@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToonFormat.Tests", "tests\ToonFormat.Tests\ToonFormat.Tests.csproj", "{25E10B0C-CAC4-475E-90C9-B4F85BB56C55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToonFormat.SpecGenerator", "tests\ToonFormat.SpecGenerator\ToonFormat.SpecGenerator.csproj", "{DB25DA28-D02C-4D8F-8C4A-D581D544607C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,18 @@ Global
 		{25E10B0C-CAC4-475E-90C9-B4F85BB56C55}.Release|x64.Build.0 = Release|Any CPU
 		{25E10B0C-CAC4-475E-90C9-B4F85BB56C55}.Release|x86.ActiveCfg = Release|Any CPU
 		{25E10B0C-CAC4-475E-90C9-B4F85BB56C55}.Release|x86.Build.0 = Release|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Debug|x64.Build.0 = Debug|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Debug|x86.Build.0 = Debug|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Release|x64.ActiveCfg = Release|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Release|x64.Build.0 = Release|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Release|x86.ActiveCfg = Release|Any CPU
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1951209F-73E0-4B33-AB40-8D80CACCB507} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{25E10B0C-CAC4-475E-90C9-B4F85BB56C55} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{DB25DA28-D02C-4D8F-8C4A-D581D544607C} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
