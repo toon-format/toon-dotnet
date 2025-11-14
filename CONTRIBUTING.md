@@ -63,6 +63,9 @@ We target .NET 8.0 and .NET 9.0 for broad compatibility.
   dotnet test
   ```
 
+Some tests are auto generated to comply with the [TOON specification](https://github.com/toon-format/spec/blob/main/SPEC.md). To ensure tests are 
+aligned with the spec, execute the `specgen.sh` or `specgen.ps1` script.
+
 ## SPEC Compliance
 
 All implementations must comply with the [TOON specification](https://github.com/toon-format/spec/blob/main/SPEC.md).

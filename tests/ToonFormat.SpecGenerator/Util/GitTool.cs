@@ -1,8 +1,11 @@
+using Microsoft.Extensions.Logging;
+
 namespace ToonFormat.SpecGenerator.Util;
 
 internal static class GitTool
 {
-    public static void CloneRepository(string repositoryUrl, string destinationPath, string? branch = null, int? depth = null)
+    public static void CloneRepository(string repositoryUrl, string destinationPath,
+        string? branch = null, int? depth = null, ILogger? logger = null)
     {
         var depthArg = depth.HasValue ? $"--depth {depth.Value}" : string.Empty;
         var branchArg = branch is not null ? $"--branch {branch}" : string.Empty;
@@ -15,6 +18,8 @@ internal static class GitTool
         process.StartInfo.RedirectStandardError = true;
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.CreateNoWindow = true;
+
+        logger?.LogDebug("Executing git with arguments: {Arguments}", process.StartInfo.Arguments);
 
         process.Start();
 

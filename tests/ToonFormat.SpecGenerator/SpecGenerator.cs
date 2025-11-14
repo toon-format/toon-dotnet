@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System.Text.Json.Nodes;
 using ToonFormat.SpecGenerator.Extensions;
 using ToonFormat.SpecGenerator.Types;
@@ -5,17 +6,20 @@ using ToonFormat.SpecGenerator.Util;
 
 namespace ToonFormat.SpecGenerator;
 
-internal class SpecGenerator
+internal class SpecGenerator(ILogger<SpecGenerator> logger)
 {
-    public static void GenerateSpecs(SpecGeneratorOptions options)
+    public void GenerateSpecs(SpecGeneratorOptions options)
     {
         var toonSpecDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-        Console.WriteLine($"Cloning Toon Format spec repository to {toonSpecDir}");
+        logger.LogInformation("Cloning Toon Format spec repository to {ToonSpecDir}", toonSpecDir);
 
         try
         {
-            GitTool.CloneRepository(options.SpecRepoUrl, toonSpecDir, branch: options.Branch, depth: 1);
+            logger.LogDebug("Cloning repository {RepoUrl} to {CloneDirectory}", options.SpecRepoUrl, toonSpecDir);
+
+            GitTool.CloneRepository(options.SpecRepoUrl, toonSpecDir, 
+                branch: options.Branch, depth: 1, logger: logger);
 
             var testsToIgnore = GenerateTestsToIgnore(options.AbsoluteSpecIgnorePath);
 
@@ -25,16 +29,24 @@ internal class SpecGenerator
                 testsToIgnore
             );
         }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed generating specs");
+
+            return;
+        }
         finally
         {
+            logger.LogDebug("Removing temp clone directory {CloneDirectory}", toonSpecDir);
+
             // delete folder recursively
             TryDeleteDirectory(toonSpecDir);
         }
 
-        Console.WriteLine("Spec generation completed.");
+        logger.LogInformation("Spec generation completed.");
     }
 
-    private static void GenerateEncodeFixtures(string specDir, string outputDir, IEnumerable<string> ignores)
+    private void GenerateEncodeFixtures(string specDir, string outputDir, IEnumerable<string> ignores)
     {
         var encodeFixtures = LoadEncodeFixtures(specDir);
 
@@ -49,28 +61,38 @@ internal class SpecGenerator
         }
     }
 
-    private static IEnumerable<Fixtures<EncodeTestCase, JsonNode, string>> LoadEncodeFixtures(string specDir)
+    private IEnumerable<Fixtures<EncodeTestCase, JsonNode, string>> LoadEncodeFixtures(string specDir)
     {
         return LoadFixtures<EncodeTestCase, JsonNode, string>(specDir, "encode");
     }
 
-    private static IEnumerable<Fixtures<DecodeTestCase, string, JsonNode>> LoadDecodeFixtures(string specDir)
+    private IEnumerable<Fixtures<DecodeTestCase, string, JsonNode>> LoadDecodeFixtures(string specDir)
     {
         return LoadFixtures<DecodeTestCase, string, JsonNode>(specDir, "decode");
     }
 
-    private static IEnumerable<string> GenerateTestsToIgnore(string specIgnorePath)
+    private IEnumerable<string> GenerateTestsToIgnore(string specIgnorePath)
     {
         const string specIgnoreFileName = ".specignore";
         var specIgnoreFileAbsolutePath = !specIgnorePath.EndsWith(specIgnoreFileName) ?
                                             Path.Combine(specIgnorePath, specIgnoreFileName) : specIgnorePath;
 
         if (!File.Exists(specIgnoreFileAbsolutePath))
+        {
+            logger.LogDebug("No spec ignore file found at path {Path}", specIgnoreFileAbsolutePath);
+
             return Array.Empty<string>();
+        }
 
-        var testNames = File.ReadAllLines(specIgnoreFileAbsolutePath);
+        // filter comments and empty lines
+        var testNames = File.ReadAllLines(specIgnoreFileAbsolutePath)
+            .Where(i => !string.IsNullOrWhiteSpace(i) && !i.StartsWith('#'));
 
-        return new HashSet<string>(testNames, StringComparer.OrdinalIgnoreCase);
+        var set = new HashSet<string>(testNames, StringComparer.OrdinalIgnoreCase);
+
+        logger.LogDebug("Found {Count} tests to ignore", set.Count);
+
+        return set;
     }
 
     private static IEnumerable<Fixtures<TTestCase, TIn, TOut>> LoadFixtures<TTestCase, TIn, TOut>(string specDir, string testType)
