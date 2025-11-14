@@ -14,7 +14,7 @@ using Toon.Format;
 using Xunit;
 
 
-namespace ToonFormat.Tests;
+namespace ToonFormat.Tests.Encode;
 
 
 [Trait("Category", "encode")]
