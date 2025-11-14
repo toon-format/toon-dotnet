@@ -1,4 +1,5 @@
 using CommandLine;
+using Microsoft.Extensions.Logging;
 
 namespace ToonFormat.SpecGenerator;
 
@@ -10,7 +11,21 @@ public static class Program
         Parser.Default.ParseArguments<SpecGeneratorOptions>(args)
             .MapResult((opts) =>
             {
-                SpecGenerator.GenerateSpecs(opts);
+                var loggerFactory = LoggerFactory.Create(builder =>
+                {
+                    builder.SetMinimumLevel(Enum.TryParse<LogLevel>(opts.LogLevel, true, out var level) ? level : LogLevel.Information);
+                    builder.AddSimpleConsole(options =>
+                    {
+                        options.IncludeScopes = false;
+                        options.SingleLine = true;
+                    });
+                });
+
+                var logger = loggerFactory.CreateLogger<SpecGenerator>();
+
+                var specGenerator = new SpecGenerator(logger);
+
+                specGenerator.GenerateSpecs(opts);
 
                 return 0;
             }, HandleParseError);

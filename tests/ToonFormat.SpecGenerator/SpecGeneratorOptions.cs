@@ -28,6 +28,12 @@ public class SpecGeneratorOptions
     [Option('b', "branch", Required = false, HelpText = "The branch version or tag name to reference")]
     public string? Branch { get; set; }
 
+    /// <summary>
+    /// The log level
+    /// </summary>
+    [Option('l', "loglevel", Required = false, HelpText = "The log level")]
+    public string? LogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Information.ToString();
+
     internal string AbsoluteOutputPath => Path.GetFullPath(
                         Path.Combine(Environment.GetEnvironmentVariable("PWD") ?? Environment.CurrentDirectory, OutputPath));
 
