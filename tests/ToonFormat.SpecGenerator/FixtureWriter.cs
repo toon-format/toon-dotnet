@@ -44,8 +44,6 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
         foreach (var testCase in Fixture.Tests)
         {
             WriteTestMethod(writer, testCase);
-
-            //break; // TODO: Remove this
         }
 
         Unindent();
@@ -146,11 +144,13 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
                 WriteLine(writer);
                 WriteLineIndented(writer, $"Assert.Equal(expected, result);");
                 break;
+
             case DecodeTestCase decodeTestCase:
                 WriteLineIndented(writer, $"var result = ToonDecoder.Decode(input);");
                 WriteLineIndented(writer, $"var expected = JsonNode.Parse(\"\"\"{decodeTestCase.Expected.ToJsonString()}\"\"\");");
                 WriteLineIndented(writer, $"Assert.Equal(expected, result);");
                 break;
+
             default:
                 WriteLineIndented(writer, "// TODO: Implement test logic");
                 break;
