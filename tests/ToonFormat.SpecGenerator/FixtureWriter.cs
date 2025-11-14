@@ -30,7 +30,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
         WriteLine(writer);
         WriteLine(writer);
 
-        WriteNamespace(writer);
+        WriteNamespace(writer, Fixture.Category);
         WriteLine(writer);
         WriteLine(writer);
 
@@ -67,7 +67,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
     private string StripIllegalCharacters(string input)
     {
-        return new Regex(@"[\(_\-/\:\)=]").Replace(input, "")!;
+        return new Regex(@"[\(_\-/\:\)=,+]").Replace(input, "")!;
     }
 
     private void WriteTestMethod(StreamWriter writer, TTestCase testCase)
@@ -85,18 +85,29 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
         {
             case EncodeTestCase encodeTestCase:
                 WriteLineIndented(writer, "var input =");
+
                 Indent();
                 WriteJsonNodeAsAnonymousType(writer, encodeTestCase.Input);
                 Unindent();
+                
                 WriteLine(writer);
+                
                 WriteLineIndented(writer, "var expected =");
                 WriteLine(writer, "\"\"\"");
                 Write(writer, encodeTestCase.Expected);
                 WriteLine(writer);
                 WriteLine(writer, "\"\"\";");
+                
                 break;
+
             case DecodeTestCase decodeTestCase:
-                WriteLineIndented(writer, $"var input = @\"{decodeTestCase.Input}\";");
+                
+                WriteLineIndented(writer, "var input =");
+                WriteLine(writer, "\"\"\"");
+                Write(writer, decodeTestCase.Input);
+                WriteLine(writer);
+                WriteLine(writer, "\"\"\";");
+
                 break;
             default:
                 WriteLineIndented(writer, $"var input = /* {typeof(TIn).Name} */; // TODO: Initialize input");
@@ -340,9 +351,9 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
         WriteLine(writer, "using Xunit;");
     }
 
-    private void WriteNamespace(StreamWriter writer)
+    private void WriteNamespace(StreamWriter writer, string category)
     {
-        WriteLine(writer, "namespace ToonFormat.Tests;");
+        WriteLine(writer, $"namespace ToonFormat.Tests.{category.ToPascalCase()};");
     }
 
     private void WriteLine(StreamWriter writer)

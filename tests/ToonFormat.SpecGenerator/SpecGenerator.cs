@@ -18,7 +18,7 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
         {
             logger.LogDebug("Cloning repository {RepoUrl} to {CloneDirectory}", options.SpecRepoUrl, toonSpecDir);
 
-            GitTool.CloneRepository(options.SpecRepoUrl, toonSpecDir, 
+            GitTool.CloneRepository(options.SpecRepoUrl, toonSpecDir,
                 branch: options.Branch, depth: 1, logger: logger);
 
             var testsToIgnore = GenerateTestsToIgnore(options.AbsoluteSpecIgnorePath);
@@ -26,6 +26,12 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
             GenerateEncodeFixtures(
                 toonSpecDir,
                 Path.Combine(options.AbsoluteOutputPath, "Encode"),
+                testsToIgnore
+            );
+
+            GenerateDecodeFixtures(
+                toonSpecDir,
+                Path.Combine(options.AbsoluteOutputPath, "Decode"),
                 testsToIgnore
             );
         }
@@ -56,6 +62,21 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
 
             // Process each encode fixture as needed
             var writer = new FixtureWriter<EncodeTestCase, JsonNode, string>(fixture, outputDir);
+
+            writer.WriteFile();
+        }
+    }
+
+    private void GenerateDecodeFixtures(string specDir, string outputDir, IEnumerable<string> ignores)
+    {
+        var decodeFixtures = LoadDecodeFixtures(specDir);
+
+        foreach (var fixture in decodeFixtures)
+        {
+            fixture.Tests = fixture.Tests.Where(t => !ignores.Contains(t.Name));
+
+            // Process each decode fixture as needed
+            var writer = new FixtureWriter<DecodeTestCase, string, JsonNode>(fixture, outputDir);
 
             writer.WriteFile();
         }
