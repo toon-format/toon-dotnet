@@ -37,7 +37,15 @@ namespace ToonFormat.Internal.Encode
                     return longVal.ToString();
 
                 if (jsonValue.TryGetValue<double>(out var doubleVal))
-                    return doubleVal.ToString("G17"); // Full precision
+                {
+                    var doublePossibleExponentRepresentation = doubleVal.ToString();
+                    if (!doublePossibleExponentRepresentation.Contains('E'))
+                        return doublePossibleExponentRepresentation;
+
+                    var formatSpecifierPlaces = Math.Abs(int.Parse(doublePossibleExponentRepresentation.Split('E')[1]));
+
+                    return doubleVal.ToString($"N{formatSpecifierPlaces}");
+                }
 
                 if (jsonValue.TryGetValue<decimal>(out var decimalVal))
                     return decimalVal.ToString();
@@ -56,7 +64,7 @@ namespace ToonFormat.Internal.Encode
         public static string EncodeStringLiteral(string value, char delimiter = Constants.COMMA)
         {
             var delimiterEnum = Constants.FromDelimiterChar(delimiter);
-            
+
             if (ValidationShared.IsSafeUnquoted(value, delimiterEnum))
             {
                 return value;
