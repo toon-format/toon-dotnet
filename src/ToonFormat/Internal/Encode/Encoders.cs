@@ -287,10 +287,9 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            foreach (var row in rows)
+            foreach (var joinedValue in rows.Select(row =>
+                Primitives.EncodeAndJoinPrimitives(header.Select(key => row[key]).ToList(), options.Delimiter)))
             {
-                var values = header.Select(key => row[key]).ToList();
-                var joinedValue = Primitives.EncodeAndJoinPrimitives(values, options.Delimiter);
                 writer.Push(depth, joinedValue);
             }
         }
