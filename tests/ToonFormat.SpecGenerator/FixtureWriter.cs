@@ -87,19 +87,19 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
                 Indent();
                 WriteJsonNodeAsAnonymousType(writer, encodeTestCase.Input);
                 Unindent();
-                
+
                 WriteLine(writer);
-                
+
                 WriteLineIndented(writer, "var expected =");
                 WriteLine(writer, "\"\"\"");
                 Write(writer, encodeTestCase.Expected);
                 WriteLine(writer);
                 WriteLine(writer, "\"\"\";");
-                
+
                 break;
 
             case DecodeTestCase decodeTestCase:
-                
+
                 WriteLineIndented(writer, "var input =");
                 WriteLine(writer, "\"\"\"");
                 Write(writer, decodeTestCase.Input);
@@ -120,8 +120,8 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
         switch (testCase)
         {
             case EncodeTestCase encodeTestCase:
-                var hasOptions = encodeTestCase.Options != null;
-                if (hasOptions)
+                var hasEncodeOptions = encodeTestCase.Options != null;
+                if (hasEncodeOptions)
                 {
                     WriteLineIndented(writer, "var options = new ToonEncodeOptions");
                     WriteLineIndented(writer, "{");
@@ -146,9 +146,90 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
                 break;
 
             case DecodeTestCase decodeTestCase:
-                WriteLineIndented(writer, $"var result = ToonDecoder.Decode(input);");
-                WriteLineIndented(writer, $"var expected = JsonNode.Parse(\"\"\"{decodeTestCase.Expected.ToJsonString()}\"\"\");");
-                WriteLineIndented(writer, $"Assert.Equal(expected, result);");
+                var hasDecodeOptions = decodeTestCase.Options != null;
+                if (hasDecodeOptions)
+                {
+                    WriteLineIndented(writer, "var options = new ToonDecodeOptions");
+                    WriteLineIndented(writer, "{");
+                    Indent();
+
+                    WriteLineIndented(writer, $"Indent = {decodeTestCase.Options?.Indent ?? 2},");
+                    WriteLineIndented(writer, $"Strict = {(decodeTestCase.Options?.Strict ?? true).ToString().ToLower()},");
+
+                    Unindent();
+                    WriteLineIndented(writer, "};");
+
+                    WriteLine(writer);
+                }
+
+                if (decodeTestCase.ShouldError)
+                {
+                    if (hasDecodeOptions)
+                    {
+                        WriteLineIndented(writer, $"Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(input, options));");
+                    }
+                    else
+                    {
+                        WriteLineIndented(writer, $"Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(input));");
+                    }
+                }
+                else
+                {
+                    var valueAsRawString = decodeTestCase.Expected?.ToString();
+                    var isNumeric = decodeTestCase.Expected?.GetValueKind() == JsonValueKind.Number;
+                    var hasEmptyRawString = valueAsRawString == string.Empty;
+                    var value = hasEmptyRawString || isNumeric ? valueAsRawString : decodeTestCase.Expected?.ToJsonString() ?? "null";
+
+                    WriteIndented(writer, "var result = ToonDecoder.Decode");
+                    if (isNumeric)
+                    {
+                        if (decodeTestCase.Expected is JsonValue jsonValue)
+                        {
+                            if (jsonValue.TryGetValue<double>(out var doubleValue))
+                            {
+                                Write(writer, "<double>");
+                            }
+                            else if (jsonValue.TryGetValue<int>(out var intValue))
+                            {
+                                Write(writer, "<int>");
+                            }
+                            else if (jsonValue.TryGetValue<long>(out var longValue))
+                            {
+                                Write(writer, "<long>");
+                            }
+                        }
+                    }
+                    Write(writer, "(input");
+                    if (hasDecodeOptions)
+                    {
+                        Write(writer, ", options");
+                    }
+                    WriteLine(writer, ");");
+
+                    WriteLine(writer);
+
+                    if (isNumeric)
+                    {
+                        WriteLineIndented(writer, $"var expected = {value};");
+
+                        WriteLine(writer);
+                        WriteLineIndented(writer, "Assert.Equal(result, expected);");
+                    }
+                    else
+                    {
+                        if (hasEmptyRawString)
+                        {
+                            WriteLineIndented(writer, $"var expected = string.Empty;");
+                        }
+                        else
+                        {
+                            WriteLineIndented(writer, $"var expected = JsonNode.Parse(\"\"\"\n{value}\n\"\"\");");
+                        }
+
+                        WriteLine(writer);
+                        WriteLineIndented(writer, $"Assert.True(JsonNode.DeepEquals(result, expected));");
+                    }
+                }
                 break;
 
             default:
