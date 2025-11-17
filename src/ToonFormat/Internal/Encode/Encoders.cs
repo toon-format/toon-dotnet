@@ -428,18 +428,31 @@ namespace ToonFormat.Internal.Encode
             {
                 writer.PushListItem(depth, Primitives.EncodePrimitive(value, options.Delimiter));
             }
-            else if (Normalize.IsJsonArray(value) && Normalize.IsArrayOfPrimitives((JsonArray)value!))
+            else if (Normalize.IsJsonArray(value))
             {
                 var arr = (JsonArray)value!;
-                var inline = EncodeInlineArrayLine(arr, options.Delimiter, null, options.LengthMarker);
-                writer.PushListItem(depth, inline);
+                
+                // Primitive arrays use inline format
+                if (Normalize.IsArrayOfPrimitives(arr))
+                {
+                    var inline = EncodeInlineArrayLine(arr, options.Delimiter, null, options.LengthMarker);
+                    writer.PushListItem(depth, inline);
+                }
+                else
+                {
+                    var header = Primitives.FormatHeader(arr.Count, null, null, options.Delimiter, options.LengthMarker);
+                    writer.PushListItem(depth, header);
+                    foreach (var item in arr)
+                    {
+                        EncodeListItemValue(item, writer, depth + 1, options);
+                    }
+                }
             }
             else if (Normalize.IsJsonObject(value))
             {
                 EncodeObjectAsListItem((JsonObject)value!, writer, depth, options);
             }
         }
-
         // #endregion
     }
 }
