@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
+
 using ToonFormat.Internal.Shared;
 
 namespace ToonFormat.Internal.Decode
@@ -202,7 +203,7 @@ namespace ToonFormat.Internal.Decode
         /// </summary>
         public static List<string> ParseDelimitedValues(string input, char delimiter)
         {
-            var values = new List<string>(16); // Ô¤·ÖÅäÒ»Ð©ÈÝÁ¿
+            var values = new List<string>(16); // Ô¤ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½ï¿½ï¿½
             var current = new System.Text.StringBuilder(input.Length);
             bool inQuotes = false;
 
@@ -212,7 +213,7 @@ namespace ToonFormat.Internal.Decode
 
                 if (ch == Constants.BACKSLASH && inQuotes && i + 1 < input.Length)
                 {
-                    // ×ªÒå´¦Àí
+                    // ×ªï¿½å´¦ï¿½ï¿½
                     current.Append(ch);
                     current.Append(input[i + 1]);
                     i++;

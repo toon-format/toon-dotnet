@@ -7,7 +7,7 @@ namespace ToonFormat
     {
         public const char LIST_ITEM_MARKER = '-';
 
-        public const string LIST_ITEM_PREFIX  = "- ";
+        public const string LIST_ITEM_PREFIX = "- ";
 
         // #region Structural characters
         public const char COMMA = ',';
