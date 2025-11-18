@@ -5,7 +5,7 @@ namespace ToonFormat.SpecGenerator;
 public class SpecGeneratorOptions
 {
     /// <summary>
-    /// Thhe git repo of the toon spec
+    /// The git repo of the toon spec
     /// </summary>
     [Option('u', "url", Required = true, HelpText = "The git repo of the toon spec")]
     public required string SpecRepoUrl { get; set; }
