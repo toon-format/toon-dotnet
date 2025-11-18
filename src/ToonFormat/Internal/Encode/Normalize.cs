@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using ToonFormat.Internal.Shared;
 
 namespace ToonFormat.Internal.Encode
 {
@@ -34,24 +35,23 @@ namespace ToonFormat.Internal.Encode
             if (value is bool b)
                 return JsonValue.Create(b);
 
-            // Numbers: canonicalize -0 to 0, handle NaN and Infinity
+            // Numbers: canonicalize -0 to +0, handle NaN and Infinity
             if (value is double d)
             {
-                // Detect -0 using Object.Equals or bitwise comparison
-                if (d == 0.0 && double.IsNegative(d))
-                    return JsonValue.Create(0.0);
-                if (!double.IsFinite(d))
+                // Canonicalize signed zero via FloatUtils
+                var dn = FloatUtils.NormalizeSignedZero(d);
+                if (!double.IsFinite(dn))
                     return null;
-                return JsonValue.Create(d);
+                return JsonValue.Create(dn);
             }
 
             if (value is float f)
             {
-                if (f == 0.0f && float.IsNegative(f))
-                    return JsonValue.Create(0.0f);
-                if (!float.IsFinite(f))
+                // Canonicalize signed zero via FloatUtils
+                var fn = FloatUtils.NormalizeSignedZero(f);
+                if (!float.IsFinite(fn))
                     return null;
-                return JsonValue.Create(f);
+                return JsonValue.Create(fn);
             }
 
             // Other numeric types
@@ -137,11 +137,11 @@ namespace ToonFormat.Internal.Encode
                 case long l:
                     return JsonValue.Create(l);
                 case double d:
-                    if (d == 0.0 && double.IsNegative(d)) return JsonValue.Create(0.0);
+                    if (BitConverter.DoubleToInt64Bits(d) == BitConverter.DoubleToInt64Bits(-0.0)) return JsonValue.Create(0.0);
                     if (!double.IsFinite(d)) return null;
                     return JsonValue.Create(d);
                 case float f:
-                    if (f == 0.0f && float.IsNegative(f)) return JsonValue.Create(0.0f);
+                    if (BitConverter.SingleToInt32Bits(f) == BitConverter.SingleToInt32Bits(-0.0f)) return JsonValue.Create(0.0f);
                     if (!float.IsFinite(f)) return null;
                     return JsonValue.Create(f);
                 case decimal dec:

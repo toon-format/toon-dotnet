@@ -28,7 +28,6 @@
   <ItemGroup>
     <Folder Include="Internal\Decode\" />
     <Folder Include="Internal\Encode\" />
-    <Folder Include="Internal\Shared\" />
   </ItemGroup>
 
 </Project>

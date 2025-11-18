@@ -287,10 +287,9 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            foreach (var row in rows)
+            foreach (var joinedValue in rows.Select(row =>
+                Primitives.EncodeAndJoinPrimitives(header.Select(key => row[key]).ToList(), options.Delimiter)))
             {
-                var values = header.Select(key => row[key]).ToList();
-                var joinedValue = Primitives.EncodeAndJoinPrimitives(values, options.Delimiter);
                 writer.Push(depth, joinedValue);
             }
         }
@@ -367,12 +366,9 @@ namespace ToonFormat.Internal.Encode
                     {
                         // Fall back to list format for non-uniform arrays of objects
                         writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
-                        foreach (var item in arr)
+                        foreach (var itemObj in arr.OfType<JsonObject>())
                         {
-                            if (item is JsonObject itemObj)
-                            {
-                                EncodeObjectAsListItem(itemObj, writer, depth + 1, options);
-                            }
+                            EncodeObjectAsListItem(itemObj, writer, depth + 1, options);
                         }
                     }
                 }
