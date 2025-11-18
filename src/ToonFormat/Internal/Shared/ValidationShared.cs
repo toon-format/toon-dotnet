@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Text.RegularExpressions;
+
 using ToonFormat;
 
 namespace ToonFormat.Internal.Shared

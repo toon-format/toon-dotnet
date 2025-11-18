@@ -193,7 +193,7 @@ namespace ToonFormat.Internal.Encode
             bool lengthMarker = false)
         {
             var header = Primitives.FormatHeader(values.Count, prefix, null, delimiter, lengthMarker);
-            
+
             if (values.Count == 0)
             {
                 return header;
@@ -235,7 +235,7 @@ namespace ToonFormat.Internal.Encode
 
             var firstRow = rows[0];
             var firstKeys = firstRow.Select(kvp => kvp.Key).ToList();
-            
+
             if (firstKeys.Count == 0)
                 return null;
 
@@ -323,7 +323,7 @@ namespace ToonFormat.Internal.Encode
         public static void EncodeObjectAsListItem(JsonObject obj, LineWriter writer, int depth, ResolvedEncodeOptions options)
         {
             var keys = obj.Select(kvp => kvp.Key).ToList();
-            
+
             if (keys.Count == 0)
             {
                 writer.Push(depth, Constants.LIST_ITEM_MARKER.ToString());
@@ -342,7 +342,7 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonArray(firstValue))
             {
                 var arr = (JsonArray)firstValue!;
-                
+
                 if (Normalize.IsArrayOfPrimitives(arr))
                 {
                     // Inline format for primitive arrays
@@ -354,7 +354,7 @@ namespace ToonFormat.Internal.Encode
                     // Check if array of objects can use tabular format
                     var objects = arr.Cast<JsonObject>().ToList();
                     var header = ExtractTabularHeader(objects);
-                    
+
                     if (header != null)
                     {
                         // Tabular format for uniform arrays of objects
@@ -387,7 +387,7 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonObject(firstValue))
             {
                 var nestedObj = (JsonObject)firstValue!;
-                
+
                 if (nestedObj.Count == 0)
                 {
                     writer.PushListItem(depth, $"{encodedKey}{Constants.COLON}");

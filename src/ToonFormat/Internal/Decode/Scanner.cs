@@ -127,7 +127,7 @@ namespace ToonFormat.Internal.Decode
             while (!span.IsEmpty)
             {
                 lineNumber++;
-                // ÕÒµ½ÕâÒ»ÐÐµÄ½áÊøÎ»ÖÃ
+                // ï¿½Òµï¿½ï¿½ï¿½Ò»ï¿½ÐµÄ½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
                 int newlineIdx = span.IndexOf('\n');
                 ReadOnlySpan<char> lineSpan;
                 if (newlineIdx >= 0)
@@ -140,12 +140,12 @@ namespace ToonFormat.Internal.Decode
                     lineSpan = span;
                     span = ReadOnlySpan<char>.Empty;
                 }
-                // È¥µô½áÎ²µÄ»»ÐÐ·ûºÍ»Ø³µ
+                // È¥ï¿½ï¿½ï¿½ï¿½Î²ï¿½Ä»ï¿½ï¿½Ð·ï¿½ï¿½Í»Ø³ï¿½
                 if (!lineSpan.IsEmpty && lineSpan[lineSpan.Length - 1] == '\r')
                 {
                     lineSpan = lineSpan.Slice(0, lineSpan.Length - 1);
                 }
-                // ¼ÆËãËõ½ø
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 int indent = 0;
                 while (indent < lineSpan.Length && lineSpan[indent] == Constants.SPACE)
                 {
