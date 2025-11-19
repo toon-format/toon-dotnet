@@ -188,8 +188,7 @@ namespace ToonFormat.Internal.Encode
         public static string EncodeInlineArrayLine(
             JsonArray values,
             char delimiter,
-            string? prefix = null,
-            bool lengthMarker = false)
+            string? prefix = null)
         {
             var header = Primitives.FormatHeader(values.Count, prefix, null, delimiter);
 

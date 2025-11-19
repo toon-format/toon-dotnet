@@ -17,7 +17,6 @@ namespace ToonFormat.Internal.Decode
         public int Length { get; set; }
         public char Delimiter { get; set; }
         public List<string>? Fields { get; set; }
-        public bool HasLengthMarker { get; set; }
     }
 
     /// <summary>
@@ -142,7 +141,6 @@ namespace ToonFormat.Internal.Decode
                     Length = parsedBracket.Length,
                     Delimiter = parsedBracket.Delimiter,
                     Fields = fields,
-                    HasLengthMarker = parsedBracket.HasLengthMarker
                 },
                 InlineValues = string.IsNullOrEmpty(afterColon) ? null : afterColon
             };
@@ -152,20 +150,11 @@ namespace ToonFormat.Internal.Decode
         {
             public int Length { get; set; }
             public char Delimiter { get; set; }
-            public bool HasLengthMarker { get; set; }
         }
 
         private static BracketSegmentResult ParseBracketSegment(string seg, char defaultDelimiter)
         {
-            bool hasLengthMarker = false;
             var content = seg;
-
-            // Check for length marker
-            if (content.StartsWith(Constants.HASH.ToString()))
-            {
-                hasLengthMarker = true;
-                content = content.Substring(1);
-            }
 
             // Check for delimiter suffix
             char delimiter = defaultDelimiter;
@@ -189,7 +178,6 @@ namespace ToonFormat.Internal.Decode
             {
                 Length = length,
                 Delimiter = delimiter,
-                HasLengthMarker = hasLengthMarker
             };
         }
 
