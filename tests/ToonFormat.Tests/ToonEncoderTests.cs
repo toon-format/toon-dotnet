@@ -30,15 +30,15 @@ public class ToonEncoderTests
         // String
         var stringResult = ToonEncoder.Encode("hello");
         Assert.Equal("hello", stringResult);
-        
+
         // Number
         var numberResult = ToonEncoder.Encode(42);
         Assert.Equal("42", numberResult);
-        
+
         // Boolean
         var boolResult = ToonEncoder.Encode(true);
         Assert.Equal("true", boolResult);
-        
+
         // Null
         var nullResult = ToonEncoder.Encode(null);
         Assert.Equal("null", nullResult);

@@ -78,7 +78,7 @@ namespace ToonFormat.Internal.Decode
                 return;
 
             var nextLine = cursor.Peek();
-            if (nextLine != null 
+            if (nextLine != null
                 && nextLine.Depth == rowDepth
                 && !nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX)
                 && IsDataRow(nextLine.Content, header.Delimiter))

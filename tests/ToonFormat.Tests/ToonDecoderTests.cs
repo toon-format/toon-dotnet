@@ -31,15 +31,15 @@ public class ToonDecoderTests
         // String
         var stringResult = ToonDecoder.Decode("hello");
         Assert.Equal("hello", stringResult?.GetValue<string>());
-        
+
         // Number - JSON defaults to double
         var numberResult = ToonDecoder.Decode("42");
         Assert.Equal(42.0, numberResult?.GetValue<double>());
-        
+
         // Boolean
         var boolResult = ToonDecoder.Decode("true");
         Assert.True(boolResult?.GetValue<bool>());
-        
+
         // Null
         var nullResult = ToonDecoder.Decode("null");
         Assert.Null(nullResult);
