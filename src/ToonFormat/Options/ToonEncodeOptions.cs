@@ -19,11 +19,4 @@ public class ToonEncodeOptions
     /// Default is comma (,).
     /// </summary>
     public ToonDelimiter Delimiter { get; set; } = Constants.DEFAULT_DELIMITER_ENUM;
-
-    /// <summary>
-    /// Optional marker to prefix array lengths in headers.
-    /// When set to true, arrays render as [#N] instead of [N].
-    /// Default is false.
-    /// </summary>
-    public bool LengthMarker { get; set; } = false;
 }
