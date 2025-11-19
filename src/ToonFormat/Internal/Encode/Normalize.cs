@@ -272,6 +272,16 @@ namespace ToonFormat.Internal.Encode
             return value is JsonObject;
         }
 
+        /// <summary>
+        /// Checks if a <see cref="JsonNode"/> is an object which is empty with no keys.
+        /// </summary>
+        /// <param name="value">The <see cref="JsonObject"/></param>
+        /// <returns><see langword="true"/> if empty, <see langword="false"/> if not.</returns>
+        public static bool IsEmptyObject(JsonNode? value)
+        {
+            return IsJsonObject(value) && (value as IDictionary<string, JsonNode>)?.Keys?.Count == 0;
+        }
+
         // #endregion
 
         // #region Array type detection

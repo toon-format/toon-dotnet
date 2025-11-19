@@ -25,9 +25,5 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Internal\Decode\" />
-    <Folder Include="Internal\Encode\" />
-  </ItemGroup>
 
 </Project>

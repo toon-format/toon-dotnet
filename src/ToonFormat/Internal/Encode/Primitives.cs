@@ -56,7 +56,7 @@ namespace ToonFormat.Internal.Encode
         public static string EncodeStringLiteral(string value, char delimiter = Constants.COMMA)
         {
             var delimiterEnum = Constants.FromDelimiterChar(delimiter);
-            
+
             if (ValidationShared.IsSafeUnquoted(value, delimiterEnum))
             {
                 return value;
