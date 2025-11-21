@@ -200,25 +200,17 @@ public class JsonComplexRoundTripTests
         var toonText = ToonEncoder.Encode(root);
         var decoded = ToonDecoder.Decode(toonText);
 
-<<<<<<< HEAD
-        // Assert - verify DateTime is preserved as ISO string
-=======
         // Assert - verify DateTime is preserved as full ISO 8601 UTC timestamp
->>>>>>> 86f6992 (Fix: use InvariantCulture for numeric encoding; add complex JSON round-trip tests)
         Assert.NotNull(decoded);
         var project = decoded["project"]?.AsObject();
         Assert.NotNull(project);
         
         var createdAt = project["createdAt"]?.GetValue<string>();
         Assert.NotNull(createdAt);
-<<<<<<< HEAD
-        Assert.Contains("2025-11-20", createdAt);
-=======
         // Validate full ISO 8601 UTC timestamp (with or without fractional seconds)
         // .NET DateTime.ToString("O") produces: 2025-11-20T10:32:00.0000000Z
         Assert.StartsWith("2025-11-20T10:32:00", createdAt);
         Assert.EndsWith("Z", createdAt);
->>>>>>> 86f6992 (Fix: use InvariantCulture for numeric encoding; add complex JSON round-trip tests)
     }
 
     // POCOs with lowercase property names to preserve original JSON keys when encoding via reflection
