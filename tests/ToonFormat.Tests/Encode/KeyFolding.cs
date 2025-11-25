@@ -50,8 +50,7 @@ a.b.c: 1
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -93,8 +92,7 @@ data.meta.items[2]: x,y
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -148,8 +146,7 @@ a.b.items[2]{id,name}:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -194,8 +191,8 @@ a.b:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
+            FlattenDepth = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -238,8 +235,7 @@ a.b.c.d: 1
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -279,8 +275,8 @@ a:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
+            FlattenDepth = 0,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -320,8 +316,8 @@ a:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
+            FlattenDepth = 1,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -361,8 +357,7 @@ a:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Off,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -404,8 +399,7 @@ a.b.c:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -442,8 +436,7 @@ a.b[2]: 1,2
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -490,8 +483,7 @@ short.path: 3
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
+            KeyFolding = ToonKeyFolding.Safe,
         };
 
         var result = ToonEncoder.Encode(input, options);
