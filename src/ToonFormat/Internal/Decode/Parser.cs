@@ -202,7 +202,7 @@ namespace ToonFormat.Internal.Decode
         /// </summary>
         public static List<string> ParseDelimitedValues(string input, char delimiter)
         {
-            var values = new List<string>(16); // 预分配一些容量
+            var values = new List<string>(16); // pre-allocate for performance
             var current = new System.Text.StringBuilder(input.Length);
             bool inQuotes = false;
 
@@ -212,7 +212,7 @@ namespace ToonFormat.Internal.Decode
 
                 if (ch == Constants.BACKSLASH && inQuotes && i + 1 < input.Length)
                 {
-                    // 转义处理
+                    // Escape sequence in quoted string
                     current.Append(ch);
                     current.Append(input[i + 1]);
                     i++;
@@ -243,7 +243,6 @@ namespace ToonFormat.Internal.Decode
 
             return values;
         }
-
 
         /// <summary>
         /// Maps an array of string tokens to JSON primitive values.

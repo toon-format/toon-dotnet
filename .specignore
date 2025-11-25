@@ -1,0 +1,23 @@
+# reason: .net doesn't support hyphens in property/field names (full-name)
+skips folding when segment requires quotes (safe mode)
+
+# reason: .net doesn't support . syntax for properties/fields (data.meta.items)
+skips folding on sibling literal-key collision (safe mode)
+
+# reason: .net doesn't support special chars or colons/brackets/spaces in property/field names or spaces (order:id full name)
+encodes tabular arrays with keys needing quotes
+quotes key with colon
+quotes key with brackets
+quotes key with braces
+quotes key with comma
+quotes key with spaces
+quotes key with leading hyphen
+quotes key with leading and trailing spaces
+quotes numeric key
+quotes empty string key
+escapes newline in key
+escapes tab in key
+escapes quotes in key
+
+# reason: may need to rely on System.Numerics.BigInteger for large numbers
+encodes large number
