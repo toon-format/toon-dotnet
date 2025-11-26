@@ -108,7 +108,6 @@ user:
         // Act & Assert
         var options = new ToonEncodeOptions
         {
-            Delimiter = ToonDelimiter.COMMA,
             Indent = 4,
         };
 
