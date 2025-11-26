@@ -127,7 +127,7 @@ namespace ToonFormat.Internal.Decode
             while (!span.IsEmpty)
             {
                 lineNumber++;
-                // 找到这一行的结束位置
+                // find the end of this line
                 int newlineIdx = span.IndexOf('\n');
                 ReadOnlySpan<char> lineSpan;
                 if (newlineIdx >= 0)
@@ -140,12 +140,12 @@ namespace ToonFormat.Internal.Decode
                     lineSpan = span;
                     span = ReadOnlySpan<char>.Empty;
                 }
-                // 去掉结尾的换行符和回车
+                // remove trailing carriage return if present
                 if (!lineSpan.IsEmpty && lineSpan[lineSpan.Length - 1] == '\r')
                 {
                     lineSpan = lineSpan.Slice(0, lineSpan.Length - 1);
                 }
-                // 计算缩进
+                // calculate indentation
                 int indent = 0;
                 while (indent < lineSpan.Length && lineSpan[indent] == Constants.SPACE)
                 {
