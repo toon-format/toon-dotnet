@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
 using ToonFormat.Internal.Shared;
@@ -31,16 +32,16 @@ namespace ToonFormat.Internal.Encode
 
                 // Number
                 if (jsonValue.TryGetValue<int>(out var intVal))
-                    return intVal.ToString();
+                    return intVal.ToString(CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<long>(out var longVal))
-                    return longVal.ToString();
+                    return longVal.ToString(CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<double>(out var doubleVal))
-                    return doubleVal.ToString("G17"); // Full precision
+                    return doubleVal.ToString("G17", CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<decimal>(out var decimalVal))
-                    return decimalVal.ToString();
+                    return decimalVal.ToString(CultureInfo.InvariantCulture);
 
                 // String
                 if (jsonValue.TryGetValue<string>(out var strVal))
