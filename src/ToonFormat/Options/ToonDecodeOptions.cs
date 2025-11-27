@@ -17,4 +17,11 @@ public class ToonDecodeOptions
     /// Default is true.
     /// </summary>
     public bool Strict { get; set; } = true;
+
+    /// <summary>
+    /// Controls path expansion for dotted keys.
+    /// "off" (default): Dotted keys are treated as literal keys.
+    /// "safe": Expand eligible dotted keys into nested objects.
+    /// </summary>
+    public string ExpandPaths { get; set; } = "off";
 }

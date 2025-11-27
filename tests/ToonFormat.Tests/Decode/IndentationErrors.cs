@@ -21,8 +21,8 @@ namespace ToonFormat.Tests.Decode;
 public class IndentationErrors
 {
     [Fact]
-    [Trait("Description", "throws when object field has non-multiple indentation (3 spaces with indent=2)")]
-    public void ThrowsWhenObjectFieldHasNonMultipleIndentation3SpacesWithIndent2()
+    [Trait("Description", "throws on object field with non-multiple indentation (3 spaces with indent=2)")]
+    public void ThrowsOnObjectFieldWithNonMultipleIndentation3SpacesWithIndent2()
     {
         // Arrange
         var input =
@@ -42,8 +42,8 @@ a:
     }
 
     [Fact]
-    [Trait("Description", "throws when list item has non-multiple indentation (3 spaces with indent=2)")]
-    public void ThrowsWhenListItemHasNonMultipleIndentation3SpacesWithIndent2()
+    [Trait("Description", "throws on list item with non-multiple indentation (3 spaces with indent=2)")]
+    public void ThrowsOnListItemWithNonMultipleIndentation3SpacesWithIndent2()
     {
         // Arrange
         var input =
@@ -64,8 +64,8 @@ items[2]:
     }
 
     [Fact]
-    [Trait("Description", "throws with custom indent size when non-multiple (3 spaces with indent=4)")]
-    public void ThrowsWithCustomIndentSizeWhenNonMultiple3SpacesWithIndent4()
+    [Trait("Description", "throws on non-multiple indentation with custom indent=4 (3 spaces)")]
+    public void ThrowsOnNonMultipleIndentationWithCustomIndent43Spaces()
     {
         // Arrange
         var input =
@@ -112,8 +112,8 @@ a:
     }
 
     [Fact]
-    [Trait("Description", "throws when tab character used in indentation")]
-    public void ThrowsWhenTabCharacterUsedInIndentation()
+    [Trait("Description", "throws on tab character used in indentation")]
+    public void ThrowsOnTabCharacterUsedInIndentation()
     {
         // Arrange
         var input =
@@ -133,8 +133,8 @@ a:
     }
 
     [Fact]
-    [Trait("Description", "throws when mixed tabs and spaces in indentation")]
-    public void ThrowsWhenMixedTabsAndSpacesInIndentation()
+    [Trait("Description", "throws on mixed tabs and spaces in indentation")]
+    public void ThrowsOnMixedTabsAndSpacesInIndentation()
     {
         // Arrange
         var input =
@@ -154,8 +154,8 @@ a:
     }
 
     [Fact]
-    [Trait("Description", "throws when tab at start of line")]
-    public void ThrowsWhenTabAtStartOfLine()
+    [Trait("Description", "throws on tab at start of line")]
+    public void ThrowsOnTabAtStartOfLine()
     {
         // Arrange
         var input =
@@ -307,8 +307,8 @@ a:
     }
 
     [Fact]
-    [Trait("Description", "empty lines do not trigger validation errors")]
-    public void EmptyLinesDoNotTriggerValidationErrors()
+    [Trait("Description", "parses empty lines without validation errors")]
+    public void ParsesEmptyLinesWithoutValidationErrors()
     {
         // Arrange
         var input =
@@ -335,8 +335,8 @@ b: 2
     }
 
     [Fact]
-    [Trait("Description", "root-level content (0 indentation) is always valid")]
-    public void RootLevelContent0IndentationIsAlwaysValid()
+    [Trait("Description", "parses root-level content (0 indentation) as always valid")]
+    public void ParsesRootLevelContent0IndentationAsAlwaysValid()
     {
         // Arrange
         var input =
@@ -363,8 +363,8 @@ c: 3
     }
 
     [Fact]
-    [Trait("Description", "lines with only spaces are not validated if empty")]
-    public void LinesWithOnlySpacesAreNotValidatedIfEmpty()
+    [Trait("Description", "parses lines with only spaces without validation if empty")]
+    public void ParsesLinesWithOnlySpacesWithoutValidationIfEmpty()
     {
         // Arrange
         var input =

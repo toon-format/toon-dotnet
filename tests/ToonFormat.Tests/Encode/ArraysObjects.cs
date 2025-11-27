@@ -119,7 +119,7 @@ items[1]:
                             3,
                         }
 ,
-                        @name = @"test",
+                        @name = @"Ada",
                     }
                     ,
                 }
@@ -131,7 +131,7 @@ items[1]:
 """
 items[1]:
   - nums[3]: 1,2,3
-    name: test
+    name: Ada
 """;
 
         // Act & Assert
@@ -151,7 +151,7 @@ items[1]:
                 @items =new object[] {                
                     new
                     {
-                        @name = @"test",
+                        @name = @"Ada",
                         @nums =new object[] {                        
                             1,
                             2,
@@ -168,7 +168,7 @@ items[1]:
         var expected =
 """
 items[1]:
-  - name: test
+  - name: Ada
     nums[3]: 1,2,3
 """;
 
@@ -214,8 +214,8 @@ items[1]:
 """
 items[1]:
   - matrix[2]:
-    - [2]: 1,2
-    - [2]: 3,4
+      - [2]: 1,2
+      - [2]: 3,4
     name: grid
 """;
 
@@ -263,8 +263,8 @@ items[1]:
 """
 items[1]:
   - users[2]{id,name}:
-    1,Ada
-    2,Bob
+      1,Ada
+      2,Bob
     status: active
 """;
 
@@ -311,9 +311,9 @@ items[1]:
 """
 items[1]:
   - users[2]:
-    - id: 1
-      name: Ada
-    - id: 2
+      - id: 1
+        name: Ada
+      - id: 2
     status: active
 """;
 
@@ -419,7 +419,7 @@ items[1]:
                 @items =new object[] {                
                     new
                     {
-                        @name = @"test",
+                        @name = @"Ada",
                         @data =new object[] {                        
                         }
 ,
@@ -433,7 +433,7 @@ items[1]:
         var expected =
 """
 items[1]:
-  - name: test
+  - name: Ada
     data[0]:
 """;
 
@@ -444,8 +444,8 @@ items[1]:
     }
 
     [Fact]
-    [Trait("Description", "places first field of nested tabular arrays on hyphen line")]
-    public void PlacesFirstFieldOfNestedTabularArraysOnHyphenLine()
+    [Trait("Description", "uses canonical encoding for multi-field list-item objects with tabular arrays")]
+    public void UsesCanonicalEncodingForMultiFieldListItemObjectsWithTabularArrays()
     {
         // Arrange
         var input =
@@ -479,9 +479,56 @@ items[1]:
 """
 items[1]:
   - users[2]{id}:
-    1
-    2
+      1
+      2
     note: x
+""";
+
+        // Act & Assert
+        var result = ToonEncoder.Encode(input);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    [Trait("Description", "uses canonical encoding for single-field list-item tabular arrays")]
+    public void UsesCanonicalEncodingForSingleFieldListItemTabularArrays()
+    {
+        // Arrange
+        var input =
+            new
+            {
+                @items =new object[] {                
+                    new
+                    {
+                        @users =new object[] {                        
+                            new
+                            {
+                                @id = 1,
+                                @name = @"Ada",
+                            }
+                            ,
+                            new
+                            {
+                                @id = 2,
+                                @name = @"Bob",
+                            }
+                            ,
+                        }
+,
+                    }
+                    ,
+                }
+,
+            }
+            ;
+
+        var expected =
+"""
+items[1]:
+  - users[2]{id,name}:
+      1,Ada
+      2,Bob
 """;
 
         // Act & Assert
@@ -517,6 +564,40 @@ items[1]:
 items[1]:
   - data[0]:
     name: x
+""";
+
+        // Act & Assert
+        var result = ToonEncoder.Encode(input);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    [Trait("Description", "encodes empty object list items as bare hyphen")]
+    public void EncodesEmptyObjectListItemsAsBareHyphen()
+    {
+        // Arrange
+        var input =
+            new
+            {
+                @items =new object[] {                
+                    @"first",
+                    @"second",
+                    new
+                    {
+                    }
+                    ,
+                }
+,
+            }
+            ;
+
+        var expected =
+"""
+items[3]:
+  - first
+  - second
+  -
 """;
 
         // Act & Assert
@@ -567,8 +648,8 @@ items[2]{a,b,c}:
     }
 
     [Fact]
-    [Trait("Description", "uses list format when one object has nested column")]
-    public void UsesListFormatWhenOneObjectHasNestedColumn()
+    [Trait("Description", "uses list format when one object has nested field")]
+    public void UsesListFormatWhenOneObjectHasNestedField()
     {
         // Arrange
         var input =
