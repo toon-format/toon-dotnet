@@ -12,6 +12,7 @@ namespace ToonFormat.Internal.Decode
     {
         public int Indent { get; set; } = 2;
         public bool Strict { get; set; } = false;
+        public ExpandPaths ExpandPaths { get; set; } = ExpandPaths.Off;
     }
 
     /// <summary>
@@ -78,7 +79,7 @@ namespace ToonFormat.Internal.Decode
                 return;
 
             var nextLine = cursor.Peek();
-            if (nextLine != null 
+            if (nextLine != null
                 && nextLine.Depth == rowDepth
                 && !nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX)
                 && IsDataRow(nextLine.Content, header.Delimiter))

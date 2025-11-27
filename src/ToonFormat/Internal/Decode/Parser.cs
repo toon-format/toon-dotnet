@@ -129,7 +129,20 @@ namespace ToonFormat.Internal.Decode
                 {
                     var fieldsContent = content.Substring(braceStart + 1, foundBraceEnd - braceStart - 1);
                     fields = ParseDelimitedValues(fieldsContent, parsedBracket.Delimiter)
-                        .Select(field => ParseStringLiteral(field.Trim()))
+                        .Select(field =>
+                        {
+                            var trimmedField = field.Trim();
+                            if (trimmedField.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
+                            {
+                                return ParseStringLiteral(trimmedField);
+                            }
+
+                            if (!ValidationShared.IsValidUnquotedKey(trimmedField))
+                            {
+                                throw ToonFormatException.Syntax($"Invalid unquoted key in header: {trimmedField}");
+                            }
+                            return trimmedField;
+                        })
                         .ToList();
                 }
             }
@@ -202,7 +215,7 @@ namespace ToonFormat.Internal.Decode
         /// </summary>
         public static List<string> ParseDelimitedValues(string input, char delimiter)
         {
-            var values = new List<string>(16); // 预分配一些容量
+            var values = new List<string>(16); // Pre-allocate some capacity
             var current = new System.Text.StringBuilder(input.Length);
             bool inQuotes = false;
 
@@ -212,7 +225,7 @@ namespace ToonFormat.Internal.Decode
 
                 if (ch == Constants.BACKSLASH && inQuotes && i + 1 < input.Length)
                 {
-                    // 转义处理
+                    // Escape handling
                     current.Append(ch);
                     current.Append(input[i + 1]);
                     i++;

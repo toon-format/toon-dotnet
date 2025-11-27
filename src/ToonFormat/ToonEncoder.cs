@@ -57,7 +57,9 @@ public static class ToonEncoder
         {
             Indent = options.Indent,
             Delimiter = Constants.ToDelimiterChar(options.Delimiter),
-            LengthMarker = options.LengthMarker
+            LengthMarker = options.LengthMarker,
+            KeyFolding = options.KeyFolding,
+            FlattenDepth = options.FlattenDepth
         };
 
         // Encode to TOON format
@@ -82,7 +84,9 @@ public static class ToonEncoder
         {
             Indent = options.Indent,
             Delimiter = Constants.ToDelimiterChar(options.Delimiter),
-            LengthMarker = options.LengthMarker
+            LengthMarker = options.LengthMarker,
+            KeyFolding = options.KeyFolding,
+            FlattenDepth = options.FlattenDepth
         };
 
         return Encoders.EncodeValue(normalized, resolvedOptions);

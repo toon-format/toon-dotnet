@@ -28,6 +28,22 @@ namespace ToonFormat.Internal.Encode
             if (value == null)
                 return null;
 
+            // Already a JsonNode - return as-is
+            if (value is JsonNode jsonNode)
+                return jsonNode;
+
+            // ToonValue - convert to JsonNode and clone to avoid parenting issues
+            if (value is Toon.Format.ToonValue toonValue)
+            {
+                var node = toonValue.ToJsonNode();
+                if (node != null)
+                {
+                    // Clone the node to detach it from any parent
+                    return JsonNode.Parse(node.ToJsonString());
+                }
+                return null;
+            }
+
             // Primitives: string, boolean
             if (value is string str)
                 return JsonValue.Create(str);
@@ -124,6 +140,22 @@ namespace ToonFormat.Internal.Encode
             // null
             if (value is null)
                 return null;
+
+            // Already a JsonNode - return as-is
+            if (value is JsonNode jsonNode)
+                return jsonNode;
+
+            // ToonValue - convert to JsonNode and clone to avoid parenting issues
+            if (value is Toon.Format.ToonValue toonValue)
+            {
+                var node = toonValue.ToJsonNode();
+                if (node != null)
+                {
+                    // Clone the node to detach it from any parent
+                    return JsonNode.Parse(node.ToJsonString());
+                }
+                return null;
+            }
 
             // Fast-path primitives without boxing
             switch (value)

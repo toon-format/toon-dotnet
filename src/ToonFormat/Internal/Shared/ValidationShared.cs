@@ -26,6 +26,10 @@ namespace ToonFormat.Internal.Shared
             pattern: "^0\\d+$",
             options: RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+        private static readonly Regex IdentifierSegmentRegex = new(
+            pattern: "^[A-Za-z_][A-Za-z0-9_]*$",
+            options: RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
         private static readonly char[] StructuralBracketsAndBraces =
         {
             Constants.OPEN_BRACKET,
@@ -48,6 +52,15 @@ namespace ToonFormat.Internal.Shared
                 return false;
 
             return ValidUnquotedKeyRegex.IsMatch(key);
+        }
+
+        /// <summary>Whether the key segment is valid for folding/expansion (no dots, alphanumeric + underscore).</summary>
+        internal static bool IsIdentifierSegment(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return false;
+
+            return IdentifierSegmentRegex.IsMatch(key);
         }
 
         /// <summary>Whether the string value can be safely without quotes.</summary>

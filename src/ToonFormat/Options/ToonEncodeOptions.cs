@@ -26,4 +26,16 @@ public class ToonEncodeOptions
     /// Default is false.
     /// </summary>
     public bool LengthMarker { get; set; } = false;
+
+    /// <summary>
+    /// Strategy for folding nested keys.
+    /// Default is Off.
+    /// </summary>
+    public KeyFolding KeyFolding { get; set; } = KeyFolding.Off;
+
+    /// <summary>
+    /// Maximum depth to flatten when KeyFolding is Safe.
+    /// Default is int.MaxValue.
+    /// </summary>
+    public int FlattenDepth { get; set; } = int.MaxValue;
 }

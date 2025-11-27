@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using ToonFormat;
 namespace Toon.Format;
 
 /// <summary>
@@ -17,4 +18,10 @@ public class ToonDecodeOptions
     /// Default is true.
     /// </summary>
     public bool Strict { get; set; } = true;
+
+    /// <summary>
+    /// Strategy for expanding dotted keys.
+    /// Default is Off.
+    /// </summary>
+    public ExpandPaths ExpandPaths { get; set; } = ExpandPaths.Off;
 }

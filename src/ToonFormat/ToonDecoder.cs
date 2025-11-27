@@ -27,6 +27,36 @@ public static class ToonDecoder
     }
 
     /// <summary>
+    /// Decodes a TOON-formatted string into a ToonObject with default options.
+    /// </summary>
+    /// <param name="toonString">The TOON-formatted string to decode.</param>
+    /// <returns>The decoded ToonObject.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when toonString is null.</exception>
+    /// <exception cref="ToonFormatException">Thrown when the TOON format is invalid.</exception>
+    public static ToonObject DecodeToonObject(string toonString)
+    {
+        return DecodeToonObject(toonString, new ToonDecodeOptions());
+    }
+
+    /// <summary>
+    /// Decodes a TOON-formatted string into a ToonObject with custom options.
+    /// </summary>
+    /// <param name="toonString">The TOON-formatted string to decode.</param>
+    /// <param name="options">Decoding options to customize parsing behavior.</param>
+    /// <returns>The decoded ToonObject.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when toonString or options is null.</exception>
+    /// <exception cref="ToonFormatException">Thrown when the TOON format is invalid.</exception>
+    public static ToonObject DecodeToonObject(string toonString, ToonDecodeOptions? options)
+    {
+        var jsonNode = Decode(toonString, options);
+        if (jsonNode is JsonObject jsonObject)
+        {
+            return new ToonObject(jsonObject);
+        }
+        throw ToonFormatException.Syntax("Decoded value is not an object");
+    }
+
+    /// <summary>
     /// Decodes a TOON-formatted string into the specified type with default options.
     /// </summary>
     /// <typeparam name="T">Target type to deserialize into.</typeparam>
@@ -56,7 +86,8 @@ public static class ToonDecoder
         var resolvedOptions = new ResolvedDecodeOptions
         {
             Indent = options.Indent,
-            Strict = options.Strict
+            Strict = options.Strict,
+            ExpandPaths = options.ExpandPaths
         };
 
         // Scan the source text into structured lines

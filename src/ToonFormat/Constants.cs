@@ -2,42 +2,65 @@ using System;
 
 namespace ToonFormat
 {
-
+    /// <summary>
+    /// Constants used throughout the TOON format implementation.
+    /// </summary>
     public static class Constants
     {
+        /// <summary>List item marker character.</summary>
         public const char LIST_ITEM_MARKER = '-';
 
-        public const string LIST_ITEM_PREFIX  = "- ";
+        /// <summary>List item prefix string.</summary>
+        public const string LIST_ITEM_PREFIX = "- ";
 
         // #region Structural characters
+        /// <summary>Comma delimiter character.</summary>
         public const char COMMA = ',';
+        /// <summary>Colon separator character.</summary>
         public const char COLON = ':';
+        /// <summary>Space character.</summary>
         public const char SPACE = ' ';
+        /// <summary>Pipe delimiter character.</summary>
         public const char PIPE = '|';
+        /// <summary>Hash/pound character for length markers.</summary>
         public const char HASH = '#';
         // #endregion
 
         // #region Brackets and braces
+        /// <summary>Opening bracket character.</summary>
         public const char OPEN_BRACKET = '[';
+        /// <summary>Closing bracket character.</summary>
         public const char CLOSE_BRACKET = ']';
+        /// <summary>Opening brace character.</summary>
         public const char OPEN_BRACE = '{';
+        /// <summary>Closing brace character.</summary>
         public const char CLOSE_BRACE = '}';
         // #endregion
 
         // #region Literals
+        /// <summary>Null literal string.</summary>
         public const string NULL_LITERAL = "null";
+        /// <summary>True literal string.</summary>
         public const string TRUE_LITERAL = "true";
+        /// <summary>False literal string.</summary>
         public const string FALSE_LITERAL = "false";
         // #endregion
 
         // #region Escape/control characters
+        /// <summary>Backslash escape character.</summary>
         public const char BACKSLASH = '\\';
+        /// <summary>Double quote character.</summary>
         public const char DOUBLE_QUOTE = '"';
+        /// <summary>Newline character.</summary>
         public const char NEWLINE = '\n';
+        /// <summary>Carriage return character.</summary>
         public const char CARRIAGE_RETURN = '\r';
+        /// <summary>Tab character.</summary>
         public const char TAB = '\t';
+        // #endregion
 
-        // #region Delimiter defaults and mapping
+        // #region Delimiter enum and default
+        /// <summary>Default delimiter for TOON format.</summary>
         public const ToonDelimiter DEFAULT_DELIMITER_ENUM = ToonDelimiter.COMMA;
 
         /// <summary>Default delimiter character (comma).</summary>
@@ -87,6 +110,28 @@ namespace ToonFormat
 
         /// <summary>Pipe |</summary>
         PIPE
+    }
+
+    /// <summary>
+    /// Options for key folding in encoder.
+    /// </summary>
+    public enum KeyFolding
+    {
+        /// <summary>No folding.</summary>
+        Off,
+        /// <summary>Fold eligible keys safely.</summary>
+        Safe
+    }
+
+    /// <summary>
+    /// Options for path expansion in decoder.
+    /// </summary>
+    public enum ExpandPaths
+    {
+        /// <summary>No expansion.</summary>
+        Off,
+        /// <summary>Expand dotted keys safely.</summary>
+        Safe
     }
 
 }

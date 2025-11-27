@@ -102,6 +102,11 @@ namespace ToonFormat.Internal.Decode
                 }
             }
 
+            if (options.ExpandPaths == ExpandPaths.Safe)
+            {
+                return ExpandObjectKeys(obj, options);
+            }
+
             return obj;
         }
 
@@ -443,5 +448,160 @@ namespace ToonFormat.Internal.Decode
         }
 
         // #endregion
+
+        // #region Path expansion
+
+        private static JsonObject ExpandObjectKeys(JsonObject obj, ResolvedDecodeOptions options)
+        {
+            var newObj = new JsonObject();
+            // Create a list of KVPs to allow modification of obj (detaching nodes)
+            var kvps = obj.ToList();
+
+            foreach (var kvp in kvps)
+            {
+                var key = kvp.Key;
+                var value = kvp.Value;
+
+                // Detach value from obj so it can be added to newObj
+                if (value != null)
+                {
+                    obj.Remove(key);
+                }
+
+                // Recursively expand nested objects first
+                if (value is JsonObject nestedObj)
+                {
+                    value = ExpandObjectKeys(nestedObj, options);
+                }
+                else if (value is JsonArray nestedArr)
+                {
+                    ExpandArrayItems(nestedArr, options);
+                }
+
+                if (key.Contains('.') && IsExpandableKey(key))
+                {
+                    var parts = key.Split('.');
+                    MergePath(newObj, parts, value, options);
+                }
+                else
+                {
+                    MergePath(newObj, new[] { key }, value, options);
+                }
+            }
+            return newObj;
+        }
+
+        private static void ExpandArrayItems(JsonArray arr, ResolvedDecodeOptions options)
+        {
+            for (int i = 0; i < arr.Count; i++)
+            {
+                var item = arr[i];
+                if (item is JsonObject objItem)
+                {
+                    arr[i] = ExpandObjectKeys(objItem, options);
+                }
+                else if (item is JsonArray arrItem)
+                {
+                    ExpandArrayItems(arrItem, options);
+                }
+            }
+        }
+
+        private static bool IsExpandableKey(string key)
+        {
+            var parts = key.Split('.');
+            foreach (var part in parts)
+            {
+                if (!ValidationShared.IsIdentifierSegment(part))
+                    return false;
+            }
+            return true;
+        }
+
+        private static void MergePath(JsonObject target, string[] path, JsonNode? value, ResolvedDecodeOptions options)
+        {
+            var currentKey = path[0];
+
+            if (path.Length == 1)
+            {
+                if (target.ContainsKey(currentKey))
+                {
+                    // Conflict
+                    if (options.Strict)
+                    {
+                        throw ToonFormatException.Syntax($"Expansion conflict at path '{currentKey}'");
+                    }
+                    // LWW: overwrite
+                    target[currentKey] = value; // JsonNode is a reference type, but we might need to clone if it's reused? No, tree structure is unique.
+                                                // Actually, if we overwrite, we detach the old value.
+                                                // System.Text.Json.Nodes handles reparenting automatically usually.
+                                                // But wait, if 'value' is already attached to 'obj' (the source), can we attach it to 'newObj'?
+                                                // JsonNode can only have one parent. We need to detach it first or clone it.
+                                                // Since we are building a NEW object structure and discarding the old one, we can detach.
+                                                // But 'value' comes from 'obj'.
+                                                // If we do `target[currentKey] = value`, it will throw if `value` has a parent.
+                                                // We should probably clone or detach.
+                                                // `value?.Parent?.Remove(value)`?
+                                                // But we are iterating `obj`. Modifying `obj` while iterating is bad.
+                                                // But `value` is a child of `obj`.
+                                                // We are building `newObj`.
+                                                // We can use `DeepClone`? Or just detach.
+                                                // Since we return `newObj` and discard `obj`, detaching is fine.
+                                                // But we can't detach while iterating `obj` easily?
+                                                // Actually, `kvp.Value` gives us the node.
+                                                // If we detach it, `obj` is modified? `JsonObject` iteration might break.
+                                                // Better to Clone. `JsonNode.DeepClone()` exists in .NET 6+.
+                                                // Assuming .NET 6+ (System.Text.Json.Nodes).
+                                                // If not available, we have to serialize/deserialize or implement clone.
+                                                // Let's assume DeepClone is available or we can detach safely if we collect all KVPs first.
+                                                // But we are recursing.
+
+                    // Let's try to detach.
+                    if (value?.Parent != null)
+                    {
+                        // We can't detach from `obj` while iterating `obj`.
+                        // So we MUST clone.
+                        // Or we convert `obj` to a list of KVPs first.
+                        // `foreach (var kvp in obj.ToList())`
+                    }
+                }
+                else
+                {
+                    target[currentKey] = value; // Will throw if parented.
+                }
+                return;
+            }
+
+            // Path length > 1
+            if (target.ContainsKey(currentKey))
+            {
+                var existing = target[currentKey];
+                if (existing is JsonObject existingObj)
+                {
+                    MergePath(existingObj, path.Skip(1).ToArray(), value, options);
+                }
+                else
+                {
+                    // Conflict: existing is primitive/array, need object
+                    if (options.Strict)
+                    {
+                        throw ToonFormatException.Syntax($"Expansion conflict at path '{currentKey}' (object vs primitive/array)");
+                    }
+                    // LWW: overwrite with new object
+                    var newObj = new JsonObject();
+                    target[currentKey] = newObj;
+                    MergePath(newObj, path.Skip(1).ToArray(), value, options);
+                }
+            }
+            else
+            {
+                var newObj = new JsonObject();
+                target[currentKey] = newObj;
+                MergePath(newObj, path.Skip(1).ToArray(), value, options);
+            }
+        }
+
+        // #endregion
     }
 }
+
