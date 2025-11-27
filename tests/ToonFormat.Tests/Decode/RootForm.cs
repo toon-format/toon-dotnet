@@ -21,8 +21,8 @@ namespace ToonFormat.Tests.Decode;
 public class RootForm
 {
     [Fact]
-    [Trait("Description", "empty document decodes to empty object")]
-    public void EmptyDocumentDecodesToEmptyObject()
+    [Trait("Description", "parses empty document as empty object")]
+    public void ParsesEmptyDocumentAsEmptyObject()
     {
         // Arrange
         var input =

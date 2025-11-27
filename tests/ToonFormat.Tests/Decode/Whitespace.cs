@@ -123,8 +123,8 @@ items[3]: "a" , "b" , "c"
     }
 
     [Fact]
-    [Trait("Description", "empty tokens decode to empty string")]
-    public void EmptyTokensDecodeToEmptyString()
+    [Trait("Description", "parses empty tokens as empty string")]
+    public void ParsesEmptyTokensAsEmptyString()
     {
         // Arrange
         var input =

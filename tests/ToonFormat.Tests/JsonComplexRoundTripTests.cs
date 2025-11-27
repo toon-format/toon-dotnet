@@ -129,12 +129,12 @@ public class JsonComplexRoundTripTests
         Assert.Equal(2.0, phase2["phaseId"]?.GetValue<double>());
         Assert.Equal("Development", phase2["title"]?.GetValue<string>());
         Assert.Equal("2026-01-30", phase2["deadline"]?.GetValue<string>());
-        
+
         var budget = phase2["budget"]?.AsObject();
         Assert.NotNull(budget);
         Assert.Equal("EUR", budget["currency"]?.GetValue<string>());
         Assert.Equal(7800.0, budget["amount"]?.GetValue<double>());
-        
+
         var resources = phase2["resources"]?.AsObject();
         Assert.NotNull(resources);
         Assert.Equal("alice.smith@example.com", resources["leadDeveloper"]?.GetValue<string>());
@@ -159,7 +159,7 @@ public class JsonComplexRoundTripTests
         Assert.Contains("PX-4921", toonText);
         Assert.Contains("metadata:", toonText);
         Assert.Contains("phases[2]", toonText);
-        
+
         _output.WriteLine("TOON Output:");
         _output.WriteLine(toonText);
     }
@@ -182,7 +182,7 @@ public class JsonComplexRoundTripTests
         var phases = project?["phases"]?.AsArray();
         var phase1 = phases?[0]?.AsObject();
         var details = phase1?["details"]?.AsObject();
-        
+
         Assert.NotNull(details);
         var specialChars = details["specialChars"]?.GetValue<string>();
         Assert.Equal("!@#$%^&*()_+=-{}[]|:;<>,.?/", specialChars);
@@ -204,7 +204,7 @@ public class JsonComplexRoundTripTests
         Assert.NotNull(decoded);
         var project = decoded["project"]?.AsObject();
         Assert.NotNull(project);
-        
+
         var createdAt = project["createdAt"]?.GetValue<string>();
         Assert.NotNull(createdAt);
         // Validate full ISO 8601 UTC timestamp (with or without fractional seconds)

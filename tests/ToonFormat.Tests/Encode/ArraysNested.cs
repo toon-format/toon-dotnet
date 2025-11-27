@@ -259,18 +259,44 @@ pairs[2]:
     }
 
     [Fact]
-    [Trait("Description", "encodes empty root-level array")]
-    public void EncodesEmptyRootLevelArray()
+    [Trait("Description", "encodes root-level array mixing primitive, object, and array of objects in list format")]
+    public void EncodesRootLevelArrayMixingPrimitiveObjectAndArrayOfObjectsInListFormat()
     {
         // Arrange
         var input =
             new object[] {            
+                @"summary",
+                new
+                {
+                    @id = 1,
+                    @name = @"Ada",
+                }
+                ,
+                new object[] {                
+                    new
+                    {
+                        @id = 2,
+                    }
+                    ,
+                    new
+                    {
+                        @status = @"draft",
+                    }
+                    ,
+                }
+                ,
             }
             ;
 
         var expected =
 """
-[0]:
+[3]:
+  - summary
+  - id: 1
+    name: Ada
+  - [2]:
+    - id: 2
+    - status: draft
 """;
 
         // Act & Assert
@@ -302,6 +328,27 @@ pairs[2]:
 [2]:
   - [2]: 1,2
   - [0]:
+""";
+
+        // Act & Assert
+        var result = ToonEncoder.Encode(input);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    [Trait("Description", "encodes empty root-level array")]
+    public void EncodesEmptyRootLevelArray()
+    {
+        // Arrange
+        var input =
+            new object[] {            
+            }
+            ;
+
+        var expected =
+"""
+[0]:
 """;
 
         // Act & Assert
