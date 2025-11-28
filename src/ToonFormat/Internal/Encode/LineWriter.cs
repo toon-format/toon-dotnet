@@ -43,15 +43,13 @@ namespace ToonFormat.Internal.Encode
             Push(depth, Constants.LIST_ITEM_PREFIX + content);
         }
 
-        /// <summary>
-        /// Returns the complete output as a single string with newlines.
-        /// </summary>
-        public override string ToString()
-        {
-            return string.Join("\n", _lines);
-        }
-
-        /// <summary>
+    /// <summary>
+    /// Returns the complete output as a single string with newlines.
+    /// </summary>
+    public override string ToString()
+    {
+        return string.Join(Environment.NewLine, _lines);
+    }        /// <summary>
         /// Helper method to repeat a string n times.
         /// </summary>
         private static string RepeatString(string str, int count)
