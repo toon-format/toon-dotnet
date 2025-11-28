@@ -21,7 +21,6 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
         Directory.CreateDirectory(OutputDir);
 
         using var writer = new StreamWriter(outputPath, false);
-        writer.NewLine = "\n"; // Use Unix line endings for cross-platform compatibility
 
         WriteHeader(writer);
         WriteLine(writer);
@@ -93,7 +92,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
                 WriteLineIndented(writer, "var expected =");
                 WriteLine(writer, "\"\"\"");
-                Write(writer, NormalizeLineEndings(encodeTestCase.Expected));
+                Write(writer, encodeTestCase.Expected);
                 WriteLine(writer);
                 WriteLine(writer, "\"\"\";");
 
@@ -103,7 +102,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
                 WriteLineIndented(writer, "var input =");
                 WriteLine(writer, "\"\"\"");
-                Write(writer, NormalizeLineEndings(decodeTestCase.Input));
+                Write(writer, decodeTestCase.Input);
                 WriteLine(writer);
                 WriteLine(writer, "\"\"\";");
 
@@ -166,10 +165,6 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
                     WriteLineIndented(writer, $"Indent = {decodeTestCase.Options?.Indent ?? 2},");
                     WriteLineIndented(writer, $"Strict = {(decodeTestCase.Options?.Strict ?? true).ToString().ToLower()},");
 
-                    if (decodeTestCase.Options?.ExpandPaths != null)
-                        WriteLineIndented(writer, $"ExpandPaths = {GetToonPathExpansionEnumFromString(decodeTestCase.Options.ExpandPaths)}");
-
-
                     Unindent();
                     WriteLineIndented(writer, "};");
 
@@ -178,17 +173,13 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
                 if (decodeTestCase.ShouldError)
                 {
-                    // Determine which exception type to expect based on the options
-                    var isPathExpansionError = decodeTestCase.Options?.ExpandPaths != null;
-                    var exceptionType = isPathExpansionError ? "ToonPathExpansionException" : "ToonFormatException";
-
                     if (hasDecodeOptions)
                     {
-                        WriteLineIndented(writer, $"Assert.Throws<{exceptionType}>(() => ToonDecoder.Decode(input, options));");
+                        WriteLineIndented(writer, $"Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(input, options));");
                     }
                     else
                     {
-                        WriteLineIndented(writer, $"Assert.Throws<{exceptionType}>(() => ToonDecoder.Decode(input));");
+                        WriteLineIndented(writer, $"Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(input));");
                     }
                 }
                 else
@@ -278,16 +269,6 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
             "off" => "ToonKeyFolding.Off",
             "safe" => "ToonKeyFolding.Safe",
             _ => "ToonKeyFolding.Off"
-        };
-    }
-
-    private static string GetToonPathExpansionEnumFromString(string? expandPathsOption)
-    {
-        return expandPathsOption switch
-        {
-            "off" => "ToonPathExpansion.Off",
-            "safe" => "ToonPathExpansion.Safe",
-            _ => "ToonPathExpansion.Safe"
         };
     }
 
@@ -488,13 +469,5 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
     private void Write(StreamWriter writer, string contents)
     {
         writer.Write(contents);
-    }
-
-    /// <summary>
-    /// Normalizes line endings to Unix format (LF) for cross-platform compatibility.
-    /// </summary>
-    private static string NormalizeLineEndings(string text)
-    {
-        return text.Replace("\r\n", "\n");
     }
 }
