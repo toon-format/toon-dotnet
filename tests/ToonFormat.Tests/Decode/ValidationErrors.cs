@@ -51,8 +51,8 @@ items[1]:
     }
 
     [Fact]
-    [Trait("Description", "throws when tabular row value count does not match header field count")]
-    public void ThrowsWhenTabularRowValueCountDoesNotMatchHeaderFieldCount()
+    [Trait("Description", "throws on tabular row value count mismatch with header field count")]
+    public void ThrowsOnTabularRowValueCountMismatchWithHeaderFieldCount()
     {
         // Arrange
         var input =
@@ -67,8 +67,8 @@ items[2]{id,name}:
     }
 
     [Fact]
-    [Trait("Description", "throws when tabular row count does not match header length")]
-    public void ThrowsWhenTabularRowCountDoesNotMatchHeaderLength()
+    [Trait("Description", "throws on tabular row count mismatch with header length")]
+    public void ThrowsOnTabularRowCountMismatchWithHeaderLength()
     {
         // Arrange
         var input =

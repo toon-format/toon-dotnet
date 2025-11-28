@@ -21,6 +21,7 @@ namespace ToonFormat.Internal.Shared
             if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
 
             return value
+                .Replace("\r\n", "\n")
                 .Replace("\\", $"{Constants.BACKSLASH}{Constants.BACKSLASH}")
                 .Replace("\"", $"{Constants.BACKSLASH}{Constants.DOUBLE_QUOTE}")
                 .Replace("\n", $"{Constants.BACKSLASH}n")

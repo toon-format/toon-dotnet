@@ -12,6 +12,7 @@ namespace ToonFormat.Internal.Decode
     {
         public int Indent { get; set; } = 2;
         public bool Strict { get; set; } = false;
+        public ToonPathExpansion ExpandPaths { get; set; } = ToonPathExpansion.Off;
     }
 
     /// <summary>

@@ -169,8 +169,8 @@ pairs[2|]:
     }
 
     [Fact]
-    [Trait("Description", "nested arrays inside list items default to comma delimiter")]
-    public void NestedArraysInsideListItemsDefaultToCommaDelimiter()
+    [Trait("Description", "parses nested arrays inside list items with default comma delimiter")]
+    public void ParsesNestedArraysInsideListItemsWithDefaultCommaDelimiter()
     {
         // Arrange
         var input =
@@ -190,8 +190,8 @@ items[1	]:
     }
 
     [Fact]
-    [Trait("Description", "nested arrays inside list items default to comma with pipe parent")]
-    public void NestedArraysInsideListItemsDefaultToCommaWithPipeParent()
+    [Trait("Description", "parses nested arrays inside list items with default comma delimiter when parent uses pipe")]
+    public void ParsesNestedArraysInsideListItemsWithDefaultCommaDelimiterWhenParentUsesPipe()
     {
         // Arrange
         var input =
@@ -211,8 +211,8 @@ items[1|]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays with tab delimiter")]
-    public void ParsesRootArraysWithTabDelimiter()
+    [Trait("Description", "parses root-level array with tab delimiter")]
+    public void ParsesRootLevelArrayWithTabDelimiter()
     {
         // Arrange
         var input =
@@ -231,8 +231,8 @@ items[1|]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays with pipe delimiter")]
-    public void ParsesRootArraysWithPipeDelimiter()
+    [Trait("Description", "parses root-level array with pipe delimiter")]
+    public void ParsesRootLevelArrayWithPipeDelimiter()
     {
         // Arrange
         var input =
@@ -251,8 +251,8 @@ items[1|]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays of objects with tab delimiter")]
-    public void ParsesRootArraysOfObjectsWithTabDelimiter()
+    [Trait("Description", "parses root-level array of objects with tab delimiter")]
+    public void ParsesRootLevelArrayOfObjectsWithTabDelimiter()
     {
         // Arrange
         var input =
@@ -273,8 +273,8 @@ items[1|]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays of objects with pipe delimiter")]
-    public void ParsesRootArraysOfObjectsWithPipeDelimiter()
+    [Trait("Description", "parses root-level array of objects with pipe delimiter")]
+    public void ParsesRootLevelArrayOfObjectsWithPipeDelimiter()
     {
         // Arrange
         var input =

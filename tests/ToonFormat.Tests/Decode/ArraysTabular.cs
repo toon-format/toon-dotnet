@@ -131,8 +131,8 @@ items[2]{"order:id","full name"}:
     }
 
     [Fact]
-    [Trait("Description", "unquoted colon terminates tabular rows and starts key-value pair")]
-    public void UnquotedColonTerminatesTabularRowsAndStartsKeyValuePair()
+    [Trait("Description", "treats unquoted colon as terminator for tabular rows and start of key-value pair")]
+    public void TreatsUnquotedColonAsTerminatorForTabularRowsAndStartOfKeyValuePair()
     {
         // Arrange
         var input =

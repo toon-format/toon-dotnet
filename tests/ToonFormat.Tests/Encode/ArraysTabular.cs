@@ -21,8 +21,8 @@ namespace ToonFormat.Tests.Encode;
 public class ArraysTabular
 {
     [Fact]
-    [Trait("Description", "encodes arrays of similar objects in tabular format")]
-    public void EncodesArraysOfSimilarObjectsInTabularFormat()
+    [Trait("Description", "encodes arrays of uniform objects in tabular format")]
+    public void EncodesArraysOfUniformObjectsInTabularFormat()
     {
         // Arrange
         var input =

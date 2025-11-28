@@ -317,6 +317,7 @@ namespace ToonFormat.Internal.Decode
         {
             public string Key { get; set; } = string.Empty;
             public int End { get; set; }
+            public bool WasQuoted { get; set; }
         }
 
         public static KeyParseResult ParseUnquotedKey(string content, int start)
@@ -338,7 +339,7 @@ namespace ToonFormat.Internal.Decode
             // Skip the colon
             end++;
 
-            return new KeyParseResult { Key = key, End = end };
+            return new KeyParseResult { Key = key, End = end, WasQuoted = false };
         }
 
         public static KeyParseResult ParseQuotedKey(string content, int start)
@@ -363,7 +364,7 @@ namespace ToonFormat.Internal.Decode
             }
             end++;
 
-            return new KeyParseResult { Key = key, End = end };
+            return new KeyParseResult { Key = key, End = end, WasQuoted = true };
         }
 
         /// <summary>
