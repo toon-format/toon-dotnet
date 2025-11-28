@@ -46,7 +46,6 @@ tags[3	]: reading	gaming	coding
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -80,7 +79,6 @@ tags[3|]: reading|gaming|coding
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -114,7 +112,6 @@ tags[3]: reading,gaming,coding
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -161,7 +158,6 @@ items[2	]{sku	qty	price}:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -208,7 +204,6 @@ items[2|]{sku|qty|price}:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -251,7 +246,6 @@ pairs[2	]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -294,7 +288,6 @@ pairs[2|]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -324,7 +317,6 @@ pairs[2|]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -354,7 +346,6 @@ pairs[2|]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -393,7 +384,6 @@ pairs[2|]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -432,7 +422,6 @@ pairs[2|]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -466,7 +455,6 @@ items[3	]: a	"b\tc"	d
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -500,7 +488,6 @@ items[3|]: a|"b|c"|d
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -533,7 +520,6 @@ items[2	]: a,b	c,d
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -566,7 +552,6 @@ items[2|]: a,b|c,d
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -611,7 +596,6 @@ items[2]{id,note}:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.COMMA,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -656,7 +640,6 @@ items[2	]{id	note}:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -685,7 +668,6 @@ note: a,b
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -714,7 +696,6 @@ note: a,b
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -751,7 +732,6 @@ pairs[1|]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -788,7 +768,6 @@ pairs[1	]:
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.TAB,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);
@@ -822,7 +801,6 @@ items[3|]: "true"|"42"|"-3.14"
         var options = new ToonEncodeOptions
         {
             Delimiter = ToonDelimiter.PIPE,
-            Indent = 2,
         };
 
         var result = ToonEncoder.Encode(input, options);

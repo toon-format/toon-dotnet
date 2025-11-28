@@ -127,8 +127,17 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
                     WriteLineIndented(writer, "{");
                     Indent();
 
-                    WriteLineIndented(writer, $"Delimiter = {GetToonDelimiterEnumFromChar(encodeTestCase.Options?.Delimiter)},");
-                    WriteLineIndented(writer, $"Indent = {encodeTestCase.Options?.Indent ?? 2},");
+                    if (encodeTestCase.Options?.Delimiter != null)
+                        WriteLineIndented(writer, $"Delimiter = {GetToonDelimiterEnumFromChar(encodeTestCase.Options.Delimiter)},");
+
+                    if (encodeTestCase.Options?.Indent != null)
+                        WriteLineIndented(writer, $"Indent = {encodeTestCase.Options.Indent},");
+
+                    if (encodeTestCase.Options?.KeyFolding != null)
+                        WriteLineIndented(writer, $"KeyFolding = {GetToonKeyFoldingEnumFromString(encodeTestCase.Options.KeyFolding)},");
+
+                    if (encodeTestCase.Options?.FlattenDepth != null)
+                        WriteLineIndented(writer, $"FlattenDepth = {encodeTestCase.Options.FlattenDepth},");
 
                     Unindent();
                     WriteLineIndented(writer, "};");
@@ -250,6 +259,16 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
             "\t" => "ToonDelimiter.TAB",
             "|" => "ToonDelimiter.PIPE",
             _ => "ToonDelimiter.COMMA"
+        };
+    }
+
+    private static string GetToonKeyFoldingEnumFromString(string? keyFoldingOption)
+    {
+        return keyFoldingOption switch
+        {
+            "off" => "ToonKeyFolding.Off",
+            "safe" => "ToonKeyFolding.Safe",
+            _ => "ToonKeyFolding.Off"
         };
     }
 
