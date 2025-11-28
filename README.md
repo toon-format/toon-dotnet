@@ -4,7 +4,7 @@
 [![.NET version](https://img.shields.io/badge/.NET-8.0%20%7C%209.0-512BD4)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-Compact, human-readable serialization format for LLM contexts with **30-60% token reduction** vs JSON. Combines YAML-like indentation with CSV-like tabular arrays. Fully compatible with the [official TOON specification v3.0](https://github.com/toon-format/spec).
+**Token-Oriented Object Notation** is a compact, human-readable encoding of the JSON data model that minimizes tokens and makes structure easy for models to follow. Combines YAML-like indentation with CSV-like tabular arrays. Fully compatible with the [official TOON specification v3.0](https://github.com/toon-format/spec).
 
 **Key Features:** Minimal syntax • TOON Encoding and Decoding • Tabular arrays for uniform data • Path expansion • Strict mode validation • .NET 8.0 & 9.0 • 370+ tests with 99.7% spec coverage.
 
