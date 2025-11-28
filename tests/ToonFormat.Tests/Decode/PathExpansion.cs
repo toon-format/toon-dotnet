@@ -35,7 +35,7 @@ a.b.c: 1
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -62,7 +62,7 @@ data.meta.items[2]: a,b
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -91,7 +91,7 @@ a.b.items[2]{id,name}:
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -118,7 +118,7 @@ user.name: Ada
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "off"
+            ExpandPaths = ToonPathExpansion.Off
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -147,7 +147,7 @@ a.e: 3
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -175,10 +175,10 @@ a: 2
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
-        Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(input, options));
+        Assert.Throws<ToonPathExpansionException>(() => ToonDecoder.Decode(input, options));
     }
 
     [Fact]
@@ -197,10 +197,10 @@ a[2]: 2,3
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
-        Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(input, options));
+        Assert.Throws<ToonPathExpansionException>(() => ToonDecoder.Decode(input, options));
     }
 
     [Fact]
@@ -219,7 +219,7 @@ a: 2
         {
             Indent = 2,
             Strict = false,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -247,7 +247,7 @@ a.b: 2
         {
             Indent = 2,
             Strict = false,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -275,7 +275,7 @@ a.b: 1
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -302,7 +302,7 @@ full-name.x: 1
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);
@@ -329,7 +329,7 @@ a.b.c:
         {
             Indent = 2,
             Strict = true,
-            ExpandPaths = "safe"
+            ExpandPaths = ToonPathExpansion.Safe
         };
 
         var result = ToonDecoder.Decode(input, options);

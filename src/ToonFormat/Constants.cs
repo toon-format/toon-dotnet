@@ -125,4 +125,16 @@ namespace ToonFormat
         Safe
     }
 
+    /// <summary>
+    /// Path expansion options
+    /// </summary>
+    public enum ToonPathExpansion
+    {
+        /// <summary>Path expansion disabled</summary>
+        Off,
+            
+        /// <summary>Keys containing dots are expanded into nested structures</summary>
+        Safe
+    }
+
 }

@@ -76,7 +76,7 @@ public static class ToonDecoder
 
         // Track quoted keys if path expansion is enabled
         HashSet<string>? quotedKeys = null;
-        if (resolvedOptions.ExpandPaths == "safe")
+        if (resolvedOptions.ExpandPaths == ToonPathExpansion.Safe)
         {
             quotedKeys = new HashSet<string>();
         }
@@ -84,7 +84,7 @@ public static class ToonDecoder
         var result = Decoders.DecodeValueFromLines(cursor, resolvedOptions, quotedKeys);
 
         // Apply path expansion if enabled
-        if (resolvedOptions.ExpandPaths == "safe" && result is JsonObject obj)
+        if (resolvedOptions.ExpandPaths == ToonPathExpansion.Safe && result is JsonObject obj)
         {
             result = PathExpansion.ExpandPaths(obj, resolvedOptions.Strict, quotedKeys);
         }
