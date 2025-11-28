@@ -132,7 +132,7 @@ namespace ToonFormat
     {
         /// <summary>Path expansion disabled</summary>
         Off,
-
+            
         /// <summary>Keys containing dots are expanded into nested structures</summary>
         Safe
     }
