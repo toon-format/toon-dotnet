@@ -14,7 +14,6 @@ namespace ToonFormat.Internal.Encode
     {
         public int Indent { get; set; } = 2;
         public char Delimiter { get; set; } = Constants.COMMA;
-        public bool LengthMarker { get; set; } = false;
         public ToonKeyFolding KeyFolding { get; set; } = ToonKeyFolding.Off;
         public int FlattenDepth { get; set; } = int.MaxValue;
     }
@@ -191,7 +190,7 @@ namespace ToonFormat.Internal.Encode
         {
             if (value.Count == 0)
             {
-                var header = Primitives.FormatHeader(0, key, null, options.Delimiter, options.LengthMarker);
+                var header = Primitives.FormatHeader(0, key, null, options.Delimiter);
                 writer.Push(depth, header);
                 return;
             }
@@ -199,7 +198,7 @@ namespace ToonFormat.Internal.Encode
             // Primitive array
             if (Normalize.IsArrayOfPrimitives(value))
             {
-                var formatted = EncodeInlineArrayLine(value, options.Delimiter, key, options.LengthMarker);
+                var formatted = EncodeInlineArrayLine(value, options.Delimiter, key);
                 writer.Push(depth, formatted);
                 return;
             }
@@ -251,14 +250,14 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            var header = Primitives.FormatHeader(values.Count, prefix, null, options.Delimiter, options.LengthMarker);
+            var header = Primitives.FormatHeader(values.Count, prefix, null, options.Delimiter);
             writer.Push(depth, header);
 
             foreach (var arr in values)
             {
                 if (Normalize.IsArrayOfPrimitives(arr))
                 {
-                    var inline = EncodeInlineArrayLine(arr, options.Delimiter, null, options.LengthMarker);
+                    var inline = EncodeInlineArrayLine(arr, options.Delimiter, null);
                     writer.PushListItem(depth + 1, inline);
                 }
             }
@@ -270,10 +269,9 @@ namespace ToonFormat.Internal.Encode
         public static string EncodeInlineArrayLine(
             JsonArray values,
             char delimiter,
-            string? prefix = null,
-            bool lengthMarker = false)
+            string? prefix = null)
         {
-            var header = Primitives.FormatHeader(values.Count, prefix, null, delimiter, lengthMarker);
+            var header = Primitives.FormatHeader(values.Count, prefix, null, delimiter);
 
             if (values.Count == 0)
             {
@@ -299,7 +297,7 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            var formattedHeader = Primitives.FormatHeader(rows.Count, prefix, header, options.Delimiter, options.LengthMarker);
+            var formattedHeader = Primitives.FormatHeader(rows.Count, prefix, header, options.Delimiter);
             writer.Push(depth, formattedHeader);
 
             WriteTabularRows(rows, header, writer, depth + 1, options);
@@ -389,7 +387,7 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            var header = Primitives.FormatHeader(items.Count, prefix, null, options.Delimiter, options.LengthMarker);
+            var header = Primitives.FormatHeader(items.Count, prefix, null, options.Delimiter);
             writer.Push(depth, header);
 
             foreach (var item in items)
@@ -427,7 +425,7 @@ namespace ToonFormat.Internal.Encode
                 if (Normalize.IsArrayOfPrimitives(arr))
                 {
                     // Inline format for primitive arrays
-                    var formatted = EncodeInlineArrayLine(arr, options.Delimiter, firstKey, options.LengthMarker);
+                    var formatted = EncodeInlineArrayLine(arr, options.Delimiter, firstKey);
                     writer.PushListItem(depth, formatted);
                 }
                 else if (Normalize.IsArrayOfObjects(arr))
@@ -439,7 +437,7 @@ namespace ToonFormat.Internal.Encode
                     if (header != null)
                     {
                         // Tabular format for uniform arrays of objects
-                        var formattedHeader = Primitives.FormatHeader(arr.Count, firstKey, header, options.Delimiter, options.LengthMarker);
+                        var formattedHeader = Primitives.FormatHeader(arr.Count, firstKey, header, options.Delimiter);
                         writer.PushListItem(depth, formattedHeader);
                         WriteTabularRows(objects, header, writer, depth + 1, options);
                     }
@@ -508,7 +506,7 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonArray(value) && Normalize.IsArrayOfPrimitives((JsonArray)value!))
             {
                 var arr = (JsonArray)value!;
-                var inline = EncodeInlineArrayLine(arr, options.Delimiter, null, options.LengthMarker);
+                var inline = EncodeInlineArrayLine(arr, options.Delimiter, null);
                 writer.PushListItem(depth, inline);
             }
             else if (Normalize.IsJsonObject(value))

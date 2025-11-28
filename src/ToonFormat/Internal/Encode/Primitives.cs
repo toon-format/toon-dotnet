@@ -113,8 +113,7 @@ namespace ToonFormat.Internal.Encode
             int length,
             string? key = null,
             IReadOnlyList<string>? fields = null,
-            char? delimiter = null,
-            bool lengthMarker = false)
+            char? delimiter = null)
         {
             var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
             var header = string.Empty;
@@ -126,12 +125,11 @@ namespace ToonFormat.Internal.Encode
             }
 
             // Add array length with optional marker and delimiter
-            var marker = lengthMarker ? Constants.HASH.ToString() : string.Empty;
             var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
                 ? delimiterChar.ToString()
                 : string.Empty;
 
-            header += $"{Constants.OPEN_BRACKET}{marker}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
+            header += $"{Constants.OPEN_BRACKET}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
 
             // Add field names for tabular format
             if (fields != null && fields.Count > 0)

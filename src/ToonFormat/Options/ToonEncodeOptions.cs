@@ -22,13 +22,6 @@ public class ToonEncodeOptions
     public ToonDelimiter Delimiter { get; set; } = Constants.DEFAULT_DELIMITER_ENUM;
 
     /// <summary>
-    /// Optional marker to prefix array lengths in headers.
-    /// When set to true, arrays render as [#N] instead of [N].
-    /// Default is false.
-    /// </summary>
-    public bool LengthMarker { get; set; } = false;
-
-    /// <summary>
     /// Enable key folding to collapse single-key wrapper chains.
     /// When set to <see cref="ToonKeyFolding.Safe"/>, nested objects with single keys are
     /// collapsed into dotted paths

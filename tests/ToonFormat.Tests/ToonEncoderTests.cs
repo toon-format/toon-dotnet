@@ -112,21 +112,6 @@ public class ToonEncoderTests
     }
 
     [Fact]
-    public void Encode_WithLengthMarker_IncludesHashSymbol()
-    {
-        // Arrange
-        var data = new { items = new[] { 1, 2, 3 } };
-        var options = new ToonEncodeOptions { LengthMarker = true };
-
-        // Act
-        var result = ToonEncoder.Encode(data, options);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Contains("[#", result);
-    }
-
-    [Fact]
     public void Encode_NestedStructures_ReturnsValidToon()
     {
         // Arrange

@@ -57,7 +57,6 @@ public static class ToonEncoder
         {
             Indent = options.Indent,
             Delimiter = Constants.ToDelimiterChar(options.Delimiter),
-            LengthMarker = options.LengthMarker,
             KeyFolding = options.KeyFolding,
             FlattenDepth = options.FlattenDepth ?? int.MaxValue,
         };
@@ -84,7 +83,6 @@ public static class ToonEncoder
         {
             Indent = options.Indent,
             Delimiter = Constants.ToDelimiterChar(options.Delimiter),
-            LengthMarker = options.LengthMarker,
             KeyFolding = options.KeyFolding,
             FlattenDepth = options.FlattenDepth ?? int.MaxValue,
         };
