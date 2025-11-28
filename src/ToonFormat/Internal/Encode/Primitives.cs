@@ -37,13 +37,52 @@ namespace ToonFormat.Internal.Encode
                 if (jsonValue.TryGetValue<long>(out var longVal))
                     return longVal.ToString(CultureInfo.InvariantCulture);
 
-                if (jsonValue.TryGetValue<double>(out var doubleVal))
-                    return doubleVal.ToString("G17", CultureInfo.InvariantCulture);
+            if (jsonValue.TryGetValue<double>(out var doubleVal))
+            {
+                // Try to find the shortest representation that round-trips correctly
+                // Start with lower precision and work up to avoid unnecessary digits
+                for (int precision = 1; precision <= 17; precision++)
+                {
+                    var candidate = doubleVal.ToString("G" + precision, CultureInfo.InvariantCulture);
+                    
+                    // Prefer decimal notation over scientific notation for reasonable ranges
+                    if (candidate.Contains('E') || candidate.Contains('e'))
+                    {
+                        var absVal = Math.Abs(doubleVal);
+                        if (absVal >= 1e-6 && absVal < 1e15)
+                        {
+                            // Try fixed-point notation
+                            var fixedPoint = doubleVal.ToString("0.################", CultureInfo.InvariantCulture);
+                            if (double.TryParse(fixedPoint, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+                            {
+                                if (parsed == doubleVal)
+                                {
+                                    // Remove trailing zeros only after decimal point
+                                    if (fixedPoint.Contains('.'))
+                                    {
+                                        fixedPoint = fixedPoint.TrimEnd('0').TrimEnd('.');
+                                    }
+                                    return fixedPoint;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (double.TryParse(candidate, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedCandidate))
+                    {
+                        if (parsedCandidate == doubleVal)
+                        {
+                            return candidate;
+                        }
+                    }
+                }
+                
+                // Fallback to full precision
+                return doubleVal.ToString("G17", CultureInfo.InvariantCulture);
+            }
 
-                if (jsonValue.TryGetValue<decimal>(out var decimalVal))
-                    return decimalVal.ToString(CultureInfo.InvariantCulture);
-
-                // String
+            if (jsonValue.TryGetValue<decimal>(out var decimalVal))
+                return decimalVal.ToString(CultureInfo.InvariantCulture);                // String
                 if (jsonValue.TryGetValue<string>(out var strVal))
                     return EncodeStringLiteral(strVal ?? string.Empty, delimiter);
             }

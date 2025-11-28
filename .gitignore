@@ -8,6 +8,7 @@ out/
 *.snupkg
 packages/
 .nuget/
+artifacts/
 
 # Build results
 [Dd]ebug/

@@ -12,23 +12,22 @@ namespace ToonFormat.Internal.Shared
     /// </summary>
     internal static class StringUtils
     {
-        /// <summary>
-        /// Escapes special characters: backslash, quotes, newlines, carriage returns, tabs.
-        /// Equivalent to TS escapeString.
-        /// </summary>
-        internal static string EscapeString(string value)
-        {
-            if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
+    /// <summary>
+    /// Escapes special characters: backslash, quotes, newlines, carriage returns, tabs.
+    /// Equivalent to TS escapeString.
+    /// </summary>
+    internal static string EscapeString(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
 
-            return value
-                .Replace("\\", $"{Constants.BACKSLASH}{Constants.BACKSLASH}")
-                .Replace("\"", $"{Constants.BACKSLASH}{Constants.DOUBLE_QUOTE}")
-                .Replace("\n", $"{Constants.BACKSLASH}n")
-                .Replace("\r", $"{Constants.BACKSLASH}r")
-                .Replace("\t", $"{Constants.BACKSLASH}t");
-        }
-
-        /// <summary>
+        return value
+            .Replace("\r\n", "\n") // Normalize Windows line endings to Unix
+            .Replace("\\", $"{Constants.BACKSLASH}{Constants.BACKSLASH}")
+            .Replace("\"", $"{Constants.BACKSLASH}{Constants.DOUBLE_QUOTE}")
+            .Replace("\n", $"{Constants.BACKSLASH}n")
+            .Replace("\r", $"{Constants.BACKSLASH}r")
+            .Replace("\t", $"{Constants.BACKSLASH}t");
+    }        /// <summary>
         /// Unescapes the string, supporting \n, \t, \r, \\, \". Invalid sequences throw <see cref="ToonFormatException"/>.
         /// Equivalent to TS unescapeString.
         /// </summary>
