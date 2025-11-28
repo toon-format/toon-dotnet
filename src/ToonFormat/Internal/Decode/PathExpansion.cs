@@ -13,8 +13,6 @@ namespace ToonFormat.Internal.Decode
     /// </summary>
     internal static class PathExpansion
     {
-        private static readonly Regex IdentifierPattern = new Regex(@"^[A-Za-z_][A-Za-z0-9_]*$", RegexOptions.Compiled);
-
         /// <summary>
         /// Expands dotted keys in a JsonObject into nested structures.
         /// Example: {"a.b.c": 1} -> {"a": {"b": {"c": 1}}}
@@ -35,10 +33,10 @@ namespace ToonFormat.Internal.Decode
                 bool wasQuoted = quotedKeys != null && quotedKeys.Contains(key);
 
                 // Check if key contains dots and is eligible for expansion
-                if (!wasQuoted && key.Contains('.') && IsExpandable(key))
+                if (!wasQuoted && key.Contains(Constants.DOT) && IsExpandable(key))
                 {
                     // Split and expand
-                    var segments = key.Split('.');
+                    var segments = key.Split(Constants.DOT);
                     SetNestedValue(result, segments, value, strict);
                 }
                 else
@@ -57,19 +55,8 @@ namespace ToonFormat.Internal.Decode
         /// </summary>
         private static bool IsExpandable(string key)
         {
-            var segments = key.Split('.');
-            return segments.All(segment => IsIdentifierSegment(segment));
-        }
-
-        /// <summary>
-        /// Checks if a segment is a valid identifier per SPEC §1.9
-        /// </summary>
-        private static bool IsIdentifierSegment(string segment)
-        {
-            if (string.IsNullOrEmpty(segment))
-                return false;
-
-            return IdentifierPattern.IsMatch(segment);
+            var segments = key.Split(Constants.DOT);
+            return segments.All(segment => ValidationShared.IsIdentifierSegment(segment));
         }
 
         /// <summary>
@@ -97,8 +84,11 @@ namespace ToonFormat.Internal.Decode
                         // Conflict: path requires object but found non-object
                         if (strict)
                         {
-                            throw ToonFormatException.Syntax(
-                                $"Path expansion conflict at '{segment}': expected object but found {GetTypeName(existing)}"
+                            throw ToonPathExpansionException.TraversalConflict(
+                                segment,
+                                GetTypeName(existing),
+                                string.Join(".", segments),
+                                i
                             );
                         }
                         else
@@ -149,8 +139,10 @@ namespace ToonFormat.Internal.Decode
                 {
                     if (strict)
                     {
-                        throw ToonFormatException.Syntax(
-                            $"Path expansion conflict at '{key}': {GetTypeName(existing)} vs {GetTypeName(value)}"
+                        throw ToonPathExpansionException.AssignmentConflict(
+                            key,
+                            GetTypeName(value),
+                            GetTypeName(existing)
                         );
                     }
                     // LWW: just overwrite

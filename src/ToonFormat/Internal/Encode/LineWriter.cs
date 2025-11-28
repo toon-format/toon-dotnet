@@ -48,7 +48,7 @@ namespace ToonFormat.Internal.Encode
         /// </summary>
         public override string ToString()
         {
-            return string.Join("\n", _lines);
+            return string.Join(Environment.NewLine, _lines);
         }
 
         /// <summary>
