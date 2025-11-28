@@ -1,4 +1,4 @@
-﻿using Toon.Format;
+using Toon.Format;
 
 namespace ToonFormat.Tests;
 
