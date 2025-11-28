@@ -21,6 +21,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
     Directory.CreateDirectory(OutputDir);
 
     using var writer = new StreamWriter(outputPath, false);
+    writer.NewLine = "\n"; // Use Unix line endings for cross-platform compatibility
 
     WriteHeader(writer);
     WriteLine(writer);
@@ -92,7 +93,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
         WriteLineIndented(writer, "var expected =");
         WriteLine(writer, "\"\"\"");
-        Write(writer, encodeTestCase.Expected);
+        Write(writer, NormalizeLineEndings(encodeTestCase.Expected));
         WriteLine(writer);
         WriteLine(writer, "\"\"\";");
 
@@ -102,7 +103,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
         WriteLineIndented(writer, "var input =");
         WriteLine(writer, "\"\"\"");
-        Write(writer, decodeTestCase.Input);
+        Write(writer, NormalizeLineEndings(decodeTestCase.Input));
         WriteLine(writer);
         WriteLine(writer, "\"\"\";");
 
@@ -487,5 +488,13 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
   private void Write(StreamWriter writer, string contents)
   {
     writer.Write(contents);
+  }
+
+  /// <summary>
+  /// Normalizes line endings to Unix format (LF) for cross-platform compatibility.
+  /// </summary>
+  private static string NormalizeLineEndings(string text)
+  {
+    return text.Replace("\r\n", "\n");
   }
 }
