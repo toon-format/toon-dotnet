@@ -296,8 +296,8 @@ pairs[2|]:
     }
 
     [Fact]
-    [Trait("Description", "encodes root arrays with tab delimiter")]
-    public void EncodesRootArraysWithTabDelimiter()
+    [Trait("Description", "encodes root-level array with tab delimiter")]
+    public void EncodesRootLevelArrayWithTabDelimiter()
     {
         // Arrange
         var input =
@@ -325,8 +325,8 @@ pairs[2|]:
     }
 
     [Fact]
-    [Trait("Description", "encodes root arrays with pipe delimiter")]
-    public void EncodesRootArraysWithPipeDelimiter()
+    [Trait("Description", "encodes root-level array with pipe delimiter")]
+    public void EncodesRootLevelArrayWithPipeDelimiter()
     {
         // Arrange
         var input =
@@ -354,8 +354,8 @@ pairs[2|]:
     }
 
     [Fact]
-    [Trait("Description", "encodes root arrays of objects with tab delimiter")]
-    public void EncodesRootArraysOfObjectsWithTabDelimiter()
+    [Trait("Description", "encodes root-level array of objects with tab delimiter")]
+    public void EncodesRootLevelArrayOfObjectsWithTabDelimiter()
     {
         // Arrange
         var input =
@@ -392,8 +392,8 @@ pairs[2|]:
     }
 
     [Fact]
-    [Trait("Description", "encodes root arrays of objects with pipe delimiter")]
-    public void EncodesRootArraysOfObjectsWithPipeDelimiter()
+    [Trait("Description", "encodes root-level array of objects with pipe delimiter")]
+    public void EncodesRootLevelArrayOfObjectsWithPipeDelimiter()
     {
         // Arrange
         var input =

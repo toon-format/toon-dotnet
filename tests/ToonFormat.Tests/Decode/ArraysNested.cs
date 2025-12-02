@@ -116,16 +116,16 @@ items[1]:
     }
 
     [Fact]
-    [Trait("Description", "parses nested tabular arrays as first field on hyphen line")]
-    public void ParsesNestedTabularArraysAsFirstFieldOnHyphenLine()
+    [Trait("Description", "parses list items whose first field is a tabular array")]
+    public void ParsesListItemsWhoseFirstFieldIsATabularArray()
     {
         // Arrange
         var input =
 """
 items[1]:
   - users[2]{id,name}:
-    1,Ada
-    2,Bob
+      1,Ada
+      2,Bob
     status: active
 """;
 
@@ -140,6 +140,29 @@ items[1]:
     }
 
     [Fact]
+    [Trait("Description", "parses single-field list-item object with tabular array")]
+    public void ParsesSingleFieldListItemObjectWithTabularArray()
+    {
+        // Arrange
+        var input =
+"""
+items[1]:
+  - users[2]{id,name}:
+      1,Ada
+      2,Bob
+""";
+
+        // Act & Assert
+        var result = ToonDecoder.Decode(input);
+
+        var expected = JsonNode.Parse("""
+{"items":[{"users":[{"id":1,"name":"Ada"},{"id":2,"name":"Bob"}]}]}
+""");
+
+        Assert.True(JsonNode.DeepEquals(result, expected));
+    }
+
+    [Fact]
     [Trait("Description", "parses objects containing arrays (including empty arrays) in list format")]
     public void ParsesObjectsContainingArraysIncludingEmptyArraysInListFormat()
     {
@@ -147,7 +170,7 @@ items[1]:
         var input =
 """
 items[1]:
-  - name: test
+  - name: Ada
     data[0]:
 """;
 
@@ -155,7 +178,7 @@ items[1]:
         var result = ToonDecoder.Decode(input);
 
         var expected = JsonNode.Parse("""
-{"items":[{"name":"test","data":[]}]}
+{"items":[{"name":"Ada","data":[]}]}
 """);
 
         Assert.True(JsonNode.DeepEquals(result, expected));
@@ -170,8 +193,8 @@ items[1]:
 """
 items[1]:
   - matrix[2]:
-    - [2]: 1,2
-    - [2]: 3,4
+      - [2]: 1,2
+      - [2]: 3,4
     name: grid
 """;
 
@@ -274,8 +297,8 @@ pairs[2]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays of primitives (inline)")]
-    public void ParsesRootArraysOfPrimitivesInline()
+    [Trait("Description", "parses root-level primitive array inline")]
+    public void ParsesRootLevelPrimitiveArrayInline()
     {
         // Arrange
         var input =
@@ -294,8 +317,8 @@ pairs[2]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays of uniform objects in tabular format")]
-    public void ParsesRootArraysOfUniformObjectsInTabularFormat()
+    [Trait("Description", "parses root-level array of uniform objects in tabular format")]
+    public void ParsesRootLevelArrayOfUniformObjectsInTabularFormat()
     {
         // Arrange
         var input =
@@ -316,8 +339,8 @@ pairs[2]:
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays of non-uniform objects in list format")]
-    public void ParsesRootArraysOfNonUniformObjectsInListFormat()
+    [Trait("Description", "parses root-level array of non-uniform objects in list format")]
+    public void ParsesRootLevelArrayOfNonUniformObjectsInListFormat()
     {
         // Arrange
         var input =
@@ -339,28 +362,34 @@ pairs[2]:
     }
 
     [Fact]
-    [Trait("Description", "parses empty root arrays")]
-    public void ParsesEmptyRootArrays()
+    [Trait("Description", "parses root-level array mixing primitive, object, and array of objects in list format")]
+    public void ParsesRootLevelArrayMixingPrimitiveObjectAndArrayOfObjectsInListFormat()
     {
         // Arrange
         var input =
 """
-[0]:
+[3]:
+  - summary
+  - id: 1
+    name: Ada
+  - [2]:
+    - id: 2
+    - status: draft
 """;
 
         // Act & Assert
         var result = ToonDecoder.Decode(input);
 
         var expected = JsonNode.Parse("""
-[]
+["summary",{"id":1,"name":"Ada"},[{"id":2},{"status":"draft"}]]
 """);
 
         Assert.True(JsonNode.DeepEquals(result, expected));
     }
 
     [Fact]
-    [Trait("Description", "parses root arrays of arrays")]
-    public void ParsesRootArraysOfArrays()
+    [Trait("Description", "parses root-level array of arrays")]
+    public void ParsesRootLevelArrayOfArrays()
     {
         // Arrange
         var input =
@@ -375,6 +404,26 @@ pairs[2]:
 
         var expected = JsonNode.Parse("""
 [[1,2],[]]
+""");
+
+        Assert.True(JsonNode.DeepEquals(result, expected));
+    }
+
+    [Fact]
+    [Trait("Description", "parses empty root-level array")]
+    public void ParsesEmptyRootLevelArray()
+    {
+        // Arrange
+        var input =
+"""
+[0]:
+""";
+
+        // Act & Assert
+        var result = ToonDecoder.Decode(input);
+
+        var expected = JsonNode.Parse("""
+[]
 """);
 
         Assert.True(JsonNode.DeepEquals(result, expected));
@@ -406,8 +455,8 @@ user:
     }
 
     [Fact]
-    [Trait("Description", "parses arrays mixing primitives, objects and strings (list format)")]
-    public void ParsesArraysMixingPrimitivesObjectsAndStringsListFormat()
+    [Trait("Description", "parses arrays mixing primitives, objects, and strings in list format")]
+    public void ParsesArraysMixingPrimitivesObjectsAndStringsInListFormat()
     {
         // Arrange
         var input =
