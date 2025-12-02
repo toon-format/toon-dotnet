@@ -56,15 +56,14 @@ We target .NET 8.0 and .NET 9.0 for broad compatibility.
 ### Testing
 
 - All new features must include tests
-- Aim for high test coverage (80%+)
+- Maintain test coverage at **85%+ line coverage**
 - Tests should cover edge cases and spec compliance
 - Run the full test suite:
   ```bash
   dotnet test
   ```
 
-Some tests are auto generated to comply with the [TOON specification](https://github.com/toon-format/spec/blob/main/SPEC.md). To ensure tests are 
-aligned with the spec, execute the `specgen.sh` or `specgen.ps1` script.
+Some tests are auto-generated to comply with the [TOON specification](https://github.com/toon-format/spec/blob/main/SPEC.md). To ensure tests are aligned with the spec, execute the `specgen.sh` or `specgen.ps1` script.
 
 ## SPEC Compliance
 
@@ -77,11 +76,13 @@ Before submitting changes that affect encoding/decoding behavior:
 
 ## Pull Request Guidelines
 
-- **Title**: Use a clear, descriptive title (e.g., "Add support for nested arrays", "Fix: Handle edge case in decoder")
+- **Title**: Use a clear, descriptive title
 - **Description**: Explain what changes you made and why
 - **Tests**: Include tests for your changes
-- **Documentation**: Update README or XML documentation if needed
+- **Documentation**: Update README or documentation if needed
 - **Commits**: Use clear commit messages ([Conventional Commits](https://www.conventionalcommits.org/) preferred)
+
+Your pull request will use our standard template which guides you through the required information.
 
 ## Communication
 
@@ -91,7 +92,12 @@ Before submitting changes that affect encoding/decoding behavior:
 
 ## Maintainers
 
-This is a collaborative project. All maintainers have equal decision-making power. For major architectural decisions, please open a discussion issue first.
+This is a collaborative project. Current maintainers:
+
+- [@ghost1face](https://github.com/ghost1face)
+- [@239573049](https://github.com/239573049)
+
+All maintainers have equal and consensual decision-making power. For major architectural decisions, please open a discussion issue first.
 
 ## License
 
