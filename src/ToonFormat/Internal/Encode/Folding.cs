@@ -46,8 +46,8 @@ namespace ToonFormat.Internal.Encode
 
     internal static class Folding
     {
-        public static FoldResult TryFoldKeyChain(string key, JsonNode value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, ISet<string> rootLiteralKeys = null,
-            string pathPrefix = null, int? flattenDepth = null)
+        public static FoldResult? TryFoldKeyChain(string key, JsonNode? value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, ISet<string>? rootLiteralKeys = null,
+            string? pathPrefix = null, int? flattenDepth = null)
         {
             // Only fold when safe mode is enabled
             if (options.KeyFolding != ToonKeyFolding.Safe)
@@ -98,7 +98,7 @@ namespace ToonFormat.Internal.Encode
             };
         }
 
-        private static KeyChain CollectSingleKeyChain(string startKey, JsonNode startValue, int maxDepth)
+        private static KeyChain CollectSingleKeyChain(string startKey, JsonNode? startValue, int maxDepth)
         {
             List<string> segments = new List<string> { startKey };
             var currentValue = startValue;

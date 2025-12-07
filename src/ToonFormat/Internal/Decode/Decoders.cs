@@ -19,7 +19,7 @@ namespace ToonFormat.Internal.Decode
         /// <summary>
         /// Decodes TOON content from a line cursor into a JSON value.
         /// </summary>
-        public static JsonNode DecodeValueFromLines(LineCursor cursor, ResolvedDecodeOptions options)
+        public static JsonNode? DecodeValueFromLines(LineCursor cursor, ResolvedDecodeOptions options)
         {
             var first = cursor.Peek();
             if (first == null)
@@ -109,7 +109,7 @@ namespace ToonFormat.Internal.Decode
         private class KeyValueDecodeResult
         {
             public string Key { get; set; } = string.Empty;
-            public JsonNode Value { get; set; }
+            public JsonNode? Value { get; set; }
             public int FollowDepth { get; set; }
         }
 
@@ -155,7 +155,7 @@ namespace ToonFormat.Internal.Decode
             return new KeyValueDecodeResult { Key = keyResult.Key, Value = primitiveValue, FollowDepth = baseDepth + 1 };
         }
 
-        private static (string key, JsonNode value) DecodeKeyValuePair(
+        private static (string key, JsonNode? value) DecodeKeyValuePair(
             ParsedLine line,
             LineCursor cursor,
             int baseDepth,
@@ -191,7 +191,7 @@ namespace ToonFormat.Internal.Decode
             if (header.Fields != null && header.Fields.Count > 0)
             {
                 var tabularResult = DecodeTabularArray(header, cursor, baseDepth, options);
-                return new JsonArray(tabularResult.Cast<JsonNode>().ToArray());
+                return new JsonArray(tabularResult.Cast<JsonNode?>().ToArray());
             }
 
             // List array
@@ -199,7 +199,7 @@ namespace ToonFormat.Internal.Decode
             return new JsonArray(listResult.ToArray());
         }
 
-        private static List<JsonNode> DecodeInlinePrimitiveArray(
+        private static List<JsonNode?> DecodeInlinePrimitiveArray(
             ArrayHeaderInfo header,
             string inlineValues,
             ResolvedDecodeOptions options)
@@ -207,7 +207,7 @@ namespace ToonFormat.Internal.Decode
             if (string.IsNullOrWhiteSpace(inlineValues))
             {
                 Validation.AssertExpectedCount(0, header.Length, "inline array items", options);
-                return new List<JsonNode>();
+                return new List<JsonNode?>();
             }
 
             var values = Parser.ParseDelimitedValues(inlineValues, header.Delimiter);
@@ -218,13 +218,13 @@ namespace ToonFormat.Internal.Decode
             return primitives;
         }
 
-        private static List<JsonNode> DecodeListArray(
+        private static List<JsonNode?> DecodeListArray(
             ArrayHeaderInfo header,
             LineCursor cursor,
             int baseDepth,
             ResolvedDecodeOptions options)
         {
-            var items = new List<JsonNode>();
+            var items = new List<JsonNode?>();
             var itemDepth = baseDepth + 1;
 
             // Track line range for blank line validation
@@ -357,7 +357,7 @@ namespace ToonFormat.Internal.Decode
 
         // #region List item decoding
 
-        private static JsonNode DecodeListItem(
+        private static JsonNode? DecodeListItem(
             LineCursor cursor,
             int baseDepth,
             ResolvedDecodeOptions options)
