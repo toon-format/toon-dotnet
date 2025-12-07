@@ -55,17 +55,17 @@ namespace ToonFormat.Internal.Decode
 
         public List<BlankLineInfo> GetBlankLines() => _blankLines;
 
-        public ParsedLine Peek()
+        public ParsedLine? Peek()
         {
             return _index < _lines.Count ? _lines[_index] : null;
         }
 
-        public ParsedLine Next()
+        public ParsedLine? Next()
         {
             return _index < _lines.Count ? _lines[_index++] : null;
         }
 
-        public ParsedLine Current()
+        public ParsedLine? Current()
         {
             return _index > 0 ? _lines[_index - 1] : null;
         }
@@ -82,7 +82,7 @@ namespace ToonFormat.Internal.Decode
 
         public int Length => _lines.Count;
 
-        public ParsedLine PeekAtDepth(int targetDepth)
+        public ParsedLine? PeekAtDepth(int targetDepth)
         {
             var line = Peek();
             if (line == null || line.Depth < targetDepth)
