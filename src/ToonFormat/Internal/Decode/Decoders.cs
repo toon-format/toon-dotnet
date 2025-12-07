@@ -172,7 +172,7 @@ namespace ToonFormat.Internal.Decode
 
         private static JsonNode DecodeArrayFromHeader(
             ArrayHeaderInfo header,
-            string inlineValues,
+            string? inlineValues,
             LineCursor cursor,
             int baseDepth,
             ResolvedDecodeOptions options)
@@ -201,7 +201,7 @@ namespace ToonFormat.Internal.Decode
 
         private static List<JsonNode?> DecodeInlinePrimitiveArray(
             ArrayHeaderInfo header,
-            string inlineValues,
+            string? inlineValues,
             ResolvedDecodeOptions options)
         {
             if (string.IsNullOrWhiteSpace(inlineValues))
