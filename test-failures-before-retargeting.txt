@@ -1,0 +1,750 @@
+Build started 12/08/2025 00:04:41.
+     1>Project "/mnt/d/projects/toon-dotnet/ToonFormat.sln" on node 1 (Restore target(s)).
+     1>ValidateSolutionConfiguration:
+         Building solution configuration "Debug|Any CPU".
+       _GetAllRestoreProjectPathItems:
+         Determining projects to restore...
+       Restore:
+         X.509 certificate chain validation will use the fallback certificate bundle at '/home/rizwan/.dotnet/sdk/9.0.307/trustedroots/codesignctl.pem'.
+         X.509 certificate chain validation will use the fallback certificate bundle at '/home/rizwan/.dotnet/sdk/9.0.307/trustedroots/timestampctl.pem'.
+         Assets file has not changed. Skipping assets file writing. Path: /mnt/d/projects/toon-dotnet/src/ToonFormat/obj/project.assets.json
+         Assets file has not changed. Skipping assets file writing. Path: /mnt/d/projects/toon-dotnet/tests/ToonFormat.SpecGenerator/obj/project.assets.json
+         Assets file has not changed. Skipping assets file writing. Path: /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/obj/project.assets.json
+         Restored /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/ToonFormat.Tests.csproj (in 80 ms).
+         Restored /mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj (in 78 ms).
+         Restored /mnt/d/projects/toon-dotnet/tests/ToonFormat.SpecGenerator/ToonFormat.SpecGenerator.csproj (in 78 ms).
+         
+         NuGet Config files used:
+             /home/rizwan/.nuget/NuGet/NuGet.Config
+         
+         Feeds used:
+             https://api.nuget.org/v3/index.json
+         All projects are up-to-date for restore.
+     1>Done Building Project "/mnt/d/projects/toon-dotnet/ToonFormat.sln" (Restore target(s)).
+   1:2>Project "/mnt/d/projects/toon-dotnet/ToonFormat.sln" on node 1 (VSTest target(s)).
+     1>ValidateSolutionConfiguration:
+         Building solution configuration "Debug|Any CPU".
+   1:2>Project "/mnt/d/projects/toon-dotnet/ToonFormat.sln" (1:2) is building "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (2:15) on node 2 (VSTest target(s)).
+     2>BuildProject:
+         Build started, please wait...
+   1:2>Project "/mnt/d/projects/toon-dotnet/ToonFormat.sln" (1:2) is building "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/ToonFormat.Tests.csproj" (3:6) on node 1 (VSTest target(s)).
+     3>BuildProject:
+         Build started, please wait...
+  2:15>Project "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (2:15) is building "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (2:16) on node 2 (Build target(s)).
+     2>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj/Debug/net8.0/ToonFormat.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+  2:15>Project "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (2:15) is building "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (2:17) on node 4 (Build target(s)).
+     2>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+     2>GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         Copying file from "/mnt/d/projects/toon-dotnet/src/ToonFormat/obj/Debug/net8.0/ToonFormat.dll" to "/mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net8.0/ToonFormat.dll".
+         ToonFormat -> /mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net8.0/ToonFormat.dll
+         Copying file from "/mnt/d/projects/toon-dotnet/src/ToonFormat/obj/Debug/net8.0/ToonFormat.pdb" to "/mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net8.0/ToonFormat.pdb".
+     2>CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+     2>CopyFilesToOutputDirectory:
+         Copying file from "/mnt/d/projects/toon-dotnet/src/ToonFormat/obj/Debug/net8.0/ToonFormat.xml" to "/mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net8.0/ToonFormat.xml".
+     2>Done Building Project "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (Build target(s)).
+     2>_GenerateSourceLinkFile:
+         Source Link file 'obj/Debug/net9.0/ToonFormat.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         Copying file from "/mnt/d/projects/toon-dotnet/src/ToonFormat/obj/Debug/net9.0/ToonFormat.dll" to "/mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net9.0/ToonFormat.dll".
+         ToonFormat -> /mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net9.0/ToonFormat.dll
+         Copying file from "/mnt/d/projects/toon-dotnet/src/ToonFormat/obj/Debug/net9.0/ToonFormat.pdb" to "/mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net9.0/ToonFormat.pdb".
+         Copying file from "/mnt/d/projects/toon-dotnet/src/ToonFormat/obj/Debug/net9.0/ToonFormat.xml" to "/mnt/d/projects/toon-dotnet/src/ToonFormat/bin/Debug/net9.0/ToonFormat.xml".
+     2>Done Building Project "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (Build target(s)).
+     2>BuildProject:
+         Build completed.
+         
+     2>Done Building Project "/mnt/d/projects/toon-dotnet/src/ToonFormat/ToonFormat.csproj" (VSTest target(s)).
+   3:6>Project "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/ToonFormat.Tests.csproj" (3:6) is building "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/ToonFormat.Tests.csproj" (3:7) on node 1 (default targets).
+     3>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj/Debug/net9.0/ToonFormat.Tests.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       _CopyOutOfDateSourceItemsToOutputDirectory:
+       Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildRuntimeConfigurationFiles:
+       Skipping target "GenerateBuildRuntimeConfigurationFiles" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         Copying file from "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/obj/Debug/net9.0/ToonFormat.Tests.dll" to "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/bin/Debug/net9.0/ToonFormat.Tests.dll".
+         ToonFormat.Tests -> /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/bin/Debug/net9.0/ToonFormat.Tests.dll
+         Copying file from "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/obj/Debug/net9.0/ToonFormat.Tests.pdb" to "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/bin/Debug/net9.0/ToonFormat.Tests.pdb".
+     3>Done Building Project "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/ToonFormat.Tests.csproj" (default targets).
+     3>BuildProject:
+         Build completed.
+         
+Test run for /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/bin/Debug/net9.0/ToonFormat.Tests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 9.0.11)
+[xUnit.net 00:00:00.10]   Discovering: ToonFormat.Tests
+[xUnit.net 00:00:00.19]   Discovered:  ToonFormat.Tests
+[xUnit.net 00:00:00.19]   Starting:    ToonFormat.Tests
+  Passed ToonFormat.Tests.Decode.RootForm.EmptyDocumentDecodesToEmptyObject [25 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnInvalidEscapeSequence [24 ms]
+  Passed ToonFormat.Tests.Encode.Objects.EncodesEmptyObjectsAsEmptyString [25 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesWhitespaceOnlyStringsInArrays [29 ms]
+  Passed ToonFormat.Tests.Decode.Whitespace.EmptyTokensDecodeToEmptyString [31 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesStringsWithDelimitersInArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Whitespace.ToleratesSpacesAroundCommasInInlineArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesStringArraysInline [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Whitespace.ToleratesSpacesAroundDelimitersWithQuotedValues [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Whitespace.ToleratesSpacesAroundPipesInInlineArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesStringsWithStructuralTokensInArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesMultiItemArrayWithEmptyString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesQuotedKeyWithEmptyArray [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesStringsThatLookLikePrimitivesWhenQuoted [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsWhenTabularRowValueCountDoesNotMatchHeaderFieldCount [21 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnMissingColonInKeyValueContext [1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.AcceptsDeeplyNestedNonMultiplesWhenStrictFalse [54 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnUnterminatedString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.UnescapesQuotesInKey [54 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.AcceptsMultipleTrailingNewlines [54 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesNumberArraysInline [20 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedObjectValueWithLeadingTrailingSpaces [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesSingleItemArrayWithEmptyString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.ThrowsWhenMixedTabsAndSpacesInIndentation [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedNumericKey [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.UnescapesNewlineInKey [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.LinesWithOnlySpacesAreNotValidatedIfEmpty [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithColon [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.UnescapesTabInKey [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsWhenTabularRowCountDoesNotMatchHeaderLength [1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesUnderscorePrefixedKeys [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.AcceptsBlankLineAfterArrayEnds [1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithBrackets [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.AcceptsBlankLineBetweenRootLevelFields [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesRootArraysOfObjectsWithTabDelimiter [56 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesComplexMixedObjectWithArraysAndNestedObjects [56 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnTwoPrimitivesAtRootDepthInStrictMode [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesMixedPrimitiveArraysInline [1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithBraces [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesEmptyArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Whitespace.ToleratesLeadingAndTrailingSpacesInTabularRowValues [23 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedObjectValueWithOnlySpaces [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesQuotedKeyContainingBracketsWithInlineArray [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysPrimitive.ParsesQuotedKeyWithInlineArray [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.IgnoresBlankLinesInsideListArrayWhenStrictFalse [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesDottedKeysAsIdentifiers [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.AcceptsCorrectIndentationWithCustomIndentSize4SpacesWithIndent4 [2 ms]
+  Passed ToonFormat.Tests.Decode.ArraysTabular.ParsesQuotedKeyWithTabularArrayFormat [58 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.EmptyLinesDoNotTriggerValidationErrors [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesArraysMixingPrimitivesObjectsAndStringsListFormat [1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesValuesContainingTabDelimiterWhenQuoted [1 ms]
+  Passed ToonFormat.Tests.Decode.Whitespace.ToleratesSpacesAroundTabsInInlineArrays [1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.AcceptsTrailingNewlineAtEndOfFile [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesQuotedStringsAndMixedLengthsInNestedArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysTabular.ParsesNullsAndQuotedValuesInTabularRows [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.AcceptsTabsInQuotedKeys [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesObjectsWithPrimitiveValues [1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesValuesContainingPipeDelimiterWhenQuoted [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesListArraysWithDeeplyNestedObjects [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysTabular.UnquotedColonTerminatesTabularRowsAndStartsKeyValuePair [1 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnMismatchedDelimiterBetweenBracketAndBraceFields [2 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.ThrowsOnBlankLineWithSpacesInsideArray [1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.ThrowsWithCustomIndentSizeWhenNonMultiple3SpacesWithIndent4 [1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedObjectValueWithComma [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.IgnoresBlankLinesInsideTabularArrayWhenStrictFalse [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnArrayLengthMismatchListFormatTooMany [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.NestedArraysInsideListItemsDefaultToCommaDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithLeadingAndTrailingSpaces [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedStringValueThatLooksLikeInteger [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnDelimiterMismatchHeaderDeclaresTabRowUsesComma [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesMixedLengthInnerArrays [1 ms]
+  Passed ToonFormat.Tests.Decode.ValidationErrors.ThrowsOnArrayLengthMismatchInlinePrimitivesTooMany [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesRootArraysOfObjectsWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.ThrowsWhenObjectFieldHasNonMultipleIndentation3SpacesWithIndent2 [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesRootArraysOfNonUniformObjectsInListFormat [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.ThrowsOnBlankLineInsideListArray [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesTabularArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedEmptyStringKey [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.DoesNotRequireQuotingCommasInObjectValues [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesEmptyNestedObjectHeader [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysTabular.ParsesTabularArraysOfUniformObjects [1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesRootArraysOfUniformObjectsInTabularFormat [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedObjectValueWithNewlineEscape [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.AcceptsBlankLineBetweenNestedObjectFields [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.PreservesQuotedAmbiguityWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesUnderscoreContainingKeys [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysTabular.ParsesQuotedColonInTabularRowAsData [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.AcceptsNonMultipleIndentationWhenStrictFalse [1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesListArraysContainingObjectsWithNestedProperties [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysTabular.ParsesQuotedHeaderKeysInTabularArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.PreservesQuotedAmbiguityWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesNestedArraysOfPrimitives [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesPrimitiveArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedStringValueThatLooksLikeNegativeDecimal [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.ThrowsOnBlankLineInNestedListArray [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesRootArraysWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesListArraysForNonUniformObjects [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithLeadingHyphen [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.ThrowsWhenListItemHasNonMultipleIndentation3SpacesWithIndent2 [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesArraysOfArraysWithinObjects [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesTabularArraysWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithComma [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.AcceptsTabsInQuotedArrayElements [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesNestedArraysWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesEmptyInnerArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesTabularValuesContainingCommaWithCommaDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedKeyWithSpaces [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.AcceptsTabsInQuotedStringValues [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedStringValueThatLooksLikeTrue [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesNestedTabularArraysAsFirstFieldOnHyphenLine [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.ThrowsOnMultipleBlankLinesInsideArray [1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesStructuralLookingStringsWhenQuotedWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedObjectValueWithColon [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesObjectsContainingArraysIncludingEmptyArraysInListFormat [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.ThrowsWhenTabCharacterUsedInIndentation [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesPrimitiveArraysWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesQuotedObjectValueWithEscapedQuotes [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesStructuralLookingStringsWhenQuotedWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.RootLevelContent0IndentationIsAlwaysValid [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.DoesNotRequireQuotingCommasWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesEmptyRootArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesDeeplyNestedObjectsWithIndentation [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesRootArraysOfArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Objects.ParsesNullValuesInObjects [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ObjectValuesInListItemsFollowDocumentDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.IndentationErrors.ThrowsWhenTabAtStartOfLine [< 1 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_PrimitiveTypes_ReturnsCorrectValues [64 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesNestedArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.ThrowsOnBlankLineInsideTabularArray [1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesListArraysWithEmptyItems [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesArraysMixingObjectsAndArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.BlankLines.IgnoresMultipleBlankLinesInArraysWhenStrictFalse [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesNestedArrayValuesContainingTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesQuotedKeyWithListArrayFormat [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesRootArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.ArraysNested.ParsesRootArraysOfPrimitivesInline [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.DoesNotSplitOnCommasWhenUsingPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesNestedArrayValuesContainingPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.NestedArraysInsideListItemsDefaultToCommaWithPipeParent [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesTabularHeadersWithKeysContainingTheActiveDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ObjectValuesWithCommaMustBeQuotedWhenDocumentDelimiterIsComma [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.ParsesPrimitiveArraysWithCommaDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Delimiters.DoesNotSplitOnCommasWhenUsingTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_PrimitiveArray_ReturnsValidArray [5 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_EmptyString_ReturnsEmptyObject [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesStandardNestingWithKeyfoldingOffBaseline [71 ms]
+  Passed ToonFormat.Tests.Encode.Whitespace.ProducesNoTrailingNewlineAtEndOfOutput [71 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_WithNonStrictOption_AllowsLengthMismatch [1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesPartialFoldingWithFlattendepth2 [72 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesFoldedChainToPrimitiveSafeMode [1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.DoesNotQuoteCommasInObjectValuesWithPipeDelimiter [72 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesChineseCharactersWithoutQuotes [72 ms]
+  Passed ToonFormat.Tests.Encode.Whitespace.RespectsCustomIndentSizeOption [1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueWithNewline [42 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_NestedObject_ReturnsValidStructure [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueThatLooksLikeTrue [< 1 ms]
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_WithCustomIndent_UsesCorrectIndentation [74 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueWithLeadingSpace [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesStandardNestingWithKeyfoldingOffBaseline [1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueThatLooksLikeNumber [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueWithEmbeddedQuotes [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesPartialFoldingWithFlattendepth2 [1 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_InvalidFormat_ThrowsToonFormatException [1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesFoldedChainToPrimitiveSafeMode [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesEmptyStringInSingleItemArray [74 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesFullChainWithFlattendepthInfinityDefault [1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesFullChainWithFlattendepthInfinityDefault [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.QuotesStringsThatLookLikeBooleansInArrays [1 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_TabularArray_ReturnsValidStructure [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.QuotesArrayStringsWithComma [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesEmptyStringInMultiItemArray [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesFalse [4 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EscapesCarriageReturnInString [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.PreservesKeyOrderInObjects [3 ms]
+  Passed ToonFormat.Tests.Encode.Objects.EncodesEmptyNestedObject [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Whitespace.MaintainsProperIndentationForNestedStructures [4 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesMixedPrimitiveArraysInline [< 1 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_WithStrictOption_ValidatesArrayLength [2 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesWhitespaceOnlyStringsInArrays [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringThatLooksLikeNegativeDecimal [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.QuotesStringsWithStructuralMeaningsInArrays [< 1 ms]
+  Passed ToonFormat.Tests.ToonDecoderTests.Decode_SimpleObject_ReturnsValidJson [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueWithComma [1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.QuotesNestedArrayValuesContainingTabDelimiter [6 ms]
+  Passed ToonFormat.Tests.Encode.Objects.EncodesNullValuesInObjects [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesEmptyArrays [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesNestedArraysOfPrimitives [81 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.QuotesNestedArrayValuesContainingPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueWithColon [1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueThatLooksLikeNegativeDecimal [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesStringArraysInline [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.QuotesStringsContainingDelimitersInNestedArrays [1 ms]
+  Passed ToonFormat.Tests.Encode.Objects.QuotesStringValueWithOnlySpaces [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysTabular.EncodesNullValuesInTabularFormat [82 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesFoldedChainWithTabularArray [6 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesFoldedChainWithTabularArray [5 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesRootArraysOfObjectsWithPipeDelimiter [2 ms]
+  Passed ToonFormat.Tests.ToonRoundTripTests.RoundTrip_ComplexStructure_PreservesData [82 ms]
+  Passed ToonFormat.Tests.Encode.Objects.EncodesDeeplyNestedObjects [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatForObjectsWithOnlyArrayFields [83 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesRootArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesStandardNestingWithFlattendepth1NoPracticalEffect [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesRootLevelArrayOfNonUniformObjectsInListFormat [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesEmptyInnerArrays [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysPrimitive.EncodesNumberArraysInline [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesRootLevelPrimitiveArray [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.PlacesEmptyArraysOnHyphenLineWhenFirst [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.StopsFoldingAtArrayBoundaryNotSingleKeyObject [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesMixedLengthInnerArrays [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.QuotesStringsContainingTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.ToonRoundTripTests.RoundTrip_Array_PreservesData [1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesRootArraysOfObjectsWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesStandardNestingWithFlattendepth0NoFolding [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.PreservesAmbiguityQuotingRegardlessOfDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesExponentNotation [85 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesNestedArraysWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesFoldedChainsPreservingSiblingFieldOrder [1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesPositiveInteger [84 ms]
+[xUnit.net 00:00:00.35]     ToonFormat.Tests.Decode.PathExpansion.PreservesQuotedDottedKeyAsLiteralWhenExpandpathsSafe [FAIL]
+[xUnit.net 00:00:00.35]       Assert.True() Failure
+[xUnit.net 00:00:00.35]       Expected: True
+[xUnit.net 00:00:00.35]       Actual:   False
+[xUnit.net 00:00:00.35]       Stack Trace:
+[xUnit.net 00:00:00.35]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(277,0): at ToonFormat.Tests.Decode.PathExpansion.PreservesQuotedDottedKeyAsLiteralWhenExpandpathsSafe()
+[xUnit.net 00:00:00.35]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.35]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatForObjectsWithNestedValues [1 ms]
+  Passed ToonFormat.Tests.ToonRoundTripTests.RoundTrip_SimpleObject_PreservesData [1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.PreservesQuotedDottedKeyAsLiteralWhenExpandpathsSafe [54 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.PreservesQuotedDottedKeyAsLiteralWhenExpandpathsSafe() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 277
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_NestedStructures_ReturnsValidToon [11 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesArrayWithMixedNumericForms [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesSafeUnquotedString [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.UsesListFormatForArraysMixingPrimitivesAndObjects [2 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesNegativeZeroAsZero [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.TreatsLeadingZerosInArrayAsStrings [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesEmptyQuotedString [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.PreservesFieldOrderInListItemsPrimitiveFirst [1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForNull [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesFoldedChainWithInlineArray [1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesIntegerWithPositiveExponent [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesFoldedChainsPreservingSiblingFieldOrder [2 ms]
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_Array_ReturnsValidToon [1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesQuotedStringWithNewlineEscape [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesStandardNestingWithFlattendepth1NoPracticalEffect [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.TreatsLeadingZeroInObjectValueAsString [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesStandardNestingWithFlattendepth0NoFolding [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesFoldedChainEndingWithEmptyObject [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesNull [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesLowercaseExponent [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesComplexNestedStructure [1 ms]
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_SimpleObject_ReturnsValidToon [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForLeadingZero [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesUppercaseExponentWithNegativeSign [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatForObjectsWithDifferentFields [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesEmptyRootLevelArray [< 1 ms]
+  Passed ToonFormat.Tests.KeyFoldingTests.EncodesFoldedChainWithInlineArray [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.EncodesFoldedChainEndingWithEmptyObject [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesChineseCharacters [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesNumberWithTrailingZerosInFractionalPart [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesRootLevelArrayOfUniformObjectsInTabularFormat [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForInteger [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesNegativeExponentNotation [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesNegativeNumberWithPositiveExponent [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.EncodesRootLevelArraysOfArrays [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesStringWithEmojiAndSpaces [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.TreatsLeadingZeroAsStringNotNumber [< 1 ms]
+  Passed ToonFormat.Tests.Encode.KeyFolding.StopsFoldingAtArrayBoundaryNotSingleKeyObject [1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.PreservesFieldOrderInListItemsArrayFirst [2 ms]
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_TabularArray_ReturnsValidToon [2 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesUnicodeString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesExponentNotationWithUppercaseE [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesTrue [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysNested.UsesListFormatForArraysMixingObjectsAndArrays [1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesVerySmallExponent [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatForObjectsContainingArraysOfArrays [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Encode.Primitives.EncodesSmallDecimalFromScientificNotation [FAIL]
+[xUnit.net 00:00:00.36]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.36]                  ↓ (pos 0)
+[xUnit.net 00:00:00.36]       Expected: "0.000001"
+[xUnit.net 00:00:00.36]       Actual:   "9.9999999999999995E-07"
+[xUnit.net 00:00:00.36]                  ↑ (pos 0)
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Primitives.cs(673,0): at ToonFormat.Tests.Encode.Primitives.EncodesSmallDecimalFromScientificNotation()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Encode.ArraysTabular.EncodesArraysOfSimilarObjectsInTabularFormat [FAIL]
+[xUnit.net 00:00:00.36]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.36]                                                   ↓ (pos 36)
+[xUnit.net 00:00:00.36]       Expected: ···"]{sku,qty,price}:\n  A1,2,9.99\n  B2,1,14.5"
+[xUnit.net 00:00:00.36]       Actual:   ···",price}:\n  A1,2,9.9900000000000002\n  B2,1"···
+[xUnit.net 00:00:00.36]                                          ↑ (pos 36)
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/ArraysTabular.cs(61,0): at ToonFormat.Tests.Encode.ArraysTabular.EncodesArraysOfSimilarObjectsInTabularFormat()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesFalse [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.ParsesNegativeZeroWithFractionalPart [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesUnquotedStringWithUnderscoreAndNumbers [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForTrue [< 1 ms]
+  Failed ToonFormat.Tests.Encode.Primitives.EncodesSmallDecimalFromScientificNotation [11 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+           ↓ (pos 0)
+Expected: "0.000001"
+Actual:   "9.9999999999999995E-07"
+           ↑ (pos 0)
+  Stack Trace:
+     at ToonFormat.Tests.Encode.Primitives.EncodesSmallDecimalFromScientificNotation() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Primitives.cs:line 673
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed ToonFormat.Tests.Encode.ArraysTabular.EncodesArraysOfSimilarObjectsInTabularFormat [8 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+                                            ↓ (pos 36)
+Expected: ···"]{sku,qty,price}:\n  A1,2,9.99\n  B2,1,14.5"
+Actual:   ···",price}:\n  A1,2,9.9900000000000002\n  B2,1"···
+                                   ↑ (pos 36)
+  Stack Trace:
+     at ToonFormat.Tests.Encode.ArraysTabular.EncodesArraysOfSimilarObjectsInTabularFormat() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/ArraysTabular.cs:line 61
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsArrayWhenStrictTrue [FAIL]
+[xUnit.net 00:00:00.36]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.36]       Expected: typeof(ToonFormat.ToonFormatException)
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(196,0): at ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsArrayWhenStrictTrue()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithTabDelimiter [FAIL]
+[xUnit.net 00:00:00.36]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.36]                                                       ↓ (pos 37)
+[xUnit.net 00:00:00.36]       Expected: ···"]{sku\tqty\tprice}:\n  A1\t2\t9.99\n  B2\t1\t14.5"
+[xUnit.net 00:00:00.36]       Actual:   ···"\tprice}:\n  A1\t2\t9.9900000000000002\n  B2\t1"···
+[xUnit.net 00:00:00.36]                                             ↑ (pos 37)
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Delimiters.cs(165,0): at ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithTabDelimiter()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsArrayWhenStrictTrue [5 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(ToonFormat.ToonFormatException)
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsArrayWhenStrictTrue() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 196
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Numbers.TreatsUnquotedOctalLikeAsString [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringThatLooksLikeInteger [< 1 ms]
+  Failed ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithTabDelimiter [6 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+                                                ↓ (pos 37)
+Expected: ···"]{sku\tqty\tprice}:\n  A1\t2\t9.99\n  B2\t1\t14.5"
+Actual:   ···"\tprice}:\n  A1\t2\t9.9900000000000002\n  B2\t1"···
+                                      ↑ (pos 37)
+  Stack Trace:
+     at ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithTabDelimiter() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Delimiters.cs:line 165
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesDecimalNumber [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithTabularArray [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(100,0): at ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithTabularArray()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesNestedArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.PlacesFirstFieldOfNestedTabularArraysOnHyphenLine [1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesQuotedStringWithBackslashEscape [< 1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithTabularArray [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithTabularArray() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 100
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForScientificNotation [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesNegativeZeroAsZero [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyToNestedObjectInSafeMode [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(46,0): at ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyToNestedObjectInSafeMode()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Numbers.TreatsUnquotedMultiLeadingZeroAsString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.PathExpansion.PreservesLiteralDottedKeysWhenExpansionIsOff [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EscapesTabInString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Numbers.TreatsUnquotedLeadingZeroNumberAsString [< 1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyToNestedObjectInSafeMode [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyToNestedObjectInSafeMode() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 46
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesNegativeInteger [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesTabularFormatForNestedUniformObjectArrays [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithInlineArray [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(72,0): at ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithInlineArray()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithInlineArray [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ExpandsDottedKeyWithInlineArray() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 72
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_PrimitiveTypes_ReturnsValidToon [2 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesQuotedStringWithTabEscape [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysTabular.QuotesAmbiguousStringsInTabularRows [1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesSingleHyphenAsObjectValue [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsPrimitiveWhenStrictTrue [FAIL]
+[xUnit.net 00:00:00.36]       Assert.Throws() Failure: No exception was thrown
+[xUnit.net 00:00:00.36]       Expected: typeof(ToonFormat.ToonFormatException)
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(175,0): at ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsPrimitiveWhenStrictTrue()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesQuotedStringWithEscapedQuotes [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesZero [< 1 ms]
+  Passed ToonFormat.Tests.ToonEncoderTests.Encode_WithCustomDelimiter_UsesCorrectDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.DoesNotQuoteCommasInTabularValuesWithTabDelimiter [1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsPrimitiveWhenStrictTrue [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: No exception was thrown
+Expected: typeof(ToonFormat.ToonFormatException)
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ThrowsOnExpansionConflictObjectVsPrimitiveWhenStrictTrue() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 175
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringWithLeadingZero [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalsePrimitiveOverwritesExpandedObject [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(223,0): at ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalsePrimitiveOverwritesExpandedObject()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatForNestedObjectArraysWithMismatchedKeys [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesEmojiWithoutQuotes [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesEmoji [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringWithBracketNotation [< 1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalsePrimitiveOverwritesExpandedObject [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalsePrimitiveOverwritesExpandedObject() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 223
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesPrimitiveArraysWithPipeDelimiter [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalseExpandedObjectOverwritesPrimitive [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(250,0): at ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalseExpandedObjectOverwritesPrimitive()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForNegativeDecimal [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesSafeStringWithUnderscoreAndNumbers [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesEmptyString [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.ParsesQuotedStringWithCarriageReturnEscape [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.QuotesTabularValuesContainingCommaDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Decode.Primitives.RespectsAmbiguityQuotingForFalse [< 1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalseExpandedObjectOverwritesPrimitive [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.AppliesLwwWhenStrictFalseExpandedObjectOverwritesPrimitive() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 250
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithPipeDelimiter [FAIL]
+[xUnit.net 00:00:00.36]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.36]                                                   ↓ (pos 37)
+[xUnit.net 00:00:00.36]       Expected: ···"]{sku|qty|price}:\n  A1|2|9.99\n  B2|1|14.5"
+[xUnit.net 00:00:00.36]       Actual:   ···"|price}:\n  A1|2|9.9900000000000002\n  B2|1"···
+[xUnit.net 00:00:00.36]                                          ↑ (pos 37)
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Delimiters.cs(211,0): at ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithPipeDelimiter()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithPipeDelimiter [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+                                            ↓ (pos 37)
+Expected: ···"]{sku|qty|price}:\n  A1|2|9.99\n  B2|1|14.5"
+Actual:   ···"|price}:\n  A1|2|9.9900000000000002\n  B2|1"···
+                                   ↑ (pos 37)
+  Stack Trace:
+     at ToonFormat.Tests.Encode.Delimiters.EncodesTabularArraysWithPipeDelimiter() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Delimiters.cs:line 211
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesFieldOrderFromFirstObjectForTabularHeaders [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysTabular.QuotesStringsContainingDelimitersInTabularRows [1 ms]
+  Passed ToonFormat.Tests.Decode.PathExpansion.PreservesNonIdentifiersegmentKeysAsLiterals [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.DoesNotQuoteCommasWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.DoesNotQuoteCommasInObjectValuesWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.QuotesStringsContainingPipeDelimiter [< 1 ms]
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ExpandsKeysCreatingEmptyNestedObjects [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(329,0): at ToonFormat.Tests.Decode.PathExpansion.ExpandsKeysCreatingEmptyNestedObjects()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.36]     ToonFormat.Tests.Decode.PathExpansion.ExpandsAndDeepMergesPreservingDocumentOrderInsertion [FAIL]
+[xUnit.net 00:00:00.36]       Assert.True() Failure
+[xUnit.net 00:00:00.36]       Expected: True
+[xUnit.net 00:00:00.36]       Actual:   False
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs(154,0): at ToonFormat.Tests.Decode.PathExpansion.ExpandsAndDeepMergesPreservingDocumentOrderInsertion()
+[xUnit.net 00:00:00.36]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Delimiters.DoesNotQuoteCommasWithTabDelimiter [< 1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.ExpandsKeysCreatingEmptyNestedObjects [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ExpandsKeysCreatingEmptyNestedObjects() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 329
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesPrimitiveArraysWithTabDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatWhenOneObjectHasNestedColumn [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesRootArraysWithPipeDelimiter [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Delimiters.EncodesPrimitiveArraysWithCommaDelimiter [< 1 ms]
+  Failed ToonFormat.Tests.Decode.PathExpansion.ExpandsAndDeepMergesPreservingDocumentOrderInsertion [< 1 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at ToonFormat.Tests.Decode.PathExpansion.ExpandsAndDeepMergesPreservingDocumentOrderInsertion() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Decode/PathExpansion.cs:line 154
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.ArraysObjects.UsesListFormatForObjectsWithMultipleArrayFields [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesMaxSafeInteger [1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesLeadingHyphenStringInArray [< 1 ms]
+  Passed ToonFormat.Tests.Encode.ArraysObjects.EncodesObjectsWithEmptyArraysInListFormat [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesStringWithEmojiAndSpaces [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesScientificNotationAsDecimal [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesPositiveInteger [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesTrue [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringWithArrayLikeSyntax [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringThatLooksLikeNull [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringThatLooksLikeTrue [< 1 ms]
+[xUnit.net 00:00:00.37]     ToonFormat.Tests.Encode.Primitives.EncodesRepeatingDecimalWithFullPrecision [FAIL]
+[xUnit.net 00:00:00.37]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.37]       Expected: "0.3333333333333333"
+[xUnit.net 00:00:00.37]       Actual:   "0.33333333333333331"
+[xUnit.net 00:00:00.37]                                    ↑ (pos 18)
+[xUnit.net 00:00:00.37]       Stack Trace:
+[xUnit.net 00:00:00.37]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Primitives.cs(711,0): at ToonFormat.Tests.Encode.Primitives.EncodesRepeatingDecimalWithFullPrecision()
+[xUnit.net 00:00:00.37]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.37]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.37]     ToonFormat.Tests.Encode.Primitives.EncodesDecimalNumber [FAIL]
+[xUnit.net 00:00:00.37]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.37]       Expected: "3.14"
+[xUnit.net 00:00:00.37]       Actual:   "3.1400000000000001"
+[xUnit.net 00:00:00.37]                      ↑ (pos 4)
+[xUnit.net 00:00:00.37]       Stack Trace:
+[xUnit.net 00:00:00.37]         /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Primitives.cs(578,0): at ToonFormat.Tests.Encode.Primitives.EncodesDecimalNumber()
+[xUnit.net 00:00:00.37]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.37]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Primitives.EscapesBackslashInString [< 1 ms]
+  Failed ToonFormat.Tests.Encode.Primitives.EncodesRepeatingDecimalWithFullPrecision [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+Expected: "0.3333333333333333"
+Actual:   "0.33333333333333331"
+                             ↑ (pos 18)
+  Stack Trace:
+     at ToonFormat.Tests.Encode.Primitives.EncodesRepeatingDecimalWithFullPrecision() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Primitives.cs:line 711
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesNull [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EscapesNewlineInString [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringStartingWithHyphenSpace [< 1 ms]
+  Failed ToonFormat.Tests.Encode.Primitives.EncodesDecimalNumber [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+Expected: "3.14"
+Actual:   "3.1400000000000001"
+               ↑ (pos 4)
+  Stack Trace:
+     at ToonFormat.Tests.Encode.Primitives.EncodesDecimalNumber() in /mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/Encode/Primitives.cs:line 578
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringThatLooksLikeScientificNotation [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesNegativeInteger [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesUnicodeStringWithoutQuotes [< 1 ms]
+[xUnit.net 00:00:00.37]   Finished:    ToonFormat.Tests
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringWithBraceNotation [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.EncodesSafeStringsWithoutQuotes [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringThatLooksLikeFalse [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesStringStartingWithHyphenAsObjectValue [< 1 ms]
+  Passed ToonFormat.Tests.Encode.Primitives.QuotesSingleHyphenInArray [< 1 ms]
+  Passed ToonFormat.Tests.JsonComplexRoundTripTests.ComplexJson_DateTime_ShouldBePreservedAsString [123 ms]
+  Passed ToonFormat.Tests.JsonComplexRoundTripTests.ComplexJson_Encode_ShouldProduceValidToonFormat [1 ms]
+  Passed ToonFormat.Tests.JsonComplexRoundTripTests.ComplexJson_RoundTrip_ShouldPreserveKeyFields [1 ms]
+  Passed ToonFormat.Tests.JsonComplexRoundTripTests.ComplexJson_SpecialCharacters_ShouldBePreserved [< 1 ms]
+
+Test Run Failed.
+Total tests: 358
+     Passed: 342
+     Failed: 16
+ Total time: 0.9265 Seconds
+       _VSTestConsole:
+         MSB4181: The "VSTestTask" task returned false but did not log an error.
+     3>Done Building Project "/mnt/d/projects/toon-dotnet/tests/ToonFormat.Tests/ToonFormat.Tests.csproj" (VSTest target(s)) -- FAILED.
+     1>Done Building Project "/mnt/d/projects/toon-dotnet/ToonFormat.sln" (VSTest target(s)) -- FAILED.
+
+Build FAILED.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.80
