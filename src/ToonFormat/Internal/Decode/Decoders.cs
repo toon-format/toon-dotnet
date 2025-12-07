@@ -1,4 +1,5 @@
 #nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -200,7 +201,7 @@ namespace ToonFormat.Internal.Decode
 
         private static List<JsonNode?> DecodeInlinePrimitiveArray(
             ArrayHeaderInfo header,
-            string inlineValues,
+            string? inlineValues,
             ResolvedDecodeOptions options)
         {
             if (string.IsNullOrWhiteSpace(inlineValues))

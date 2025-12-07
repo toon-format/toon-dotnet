@@ -14,13 +14,13 @@ namespace ToonFormat.Internal.Shared
         /// <returns></returns>
         public static bool NearlyEqual(double a, double b, double absEps = 1e-12, double relEps = 1e-9)
         {
-            if (double.IsNaN(a) && double.IsNaN(b)) return true;     // ÒµÎñÉÏ³£ÐèÒªÊÓ NaN == NaN
+            if (double.IsNaN(a) && double.IsNaN(b)) return true;     // Òµï¿½ï¿½ï¿½Ï³ï¿½ï¿½ï¿½Òªï¿½ï¿½ NaN == NaN
             if (double.IsInfinity(a) || double.IsInfinity(b)) return a.Equals(b);
-            if (a == b) return true;                                  // ¸²¸Ç 0.0 == -0.0¡¢ÍêÈ«ÏàµÈ
+            if (a == b) return true;                                  // ï¿½ï¿½ï¿½ï¿½ 0.0 == -0.0ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½
 
             var diff = Math.Abs(a - b);
             var scale = Math.Max(Math.Abs(a), Math.Abs(b));
-            if (scale == 0) return diff <= absEps;                    // Á½Õß¶¼½Ó½ü 0
+            if (scale == 0) return diff <= absEps;                    // ï¿½ï¿½ï¿½ß¶ï¿½ï¿½Ó½ï¿½ 0
             return diff <= Math.Max(absEps, relEps * scale);
         }
 
@@ -35,7 +35,15 @@ namespace ToonFormat.Internal.Shared
         /// <summary>
         /// Explicitly change -0.0f to +0.0f for float values.
         /// </summary>
-        public static float NormalizeSignedZero(float v) =>
-            BitConverter.SingleToInt32Bits(v) == BitConverter.SingleToInt32Bits(-0.0f) ? 0.0f : v;
+        public static float NormalizeSignedZero(float v)
+        {
+            unsafe
+            {
+                int* vBits = (int*)&v;
+                float negZero = -0.0f;
+                int* zeroBits = (int*)&negZero;
+                return *vBits == *zeroBits ? 0.0f : v;
+            }
+        }
     }
 }

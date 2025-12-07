@@ -2,7 +2,8 @@
 using System.Text.Json.Nodes;
 using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace ToonFormat.Tests
+{
 
 /// <summary>
 /// Tests for encoding data to TOON format.
@@ -136,4 +137,5 @@ public class ToonEncoderTests
         Assert.Contains("user:", result);
         Assert.Contains("address:", result);
     }
+}
 }

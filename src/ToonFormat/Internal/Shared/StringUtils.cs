@@ -1,4 +1,5 @@
 #nullable enable
+
 using System.Text;
 
 namespace ToonFormat.Internal.Shared

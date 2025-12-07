@@ -36,7 +36,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ### .NET Version Support
 
-We target .NET 8.0 and .NET 9.0 for broad compatibility.
+We target .NET Standard 2.0 for maximum compatibility across .NET Framework, .NET Core, and .NET 5+.
 
 ### Type Safety
 

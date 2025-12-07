@@ -13,7 +13,7 @@ namespace ToonFormat.Internal.Encode
         /// <summary>
         /// The folded key with dot-separated segments (e.g., "data.metadata.items")
         /// </summary>
-        public required string FoldedKey { get; set; }
+        public string FoldedKey { get; set; }
 
         /// <summary>
         /// The remainder value after folding:
@@ -28,25 +28,25 @@ namespace ToonFormat.Internal.Encode
         /// The leaf value at the end of the folded chain.
         /// Used to avoid redundant traversal when encoding the folded value.
         /// </summary>
-        public required JsonNode LeafValue { get; set; }
+        public JsonNode LeafValue { get; set; }
 
         /// <summary>
         /// The number of segments that were folded.
         /// Used to calculate remaining depth budget for nested encoding.
         /// </summary>
-        public required int SegmentCount { get; set; }
+        public int SegmentCount { get; set; }
     }
 
     internal class KeyChain
     {
-        public required IReadOnlyCollection<string> Segments { get; set; }
+        public IReadOnlyCollection<string> Segments { get; set; }
         public JsonNode? Tail { get; set; }
-        public required JsonNode LeafValue { get; set; }
+        public JsonNode LeafValue { get; set; }
     }
 
     internal static class Folding
     {
-        public static FoldResult? TryFoldKeyChain(string key, JsonNode? value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, IReadOnlySet<string>? rootLiteralKeys = null,
+        public static FoldResult? TryFoldKeyChain(string key, JsonNode? value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, ISet<string>? rootLiteralKeys = null,
             string? pathPrefix = null, int? flattenDepth = null)
         {
             // Only fold when safe mode is enabled
@@ -100,7 +100,7 @@ namespace ToonFormat.Internal.Encode
 
         private static KeyChain CollectSingleKeyChain(string startKey, JsonNode? startValue, int maxDepth)
         {
-            List<string> segments = [startKey];
+            List<string> segments = new List<string> { startKey };
             var currentValue = startValue;
 
             // Traverse nested single-key objects, collecting each key into segments array
@@ -149,7 +149,7 @@ namespace ToonFormat.Internal.Encode
 
         private static string BuildFoldedKey(IReadOnlyCollection<string> segments)
         {
-            return string.Join(Constants.DOT, segments);
+            return string.Join(Constants.DOT.ToString(), segments);
         }
     }
 }

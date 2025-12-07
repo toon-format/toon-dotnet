@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Globalization;
 
 namespace ToonFormat.Internal.Shared

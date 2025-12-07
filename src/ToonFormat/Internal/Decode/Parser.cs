@@ -47,7 +47,7 @@ namespace ToonFormat.Internal.Decode
             int bracketStart = -1;
 
             // For quoted keys, find bracket after closing quote (not inside the quoted string)
-            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE))
+            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
             {
                 var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed, 0);
                 if (closingQuoteIndex == -1)

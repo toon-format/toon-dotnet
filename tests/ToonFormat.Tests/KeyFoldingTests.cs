@@ -1,6 +1,7 @@
 ﻿using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace ToonFormat.Tests
+{
 
 // TODO: Remove these tests once generated spec tests are in source control
 // used to validate current key folding functionality aligns with spec
@@ -498,4 +499,5 @@ short.path: 3
 
         Assert.Equal(expected, result);
     }
+}
 }

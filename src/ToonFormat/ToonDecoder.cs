@@ -1,5 +1,5 @@
-﻿#nullable enable
-using System;
+#nullable enable
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -7,13 +7,13 @@ using System.Text.Json.Nodes;
 using ToonFormat;
 using ToonFormat.Internal.Decode;
 
-namespace Toon.Format;
-
-/// <summary>
-/// Decodes TOON-formatted strings into data structures.
-/// </summary>
-public static class ToonDecoder
+namespace Toon.Format
 {
+    /// <summary>
+    /// Decodes TOON-formatted strings into data structures.
+    /// </summary>
+    public static class ToonDecoder
+    {
     /// <summary>
     /// Decodes a TOON-formatted string into a JsonNode with default options.
     /// </summary>
@@ -165,9 +165,11 @@ public static class ToonDecoder
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
-        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
-        var text = reader.ReadToEnd();
-        return Decode(text, options ?? new ToonDecodeOptions());
+        using (var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true))
+        {
+            var text = reader.ReadToEnd();
+            return Decode(text, options ?? new ToonDecodeOptions());
+        }
     }
 
     /// <summary>
@@ -190,8 +192,11 @@ public static class ToonDecoder
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
-        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
-        var text = reader.ReadToEnd();
-        return Decode<T>(text, options ?? new ToonDecodeOptions());
+        using (var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true))
+        {
+            var text = reader.ReadToEnd();
+            return Decode<T>(text, options ?? new ToonDecodeOptions());
+        }
+    }
     }
 }

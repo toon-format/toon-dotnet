@@ -14,7 +14,8 @@ using Toon.Format;
 using Xunit;
 
 
-namespace ToonFormat.Tests.Decode;
+namespace ToonFormat.Tests.Decode
+{
 
 
 [Trait("Category", "decode")]
@@ -329,4 +330,5 @@ a.b.c:
         Assert.True(JsonNode.DeepEquals(result, expected));
     }
 
+}
 }

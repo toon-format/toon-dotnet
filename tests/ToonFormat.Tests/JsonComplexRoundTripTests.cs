@@ -6,7 +6,8 @@ using System.Text.Json.Nodes;
 using Toon.Format;
 using Xunit.Abstractions;
 
-namespace ToonFormat.Tests;
+namespace ToonFormat.Tests
+{
 
 /// <summary>
 /// Tests for complex multi-level JSON structures to validate TOON format encoding and decoding.
@@ -252,4 +253,5 @@ public class JsonComplexRoundTripTests
     public class Budget { public string currency { get; set; } = null!; public double amount { get; set; } }
 
     public class Resources { public string leadDeveloper { get; set; } = null!; public string repository { get; set; } = null!; }
+}
 }
