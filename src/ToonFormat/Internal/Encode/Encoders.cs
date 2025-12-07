@@ -1,7 +1,6 @@
-#nullable enable
+
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Nodes;
 
@@ -29,7 +28,7 @@ namespace ToonFormat.Internal.Encode
         /// <summary>
         /// Encodes a normalized JsonNode value to TOON format string.
         /// </summary>
-        public static string EncodeValue(JsonNode? value, ResolvedEncodeOptions options)
+        public static string EncodeValue(JsonNode value, ResolvedEncodeOptions options)
         {
             if (Normalize.IsJsonPrimitive(value))
             {
@@ -57,8 +56,8 @@ namespace ToonFormat.Internal.Encode
         /// <summary>
         /// Encodes a JsonObject as key-value pairs.
         /// </summary>
-        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options, IReadOnlySet<string>? rootLiteralKeys = null,
-            string? pathPrefix = null, int? remainingDepth = null)
+        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options, ISet<string> rootLiteralKeys = null,
+            string pathPrefix = null, int? remainingDepth = null)
         {
             var keys = (value as IDictionary<string, JsonNode>).Keys!;
 
@@ -78,7 +77,7 @@ namespace ToonFormat.Internal.Encode
                     writer,
                     depth,
                     options,
-                    keys.ToImmutableArray(),
+                    keys.ToArray(),
                     rootLiteralKeys,
                     pathPrefix,
                     effectiveFlattenDepth
@@ -91,13 +90,13 @@ namespace ToonFormat.Internal.Encode
         /// </summary>
         public static void EncodeKeyValuePair(
             string key,
-            JsonNode? value,
+            JsonNode value,
             LineWriter writer,
             int depth,
             ResolvedEncodeOptions options,
-            IReadOnlyCollection<string>? siblings = null,
-            IReadOnlySet<string>? rootLiteralKeys = null,
-            string? pathPrefix = null,
+            IReadOnlyCollection<string> siblings = null,
+            ISet<string> rootLiteralKeys = null,
+            string pathPrefix = null,
             int? flattenDepth = null)
         {
             var currentPath = pathPrefix != null ? $"{pathPrefix}{Constants.DOT}{key}" : key;

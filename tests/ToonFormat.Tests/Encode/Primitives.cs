@@ -14,7 +14,8 @@ using Toon.Format;
 using Xunit;
 
 
-namespace ToonFormat.Tests.Encode;
+namespace ToonFormat.Tests.Encode
+{
 
 
 [Trait("Category", "encode")]
@@ -767,4 +768,5 @@ null
         Assert.Equal(expected, result);
     }
 
+}
 }

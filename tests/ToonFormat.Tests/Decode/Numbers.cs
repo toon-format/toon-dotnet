@@ -14,7 +14,8 @@ using Toon.Format;
 using Xunit;
 
 
-namespace ToonFormat.Tests.Decode;
+namespace ToonFormat.Tests.Decode
+{
 
 
 [Trait("Category", "decode")]
@@ -374,4 +375,5 @@ nums[3]: 05,007,0123
         Assert.True(JsonNode.DeepEquals(result, expected));
     }
 
+}
 }

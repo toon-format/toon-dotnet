@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +12,7 @@ namespace ToonFormat.Internal.Decode
     /// </summary>
     internal class ArrayHeaderInfo
     {
-        public string? Key { get; set; }
+        public string Key { get; set; }
         public int Length { get; set; }
         public char Delimiter { get; set; }
         public List<string>? Fields { get; set; }
@@ -25,7 +24,7 @@ namespace ToonFormat.Internal.Decode
     internal class ArrayHeaderParseResult
     {
         public ArrayHeaderInfo Header { get; set; } = null!;
-        public string? InlineValues { get; set; }
+        public string InlineValues { get; set; }
     }
 
     /// <summary>
@@ -39,7 +38,7 @@ namespace ToonFormat.Internal.Decode
         /// <summary>
         /// Parses an array header line like "key[3]:" or "users[#2,]{name,age}:".
         /// </summary>
-        public static ArrayHeaderParseResult? ParseArrayHeaderLine(string content, char defaultDelimiter)
+        public static ArrayHeaderParseResult ParseArrayHeaderLine(string content, char defaultDelimiter)
         {
             var trimmed = content.TrimStart();
 
@@ -47,7 +46,7 @@ namespace ToonFormat.Internal.Decode
             int bracketStart = -1;
 
             // For quoted keys, find bracket after closing quote (not inside the quoted string)
-            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE))
+            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
             {
                 var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed, 0);
                 if (closingQuoteIndex == -1)
@@ -96,7 +95,7 @@ namespace ToonFormat.Internal.Decode
                 return null;
 
             // Extract and parse the key (might be quoted)
-            string? key = null;
+            string key = null;
             if (bracketStart > 0)
             {
                 var rawKey = content.Substring(0, bracketStart).Trim();
@@ -247,7 +246,7 @@ namespace ToonFormat.Internal.Decode
         /// <summary>
         /// Parses a primitive token (null, boolean, number, or string).
         /// </summary>
-        public static JsonNode? ParsePrimitiveToken(string token)
+        public static JsonNode ParsePrimitiveToken(string token)
         {
             var trimmed = token.Trim();
 

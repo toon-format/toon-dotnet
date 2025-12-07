@@ -2,7 +2,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace ToonFormat.Tests
+{
 
 /// <summary>
 /// Tests for decoding TOON format strings.
@@ -167,4 +168,5 @@ public class ToonDecoderTests
         // Assert - empty string returns empty array
         Assert.NotNull(result);
     }
+}
 }

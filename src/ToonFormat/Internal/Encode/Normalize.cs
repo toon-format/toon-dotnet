@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,7 +39,7 @@ namespace ToonFormat.Internal.Encode
             {
                 // Canonicalize signed zero via FloatUtils
                 var dn = FloatUtils.NormalizeSignedZero(d);
-                if (!double.IsFinite(dn))
+                if (double.IsNaN(dn) || double.IsInfinity(dn))
                     return null;
                 return JsonValue.Create(dn);
             }
@@ -49,7 +48,7 @@ namespace ToonFormat.Internal.Encode
             {
                 // Canonicalize signed zero via FloatUtils
                 var fn = FloatUtils.NormalizeSignedZero(f);
-                if (!float.IsFinite(fn))
+                if (float.IsNaN(fn) || float.IsInfinity(fn))
                     return null;
                 return JsonValue.Create(fn);
             }
@@ -138,11 +137,17 @@ namespace ToonFormat.Internal.Encode
                     return JsonValue.Create(l);
                 case double d:
                     if (BitConverter.DoubleToInt64Bits(d) == BitConverter.DoubleToInt64Bits(-0.0)) return JsonValue.Create(0.0);
-                    if (!double.IsFinite(d)) return null;
+                    if (double.IsNaN(d) || double.IsInfinity(d)) return null;
                     return JsonValue.Create(d);
                 case float f:
-                    if (BitConverter.SingleToInt32Bits(f) == BitConverter.SingleToInt32Bits(-0.0f)) return JsonValue.Create(0.0f);
-                    if (!float.IsFinite(f)) return null;
+                    unsafe
+                    {
+                        float negZero = -0.0f;
+                        int* fBits = (int*)&f;
+                        int* zeroBits = (int*)&negZero;
+                        if (*fBits == *zeroBits) return JsonValue.Create(0.0f);
+                    }
+                    if (float.IsNaN(f) || float.IsInfinity(f)) return null;
                     return JsonValue.Create(f);
                 case decimal dec:
                     return JsonValue.Create(dec);

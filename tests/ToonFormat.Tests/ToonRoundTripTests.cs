@@ -2,7 +2,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace ToonFormat.Tests
+{
 
 /// <summary>
 /// Round-trip tests to verify encoding and decoding preserve data integrity.
@@ -81,4 +82,5 @@ public class ToonRoundTripTests
         Assert.NotNull(metadata);
         Assert.Equal(2.0, metadata["total"]?.GetValue<double>());
     }
+}
 }

@@ -1,13 +1,12 @@
-#nullable enable
 using ToonFormat;
 
-namespace Toon.Format;
-
-/// <summary>
-/// Options for encoding data to TOON format.
-/// </summary>
-public class ToonEncodeOptions
+namespace Toon.Format
 {
+    /// <summary>
+    /// Options for encoding data to TOON format.
+    /// </summary>
+    public class ToonEncodeOptions
+    {
     /// <summary>
     /// Number of spaces per indentation level.
     /// </summary>
@@ -37,4 +36,5 @@ public class ToonEncodeOptions
     /// </summary>
     /// <remarks>Default is <see cref="int.MaxValue"/></remarks>
     public int? FlattenDepth { get; set; } = int.MaxValue;
+    }
 }

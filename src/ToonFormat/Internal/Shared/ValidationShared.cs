@@ -1,4 +1,4 @@
-#nullable enable
+
 using System;
 using System.Text.RegularExpressions;
 using ToonFormat;
@@ -23,7 +23,7 @@ namespace ToonFormat.Internal.Shared
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         private static readonly Regex NumericLikeRegex = new(
-            pattern: "^-?\\d+(?:\\.\\d+)?(?:e[+-]?\\d+)?$",
+            pattern: "^-?\\d+(\\.\\d+)?(e[+-]?\\d+)?$",
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         private static readonly Regex LeadingZeroIntegerRegex = new(
