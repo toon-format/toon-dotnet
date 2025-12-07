@@ -1,7 +1,7 @@
 # TOON Format for .NET
 
 [![NuGet version](https://img.shields.io/nuget/v/Toon.Format.svg)](https://www.nuget.org/packages/Toon.Format/)
-[![.NET version](https://img.shields.io/badge/.NET-8.0%20%7C%209.0-512BD4)](https://dotnet.microsoft.com/)
+[![.NET version](https://img.shields.io/badge/.NET-Standard%202.0-512BD4)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 **Token-Oriented Object Notation** is a compact, human-readable format designed for passing structured data to Large Language Models with significantly reduced token usage.
