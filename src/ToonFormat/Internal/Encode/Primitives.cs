@@ -1,7 +1,8 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
+using System.Linq;
 using System.Text.Json.Nodes;
 using ToonFormat.Internal.Shared;
 
@@ -31,16 +32,16 @@ namespace ToonFormat.Internal.Encode
 
                 // Number
                 if (jsonValue.TryGetValue<int>(out var intVal))
-                    return intVal.ToString();
+                    return intVal.ToString(CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<long>(out var longVal))
-                    return longVal.ToString();
+                    return longVal.ToString(CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<double>(out var doubleVal))
-                    return doubleVal.ToString("G17"); // Full precision
+                    return doubleVal.ToString("G17", CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<decimal>(out var decimalVal))
-                    return decimalVal.ToString();
+                    return decimalVal.ToString(CultureInfo.InvariantCulture);
 
                 // String
                 if (jsonValue.TryGetValue<string>(out var strVal))
@@ -56,7 +57,7 @@ namespace ToonFormat.Internal.Encode
         public static string EncodeStringLiteral(string value, char delimiter = Constants.COMMA)
         {
             var delimiterEnum = Constants.FromDelimiterChar(delimiter);
-            
+
             if (ValidationShared.IsSafeUnquoted(value, delimiterEnum))
             {
                 return value;
@@ -121,8 +122,7 @@ namespace ToonFormat.Internal.Encode
             int length,
             string? key = null,
             IReadOnlyList<string>? fields = null,
-            char? delimiter = null,
-            bool lengthMarker = false)
+            char? delimiter = null)
         {
             var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
             var sb = new StringBuilder();

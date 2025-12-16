@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Nodes;
 
@@ -13,7 +14,8 @@ namespace ToonFormat.Internal.Encode
     {
         public int Indent { get; set; } = 2;
         public char Delimiter { get; set; } = Constants.COMMA;
-        public bool LengthMarker { get; set; } = false;
+        public ToonKeyFolding KeyFolding { get; set; } = ToonKeyFolding.Off;
+        public int FlattenDepth { get; set; } = int.MaxValue;
     }
 
     /// <summary>
@@ -55,19 +57,102 @@ namespace ToonFormat.Internal.Encode
         /// <summary>
         /// Encodes a JsonObject as key-value pairs.
         /// </summary>
-        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options)
+        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options, IReadOnlySet<string>? rootLiteralKeys = null,
+            string? pathPrefix = null, int? remainingDepth = null)
         {
+            var keys = (value as IDictionary<string, JsonNode>).Keys!;
+
+            // At root level (depth 0), collect all literal dotted keys for collision checking
+            if (depth == 0 && rootLiteralKeys == null)
+            {
+                rootLiteralKeys = new HashSet<string>(keys.Where(k => k.Contains('.')));
+            }
+
+            var effectiveFlattenDepth = remainingDepth ?? options.FlattenDepth;
+
             foreach (var kvp in value)
             {
-                EncodeKeyValuePair(kvp.Key, kvp.Value, writer, depth, options);
+                EncodeKeyValuePair(
+                    kvp.Key,
+                    kvp.Value,
+                    writer,
+                    depth,
+                    options,
+                    keys.ToImmutableArray(),
+                    rootLiteralKeys,
+                    pathPrefix,
+                    effectiveFlattenDepth
+                );
             }
         }
 
         /// <summary>
         /// Encodes a single key-value pair.
         /// </summary>
-        public static void EncodeKeyValuePair(string key, JsonNode? value, LineWriter writer, int depth, ResolvedEncodeOptions options)
+        public static void EncodeKeyValuePair(
+            string key,
+            JsonNode? value,
+            LineWriter writer,
+            int depth,
+            ResolvedEncodeOptions options,
+            IReadOnlyCollection<string>? siblings = null,
+            IReadOnlySet<string>? rootLiteralKeys = null,
+            string? pathPrefix = null,
+            int? flattenDepth = null)
         {
+            var currentPath = pathPrefix != null ? $"{pathPrefix}{Constants.DOT}{key}" : key;
+            var effectiveFlattenDepth = flattenDepth ?? options.FlattenDepth;
+
+            if (options.KeyFolding == ToonKeyFolding.Safe && siblings != null)
+            {
+                var foldResult = Folding.TryFoldKeyChain(key, value, siblings, options, rootLiteralKeys, pathPrefix, effectiveFlattenDepth);
+
+                if (foldResult is not null)
+                {
+                    var foldedKey = foldResult.FoldedKey;
+                    var remainder = foldResult.Remainder;
+                    var leafValue = foldResult.LeafValue;
+                    var segmentCount = foldResult.SegmentCount;
+
+                    var encodedFoldedKey = Primitives.EncodeKey(foldedKey);
+
+                    // Case 1: Fully folded to a leaf value
+                    if (remainder is null)
+                    {
+                        // The folded chain ended at a leaf (primitive, array, or empty object)
+                        if (Normalize.IsJsonPrimitive(leafValue))
+                        {
+                            writer.Push(depth, $"{encodedFoldedKey}: {Primitives.EncodePrimitive(leafValue, options.Delimiter)}");
+                            return;
+                        }
+                        else if (Normalize.IsJsonArray(leafValue))
+                        {
+                            EncodeArray(foldedKey, leafValue.AsArray(), writer, depth, options);
+                            return;
+                        }
+                        else if (Normalize.IsEmptyObject(leafValue))
+                        {
+                            writer.Push(depth, $"{encodedFoldedKey}:");
+                            return;
+                        }
+                    }
+
+                    // Case 2: Partially folded with a tail object
+                    if (Normalize.IsJsonObject(remainder))
+                    {
+                        writer.Push(depth, $"{encodedFoldedKey}:");
+                        // Calculate remaining depth budget (subtract segments already folded)
+                        var remainingDepth = effectiveFlattenDepth - segmentCount;
+                        var foldedPath = pathPrefix != null ? $"{pathPrefix}{Constants.DOT}{foldedKey}" : foldedKey;
+
+                        EncodeObject(remainder!.AsObject(), writer, depth + 1, options, rootLiteralKeys, foldedPath, remainingDepth);
+
+                        return;
+                    }
+                }
+            }
+
+            // No folding applied  use standard encoding
             var encodedKey = Primitives.EncodeKey(key);
 
             if (Normalize.IsJsonPrimitive(value))
@@ -80,16 +165,11 @@ namespace ToonFormat.Internal.Encode
             }
             else if (Normalize.IsJsonObject(value))
             {
-                var obj = (JsonObject)value!;
-                if (obj.Count == 0)
+                writer.Push(depth, $"{encodedKey}{Constants.COLON}");
+                var obj = value!.AsObject();
+                if (!Normalize.IsEmptyObject(obj))
                 {
-                    // Empty object
-                    writer.Push(depth, $"{encodedKey}{Constants.COLON}");
-                }
-                else
-                {
-                    writer.Push(depth, $"{encodedKey}{Constants.COLON}");
-                    EncodeObject(obj, writer, depth + 1, options);
+                    EncodeObject(obj, writer, depth + 1, options, rootLiteralKeys, currentPath, effectiveFlattenDepth);
                 }
             }
         }
@@ -110,7 +190,7 @@ namespace ToonFormat.Internal.Encode
         {
             if (value.Count == 0)
             {
-                var header = Primitives.FormatHeader(0, key, null, options.Delimiter, options.LengthMarker);
+                var header = Primitives.FormatHeader(0, key, null, options.Delimiter);
                 writer.Push(depth, header);
                 return;
             }
@@ -118,7 +198,7 @@ namespace ToonFormat.Internal.Encode
             // Primitive array
             if (Normalize.IsArrayOfPrimitives(value))
             {
-                var formatted = EncodeInlineArrayLine(value, options.Delimiter, key, options.LengthMarker);
+                var formatted = EncodeInlineArrayLine(value, options.Delimiter, key);
                 writer.Push(depth, formatted);
                 return;
             }
@@ -170,14 +250,14 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            var header = Primitives.FormatHeader(values.Count, prefix, null, options.Delimiter, options.LengthMarker);
+            var header = Primitives.FormatHeader(values.Count, prefix, null, options.Delimiter);
             writer.Push(depth, header);
 
             foreach (var arr in values)
             {
                 if (Normalize.IsArrayOfPrimitives(arr))
                 {
-                    var inline = EncodeInlineArrayLine(arr, options.Delimiter, null, options.LengthMarker);
+                    var inline = EncodeInlineArrayLine(arr, options.Delimiter, null);
                     writer.PushListItem(depth + 1, inline);
                 }
             }
@@ -189,11 +269,10 @@ namespace ToonFormat.Internal.Encode
         public static string EncodeInlineArrayLine(
             JsonArray values,
             char delimiter,
-            string? prefix = null,
-            bool lengthMarker = false)
+            string? prefix = null)
         {
-            var header = Primitives.FormatHeader(values.Count, prefix, null, delimiter, lengthMarker);
-            
+            var header = Primitives.FormatHeader(values.Count, prefix, null, delimiter);
+
             if (values.Count == 0)
             {
                 return header;
@@ -218,7 +297,7 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            var formattedHeader = Primitives.FormatHeader(rows.Count, prefix, header, options.Delimiter, options.LengthMarker);
+            var formattedHeader = Primitives.FormatHeader(rows.Count, prefix, header, options.Delimiter);
             writer.Push(depth, formattedHeader);
 
             WriteTabularRows(rows, header, writer, depth + 1, options);
@@ -235,7 +314,7 @@ namespace ToonFormat.Internal.Encode
 
             var firstRow = rows[0];
             var firstKeys = firstRow.Select(kvp => kvp.Key).ToList();
-            
+
             if (firstKeys.Count == 0)
                 return null;
 
@@ -308,7 +387,7 @@ namespace ToonFormat.Internal.Encode
             int depth,
             ResolvedEncodeOptions options)
         {
-            var header = Primitives.FormatHeader(items.Count, prefix, null, options.Delimiter, options.LengthMarker);
+            var header = Primitives.FormatHeader(items.Count, prefix, null, options.Delimiter);
             writer.Push(depth, header);
 
             foreach (var item in items)
@@ -323,7 +402,7 @@ namespace ToonFormat.Internal.Encode
         public static void EncodeObjectAsListItem(JsonObject obj, LineWriter writer, int depth, ResolvedEncodeOptions options)
         {
             var keys = obj.Select(kvp => kvp.Key).ToList();
-            
+
             if (keys.Count == 0)
             {
                 writer.Push(depth, Constants.LIST_ITEM_MARKER.ToString());
@@ -342,11 +421,11 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonArray(firstValue))
             {
                 var arr = (JsonArray)firstValue!;
-                
+
                 if (Normalize.IsArrayOfPrimitives(arr))
                 {
                     // Inline format for primitive arrays
-                    var formatted = EncodeInlineArrayLine(arr, options.Delimiter, firstKey, options.LengthMarker);
+                    var formatted = EncodeInlineArrayLine(arr, options.Delimiter, firstKey);
                     writer.PushListItem(depth, formatted);
                 }
                 else if (Normalize.IsArrayOfObjects(arr))
@@ -354,11 +433,11 @@ namespace ToonFormat.Internal.Encode
                     // Check if array of objects can use tabular format
                     var objects = arr.Cast<JsonObject>().ToList();
                     var header = ExtractTabularHeader(objects);
-                    
+
                     if (header != null)
                     {
                         // Tabular format for uniform arrays of objects
-                        var formattedHeader = Primitives.FormatHeader(arr.Count, firstKey, header, options.Delimiter, options.LengthMarker);
+                        var formattedHeader = Primitives.FormatHeader(arr.Count, firstKey, header, options.Delimiter);
                         writer.PushListItem(depth, formattedHeader);
                         WriteTabularRows(objects, header, writer, depth + 1, options);
                     }
@@ -387,7 +466,7 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonObject(firstValue))
             {
                 var nestedObj = (JsonObject)firstValue!;
-                
+
                 if (nestedObj.Count == 0)
                 {
                     writer.PushListItem(depth, $"{encodedKey}{Constants.COLON}");
@@ -427,7 +506,7 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonArray(value) && Normalize.IsArrayOfPrimitives((JsonArray)value!))
             {
                 var arr = (JsonArray)value!;
-                var inline = EncodeInlineArrayLine(arr, options.Delimiter, null, options.LengthMarker);
+                var inline = EncodeInlineArrayLine(arr, options.Delimiter, null);
                 writer.PushListItem(depth, inline);
             }
             else if (Normalize.IsJsonObject(value))

@@ -7,7 +7,7 @@ namespace ToonFormat
     {
         public const char LIST_ITEM_MARKER = '-';
 
-        public const string LIST_ITEM_PREFIX  = "- ";
+        public const string LIST_ITEM_PREFIX = "- ";
 
         // #region Structural characters
         public const char COMMA = ',';
@@ -15,6 +15,7 @@ namespace ToonFormat
         public const char SPACE = ' ';
         public const char PIPE = '|';
         public const char HASH = '#';
+        public const char DOT = '.';
         // #endregion
 
         // #region Brackets and braces
@@ -87,6 +88,18 @@ namespace ToonFormat
 
         /// <summary>Pipe |</summary>
         PIPE
+    }
+
+    /// <summary>
+    /// Key folding options
+    /// </summary>
+    public enum ToonKeyFolding
+    {
+        /// <summary>Key folding disabled</summary>
+        Off,
+
+        /// <summary>Nested objects with single keys are collapsed into dotted paths</summary>
+        Safe
     }
 
 }

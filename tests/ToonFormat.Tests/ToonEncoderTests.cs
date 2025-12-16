@@ -30,15 +30,15 @@ public class ToonEncoderTests
         // String
         var stringResult = ToonEncoder.Encode("hello");
         Assert.Equal("hello", stringResult);
-        
+
         // Number
         var numberResult = ToonEncoder.Encode(42);
         Assert.Equal("42", numberResult);
-        
+
         // Boolean
         var boolResult = ToonEncoder.Encode(true);
         Assert.Equal("true", boolResult);
-        
+
         // Null
         var nullResult = ToonEncoder.Encode(null);
         Assert.Equal("null", nullResult);
@@ -109,21 +109,6 @@ public class ToonEncoderTests
         // Assert
         Assert.NotNull(result);
         Assert.Contains("numbers[", result);
-    }
-
-    [Fact]
-    public void Encode_WithLengthMarker_IncludesHashSymbol()
-    {
-        // Arrange
-        var data = new { items = new[] { 1, 2, 3 } };
-        var options = new ToonEncodeOptions { LengthMarker = true };
-
-        // Act
-        var result = ToonEncoder.Encode(data, options);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Contains("[#", result);
     }
 
     [Fact]
