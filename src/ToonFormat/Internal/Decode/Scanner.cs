@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ToonFormat.Internal.Decode
 {
@@ -10,7 +9,6 @@ namespace ToonFormat.Internal.Decode
     /// </summary>
     internal class ParsedLine
     {
-        public string Raw { get; set; } = string.Empty;
         public int Indent { get; set; }
         public string Content { get; set; } = string.Empty;
         public int Depth { get; set; }
@@ -188,7 +186,6 @@ namespace ToonFormat.Internal.Decode
                 }
                 parsed.Add(new ParsedLine
                 {
-                    Raw = new string(lineSpan),
                     Indent = indent,
                     Content = new string(contentSpan),
                     Depth = lineDepth,

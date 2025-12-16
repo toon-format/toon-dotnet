@@ -10,8 +10,10 @@ namespace ToonFormat.Internal.Encode
     /// </summary>
     internal class LineWriter
     {
-        private readonly List<string> _lines = new();
-        private readonly string _indentationString;
+        private readonly StringBuilder _builder = new();
+        private readonly string _indentationUnit;
+        private readonly List<string> _indentCache = new() { string.Empty };
+        private bool _hasAnyLine;
 
         /// <summary>
         /// Creates a new LineWriter with the specified indentation size.
@@ -19,7 +21,7 @@ namespace ToonFormat.Internal.Encode
         /// <param name="indentSize">Number of spaces per indentation level.</param>
         public LineWriter(int indentSize)
         {
-            _indentationString = new string(' ', indentSize);
+            _indentationUnit = new string(' ', indentSize);
         }
 
         /// <summary>
@@ -29,8 +31,17 @@ namespace ToonFormat.Internal.Encode
         /// <param name="content">The content of the line.</param>
         public void Push(int depth, string content)
         {
-            var indent = RepeatString(_indentationString, depth);
-            _lines.Add(indent + content);
+            if (_hasAnyLine)
+            {
+                _builder.Append('\n');
+            }
+            else
+            {
+                _hasAnyLine = true;
+            }
+
+            _builder.Append(GetIndent(depth));
+            _builder.Append(content);
         }
 
         /// <summary>
@@ -48,23 +59,20 @@ namespace ToonFormat.Internal.Encode
         /// </summary>
         public override string ToString()
         {
-            return string.Join("\n", _lines);
+            return _builder.ToString();
         }
 
-        /// <summary>
-        /// Helper method to repeat a string n times.
-        /// </summary>
-        private static string RepeatString(string str, int count)
+        private string GetIndent(int depth)
         {
-            if (count <= 0)
+            if (depth <= 0)
                 return string.Empty;
 
-            var sb = new StringBuilder(str.Length * count);
-            for (int i = 0; i < count; i++)
+            while (_indentCache.Count <= depth)
             {
-                sb.Append(str);
+                _indentCache.Add(string.Concat(_indentCache[^1], _indentationUnit));
             }
-            return sb.ToString();
+
+            return _indentCache[depth];
         }
     }
 }
