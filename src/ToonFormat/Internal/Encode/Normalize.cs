@@ -102,8 +102,10 @@ namespace ToonFormat.Internal.Encode
                 var type = value.GetType();
                 var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-                foreach (var prop in properties.Where(prop => prop.CanRead))
+                foreach (var prop in properties)
                 {
+                    if (!prop.CanRead)
+                        continue;
                     var propValue = prop.GetValue(value);
                     jsonObject[prop.Name] = NormalizeValue(propValue);
                 }
@@ -211,7 +213,7 @@ namespace ToonFormat.Internal.Encode
         /// <summary>
         /// Determines if a value is a plain object (not a primitive, collection, or special type).
         /// </summary>
-        private static bool IsPlainObject(object value)
+        private static bool IsPlainObject(object? value)
         {
             if (value == null)
                 return false;

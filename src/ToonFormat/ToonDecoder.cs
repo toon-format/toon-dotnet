@@ -98,6 +98,54 @@ public static class ToonDecoder
     }
 
     /// <summary>
+    /// Decodes TOON data from a UTF-8 byte span into a JsonNode with default options.
+    /// </summary>
+    /// <param name="utf8Bytes">UTF-8 encoded TOON text.</param>
+    public static JsonNode? Decode(ReadOnlySpan<byte> utf8Bytes)
+    {
+        return Decode(utf8Bytes, new ToonDecodeOptions());
+    }
+
+    /// <summary>
+    /// Decodes TOON data from a UTF-8 byte span into a JsonNode with custom options.
+    /// </summary>
+    /// <param name="utf8Bytes">UTF-8 encoded TOON text.</param>
+    /// <param name="options">Decoding options to customize parsing behavior.</param>
+    public static JsonNode? Decode(ReadOnlySpan<byte> utf8Bytes, ToonDecodeOptions? options)
+    {
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+
+        var text = Encoding.UTF8.GetString(utf8Bytes);
+        return Decode(text, options);
+    }
+
+    /// <summary>
+    /// Decodes TOON data from a UTF-8 byte span into the specified type with default options.
+    /// </summary>
+    /// <typeparam name="T">Target type to deserialize into.</typeparam>
+    /// <param name="utf8Bytes">UTF-8 encoded TOON text.</param>
+    public static T? Decode<T>(ReadOnlySpan<byte> utf8Bytes)
+    {
+        return Decode<T>(utf8Bytes, new ToonDecodeOptions());
+    }
+
+    /// <summary>
+    /// Decodes TOON data from a UTF-8 byte span into the specified type with custom options.
+    /// </summary>
+    /// <typeparam name="T">Target type to deserialize into.</typeparam>
+    /// <param name="utf8Bytes">UTF-8 encoded TOON text.</param>
+    /// <param name="options">Decoding options to customize parsing behavior.</param>
+    public static T? Decode<T>(ReadOnlySpan<byte> utf8Bytes, ToonDecodeOptions? options)
+    {
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+
+        var text = Encoding.UTF8.GetString(utf8Bytes);
+        return Decode<T>(text, options);
+    }
+
+    /// <summary>
     /// Decodes TOON data from a UTF-8 byte array into a JsonNode with default options.
     /// </summary>
     /// <param name="utf8Bytes">UTF-8 encoded TOON text.</param>

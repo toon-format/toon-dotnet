@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Text.Json.Nodes;
 using ToonFormat.Internal.Shared;
 
@@ -93,8 +93,17 @@ namespace ToonFormat.Internal.Encode
         /// </summary>
         public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter = Constants.COMMA)
         {
-            var encoded = values.Select(v => EncodePrimitive(v, delimiter));
-            return string.Join(delimiter.ToString(), encoded);
+            var sb = new StringBuilder();
+            bool first = true;
+            foreach (var value in values)
+            {
+                if (!first)
+                    sb.Append(delimiter);
+                first = false;
+
+                sb.Append(EncodePrimitive(value, delimiter));
+            }
+            return sb.ToString();
         }
 
         // #endregion
@@ -116,33 +125,36 @@ namespace ToonFormat.Internal.Encode
             bool lengthMarker = false)
         {
             var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
-            var header = string.Empty;
+            var sb = new StringBuilder();
 
             // Add key if present
             if (!string.IsNullOrEmpty(key))
-            {
-                header += EncodeKey(key);
-            }
+                sb.Append(EncodeKey(key));
 
             // Add array length with optional marker and delimiter
-            var marker = lengthMarker ? Constants.HASH.ToString() : string.Empty;
-            var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
-                ? delimiterChar.ToString()
-                : string.Empty;
-
-            header += $"{Constants.OPEN_BRACKET}{marker}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
+            sb.Append(Constants.OPEN_BRACKET);
+            if (lengthMarker)
+                sb.Append(Constants.HASH);
+            sb.Append(length);
+            if (delimiterChar != Constants.DEFAULT_DELIMITER_CHAR)
+                sb.Append(delimiterChar);
+            sb.Append(Constants.CLOSE_BRACKET);
 
             // Add field names for tabular format
-            if (fields != null && fields.Count > 0)
+            if (fields is { Count: > 0 })
             {
-                var quotedFields = fields.Select(EncodeKey);
-                var fieldsStr = string.Join(delimiterChar.ToString(), quotedFields);
-                header += $"{Constants.OPEN_BRACE}{fieldsStr}{Constants.CLOSE_BRACE}";
+                sb.Append(Constants.OPEN_BRACE);
+                for (int i = 0; i < fields.Count; i++)
+                {
+                    if (i > 0)
+                        sb.Append(delimiterChar);
+                    sb.Append(EncodeKey(fields[i]));
+                }
+                sb.Append(Constants.CLOSE_BRACE);
             }
 
-            header += Constants.COLON;
-
-            return header;
+            sb.Append(Constants.COLON);
+            return sb.ToString();
         }
 
         // #endregion
