@@ -25,18 +25,18 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ToonFormat.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ToonFormat.sln --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: dotnet test ToonFormat.sln --no-build --configuration Release --verbosity normal
 
       - name: Run tests with coverage
         if: matrix.os == 'ubuntu-latest' && matrix.dotnet-version == '8.0'
         run: |
-          dotnet test --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+          dotnet test ToonFormat.sln --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.dotnet-version == '8.0'
