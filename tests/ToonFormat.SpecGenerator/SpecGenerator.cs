@@ -19,9 +19,6 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
             // Clean up test directory before generating new files
             CleanTestDirectory(options.AbsoluteOutputPath);
 
-            // Copy manual tests from ManualTests folder
-            CopyManualTests(options.AbsoluteOutputPath);
-
             logger.LogDebug("Cloning repository {RepoUrl} to {CloneDirectory}", options.SpecRepoUrl, toonSpecDir);
 
             GitTool.CloneRepository(options.SpecRepoUrl, toonSpecDir,
@@ -103,26 +100,6 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
         }
 
         logger.LogInformation("Test directory cleanup completed");
-    }
-
-    private void CopyManualTests(string testDirectory)
-    {
-        // Get the directory where SpecGenerator assembly is located
-        var assemblyLocation = AppContext.BaseDirectory;
-        var manualTestsDir = Path.Combine(assemblyLocation, "ManualTests");
-
-        if (!Directory.Exists(manualTestsDir))
-        {
-            logger.LogDebug("ManualTests directory not found at {ManualTestsDir}, skipping manual test copy", manualTestsDir);
-            return;
-        }
-
-        logger.LogInformation("Copying manual tests from {ManualTestsDir}", manualTestsDir);
-
-        // Copy all files and subdirectories from ManualTests to test directory
-        CopyDirectory(manualTestsDir, testDirectory);
-
-        logger.LogInformation("Manual tests copied successfully");
     }
 
     private void CopyDirectory(string sourceDir, string destDir)
