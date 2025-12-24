@@ -127,7 +127,7 @@ namespace Toon.Format.Internal.Encode
             }
 
             var escaped = StringUtils.EscapeString(key);
-            
+
             return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
         }
 
@@ -171,11 +171,15 @@ namespace Toon.Format.Internal.Encode
             }
 
             // Add array length with optional marker and delimiter
-            var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
-                ? delimiterChar.ToString()
-                : string.Empty;
-
-            header += $"{Constants.OPEN_BRACKET}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
+            if (delimiterChar != Constants.DEFAULT_DELIMITER_CHAR)
+            {
+                header += $"{Constants.OPEN_BRACKET}{length}{delimiterChar}{Constants.CLOSE_BRACKET}";
+            }
+            else
+            {
+                // default delimiter does not need to be rendered
+                header += $"{Constants.OPEN_BRACKET}{length}{Constants.CLOSE_BRACKET}";
+            }
 
             // Add field names for tabular format
             if (fields != null && fields.Count > 0)

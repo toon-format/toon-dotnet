@@ -52,7 +52,7 @@ namespace Toon.Format.Internal.Decode
 
         private static bool IsKeyValueLine(ParsedLine line)
         {
-            var content = line.Content;
+            var content = line.Content.AsSpan();
             // Look for unquoted colon or quoted key followed by colon
             if (content.StartsWith(Constants.DOUBLE_QUOTE))
             {
@@ -62,7 +62,7 @@ namespace Toon.Format.Internal.Decode
                     return false;
 
                 // Check if colon exists after quoted key (may have array/brace syntax between)
-                return content.AsSpan(closingQuoteIndex + 1).Contains(Constants.COLON);
+                return content.Slice(closingQuoteIndex + 1).Contains(Constants.COLON);
             }
             else
             {
