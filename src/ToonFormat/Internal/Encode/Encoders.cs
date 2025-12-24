@@ -532,7 +532,7 @@ namespace ToonFormat.Internal.Encode
                     var header = ExtractTabularHeader(objects);
                     if (header != null)
                     {
-                        var formattedHeader = Primitives.FormatHeader(arr.Count, null, header, options.Delimiter, options.LengthMarker);
+                        var formattedHeader = Primitives.FormatHeader(arr.Count, null, header, options.Delimiter);
                         writer.PushListItem(depth, formattedHeader);
                         WriteTabularRows(objects, header, writer, depth + 2, options);
                         return;
@@ -540,7 +540,7 @@ namespace ToonFormat.Internal.Encode
                 }
 
                 // Fallback for non-tabular or mixed
-                var headerStr = Primitives.FormatHeader(arr.Count, null, null, options.Delimiter, options.LengthMarker);
+                var headerStr = Primitives.FormatHeader(arr.Count, null, null, options.Delimiter);
                 writer.PushListItem(depth, headerStr);
 
                 foreach (var item in arr)

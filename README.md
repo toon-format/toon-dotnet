@@ -80,7 +80,6 @@ Converts any .NET object to TOON format.
   - `Indent` – Number of spaces per indentation level (default: `2`)
   - `Delimiter` – Delimiter for array values: `ToonDelimiter.COMMA` (default), `TAB`, or `PIPE`
   - `KeyFolding` – Collapse nested single-key objects: `ToonKeyFolding.Off` or `Safe` (default: `Off`)
-  - `LengthMarker` – Prefix array lengths with `#` (default: `false`)
 
 **Returns:**
 
