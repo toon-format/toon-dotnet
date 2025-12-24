@@ -136,4 +136,37 @@ public class ToonEncoderTests
         Assert.Contains("user:", result);
         Assert.Contains("address:", result);
     }
+
+    [Fact]
+    public void Encode_ArrayOfPrimitives_Issue7()
+    {
+        var data = new[]
+        {
+            new
+            {
+                ZCHATJID = "18324448539@s.whatsapp.net",
+                ZMATCHEDTEXT = "http://www.\\u0138roger.com/anniversary",
+                ZINDEX = "0",
+                Z_OPT = 2,
+                Z_PK = 2,
+                ZSENDERJID = "18324448539@s.whatsapp.net",
+                ZOWNSTHUMBNAIL = "0",
+                ZTYPE = "0",
+                Z_ENT = "10",
+                ZMESSAGE = "696",
+                ZSECTIONID = "2017-11",
+                ZDATE = "531829799",
+                ZCONTENT1 = "http://www.xn--roger-t5a.com/anniversary"
+            }
+        };
+
+        var expected = """
+                       [1]{ZCHATJID,ZMATCHEDTEXT,ZINDEX,Z_OPT,Z_PK,ZSENDERJID,ZOWNSTHUMBNAIL,ZTYPE,Z_ENT,ZMESSAGE,ZSECTIONID,ZDATE,ZCONTENT1}:
+                         18324448539@s.whatsapp.net,"http://www.\\u0138roger.com/anniversary","0",2,2,18324448539@s.whatsapp.net,"0","0","10","696",2017-11,"531829799","http://www.xn--roger-t5a.com/anniversary"
+                       """;
+
+        var result = ToonEncoder.Encode(data);
+
+        Assert.Equal(expected, result);
+    }
 }
