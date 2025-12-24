@@ -127,6 +127,7 @@ namespace Toon.Format.Internal.Encode
             }
 
             var escaped = StringUtils.EscapeString(key);
+            
             return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
         }
 
