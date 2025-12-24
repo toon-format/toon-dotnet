@@ -212,7 +212,7 @@ string toon = "a.b.c: 1";
 
 var options = new ToonDecodeOptions
 {
-    ExpandPaths = "safe"
+    ExpandPaths = ToonPathExpansion.Safe
 };
 
 var result = ToonDecoder.Decode(toon, options);
