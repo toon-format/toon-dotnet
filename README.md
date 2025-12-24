@@ -6,7 +6,7 @@
 
 **Token-Oriented Object Notation** is a compact, human-readable encoding of the JSON data model that minimizes tokens and makes structure easy for models to follow. Combines YAML-like indentation with CSV-like tabular arrays. Fully compatible with the [official TOON specification v3.0](https://github.com/toon-format/spec).
 
-**Key Features:** Minimal syntax • TOON Encoding and Decoding • Tabular arrays for uniform data • Path expansion • Strict mode validation • .NET 8.0 & 9.0 • 370+ tests with 99.7% spec coverage.
+**Key Features:** Minimal syntax • TOON Encoding and Decoding • Tabular arrays for uniform data • Path expansion • Strict mode validation • .NET 8.0, 9.0 and 10.0 • 520+ tests with 99.7% spec coverage.
 
 ## Quick Start
 
@@ -253,7 +253,7 @@ This implementation:
 - Supports all TOON v3.0 features
 - Handles all edge cases and strict mode validations
 - Fully documented with XML comments
-- Production-ready for .NET 8.0 and .NET 9.0
+- Production-ready for .NET 8.0, .NET 9.0 and .NET 10.0
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
