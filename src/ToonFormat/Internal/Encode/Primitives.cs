@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Primitive value encoding, key encoding, and header formatting utilities.

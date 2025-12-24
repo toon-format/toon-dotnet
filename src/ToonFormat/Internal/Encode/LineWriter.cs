@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Helper class for building indented lines of TOON output.

@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using ToonFormat;
-using ToonFormat.Internal.Decode;
+using Toon.Format;
+using Toon.Format.Internal.Decode;
 
 namespace Toon.Format;
 

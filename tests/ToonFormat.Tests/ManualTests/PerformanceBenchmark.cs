@@ -5,7 +5,7 @@ using Toon.Format;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ToonFormat.Tests;
+namespace Toon.Format.Tests;
 
 public class PerformanceBenchmark
 {

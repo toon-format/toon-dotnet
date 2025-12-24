@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Decode
+namespace Toon.Format.Internal.Decode
 {
     /// <summary>
     /// Path expansion logic for dotted keys per SPEC §13.4

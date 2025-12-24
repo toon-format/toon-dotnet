@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace Toon.Format.Tests;
 
 /// <summary>
 /// Tests for decoding TOON format strings.

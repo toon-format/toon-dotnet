@@ -1,6 +1,6 @@
 using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace Toon.Format.Tests;
 
 // TODO: Remove these tests once generated spec tests are in source control
 // used to validate current key folding functionality aligns with spec

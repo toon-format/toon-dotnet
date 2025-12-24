@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Toon.Format;
 
-namespace ToonFormat.Tests;
+namespace Toon.Format.Tests;
 
 /// <summary>
 /// Round-trip tests to verify encoding and decoding preserve data integrity.

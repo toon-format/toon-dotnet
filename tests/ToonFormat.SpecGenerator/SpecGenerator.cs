@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Nodes;
-using ToonFormat.SpecGenerator.Extensions;
-using ToonFormat.SpecGenerator.Types;
-using ToonFormat.SpecGenerator.Util;
+using Toon.Format.SpecGenerator.Types;
+using Toon.Format.SpecGenerator.Util;
+using Toon.Format.SpecGenerator.Extensions;
 
-namespace ToonFormat.SpecGenerator;
+namespace Toon.Format.SpecGenerator;
 
 internal class SpecGenerator(ILogger<SpecGenerator> logger)
 {

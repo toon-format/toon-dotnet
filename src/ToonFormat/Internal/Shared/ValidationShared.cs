@@ -1,9 +1,9 @@
 #nullable enable
 using System;
 using System.Text.RegularExpressions;
-using ToonFormat;
+using Toon.Format;
 
-namespace ToonFormat.Internal.Shared
+namespace Toon.Format.Internal.Shared
 {
     /// <summary>
     /// Validation utilities aligned with TypeScript version shared/validation.ts:

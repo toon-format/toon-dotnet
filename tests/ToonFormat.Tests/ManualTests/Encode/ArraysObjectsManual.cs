@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 using Toon.Format;
 using Xunit;
 
-namespace ToonFormat.Tests.Encode;
+namespace Toon.Format.Tests.Encode;
 
 [Trait("Category", "encode")]
 public class ArraysObjectsManual

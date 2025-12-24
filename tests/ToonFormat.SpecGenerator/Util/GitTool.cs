@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace ToonFormat.SpecGenerator.Util;
+namespace Toon.Format.SpecGenerator.Util;
 
 internal static class GitTool
 {

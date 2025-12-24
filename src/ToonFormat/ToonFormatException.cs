@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace ToonFormat
+namespace Toon.Format
 {
     /// <summary>
     /// Exception thrown when TOON format parsing or encoding fails.

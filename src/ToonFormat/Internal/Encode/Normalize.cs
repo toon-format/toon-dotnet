@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Normalization utilities for converting arbitrary .NET objects to JsonNode representations

@@ -1,5 +1,5 @@
 #nullable enable
-using ToonFormat;
+using Toon.Format;
 
 namespace Toon.Format;
 

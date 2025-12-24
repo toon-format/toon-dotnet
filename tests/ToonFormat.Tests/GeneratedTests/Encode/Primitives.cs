@@ -14,7 +14,7 @@ using Toon.Format;
 using Xunit;
 
 
-namespace ToonFormat.Tests.Encode;
+namespace Toon.Format.Tests.Encode;
 
 
 [Trait("Category", "encode")]
@@ -255,7 +255,8 @@ line2"            ;
     {
         // Arrange
         var input =
-            @"returncarriage"            ;
+            @"return
+carriage"            ;
 
         var expected =
 """

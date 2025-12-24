@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace ToonFormat.SpecGenerator.Types;
+namespace Toon.Format.SpecGenerator.Types;
 
 public record EncodeTestCase : ITestCase<JsonNode, string>
 {

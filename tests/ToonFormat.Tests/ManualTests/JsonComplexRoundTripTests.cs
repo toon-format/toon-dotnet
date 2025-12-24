@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 using Toon.Format;
 using Xunit.Abstractions;
 
-namespace ToonFormat.Tests;
+namespace Toon.Format.Tests;
 
 /// <summary>
 /// Tests for complex multi-level JSON structures to validate TOON format encoding and decoding.

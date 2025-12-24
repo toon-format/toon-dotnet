@@ -23,5 +23,5 @@ public class ToonDecodeOptions
     /// "off" (default): Dotted keys are treated as literal keys.
     /// "safe": Expand eligible dotted keys into nested objects.
     /// </summary>
-    public ToonFormat.ToonPathExpansion ExpandPaths { get; set; } = ToonFormat.ToonPathExpansion.Off;
+    public Format.ToonPathExpansion ExpandPaths { get; set; } = Format.ToonPathExpansion.Off;
 }

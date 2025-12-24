@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <RootNamespace>Toon.Format</RootNamespace>
 
     <!-- Package Information -->
     <PackageId>Toon.Format</PackageId>

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace ToonFormat.SpecGenerator.Extensions;
+namespace Toon.Format.SpecGenerator.Extensions;
 
 public static class StringExtensions
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace ToonFormat
+namespace Toon.Format
 {
     /// <summary>
     /// TOON format constants for structural characters, literals, and delimiters.

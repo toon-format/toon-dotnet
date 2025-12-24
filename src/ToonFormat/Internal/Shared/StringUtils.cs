@@ -1,7 +1,7 @@
 #nullable enable
 using System.Text;
 
-namespace ToonFormat.Internal.Shared
+namespace Toon.Format.Internal.Shared
 {
     /// <summary>
     /// String utilities, aligned with TypeScript version shared/string-utils.ts:

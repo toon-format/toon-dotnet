@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Options for encoding TOON format, aligned with TypeScript ResolvedEncodeOptions.

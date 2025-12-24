@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace ToonFormat.Internal.Shared
+namespace Toon.Format.Internal.Shared
 {
     internal static class NumericUtils
     {

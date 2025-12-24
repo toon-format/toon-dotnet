@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Toon.Format;
 using Xunit;
 
-namespace ToonFormat.Tests;
+namespace Toon.Format.Tests;
 
 /// <summary>
 /// Tests for async encoding and decoding methods.

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     internal class FoldResult
     {

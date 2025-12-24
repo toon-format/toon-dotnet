@@ -1,10 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using ToonFormat.SpecGenerator.Extensions;
-using ToonFormat.SpecGenerator.Types;
+using Toon.Format.SpecGenerator.Types;
+using Toon.Format.SpecGenerator.Extensions;
 
-namespace ToonFormat.SpecGenerator;
+namespace Toon.Format.SpecGenerator;
 
 internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut> fixture, string outputDir)
     where TTestCase : ITestCase<TIn, TOut>
@@ -472,7 +472,7 @@ internal class FixtureWriter<TTestCase, TIn, TOut>(Fixtures<TTestCase, TIn, TOut
 
     private void WriteNamespace(StreamWriter writer, string category)
     {
-        WriteLine(writer, $"namespace ToonFormat.Tests.{category.ToPascalCase()};");
+        WriteLine(writer, $"namespace Toon.Format.Tests.{category.ToPascalCase()};");
     }
 
     private void WriteLine(StreamWriter writer)
