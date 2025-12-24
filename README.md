@@ -179,7 +179,7 @@ Converts TOON-formatted strings back to .NET objects.
 - `options` – Optional decoding options:
   - `Indent` – Number of spaces per indentation level (default: `2`)
   - `Strict` – Enable validation mode (default: `true`). When `true`, throws `ToonFormatException` on invalid input.
-  - `ExpandPaths` – Expand dotted keys: `"off"` (default) or `"safe"`
+  - `ExpandPaths` – Expand dotted keys: `ToonPathExpansion.Off` (default) or `ToonPathExpansion.Safe`
 
 **Returns:**
 
