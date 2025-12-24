@@ -62,7 +62,7 @@ namespace Toon.Format.Internal.Decode
                     return false;
 
                 // Check if colon exists after quoted key (may have array/brace syntax between)
-                return content.Substring(closingQuoteIndex + 1).Contains(Constants.COLON);
+                return content.AsSpan(closingQuoteIndex + 1).Contains(Constants.COLON);
             }
             else
             {
@@ -400,7 +400,8 @@ namespace Toon.Format.Internal.Decode
             {
                 return new JsonObject();
             }
-            else if (line.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
+
+            if (line.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
             {
                 afterHyphen = line.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
             }
