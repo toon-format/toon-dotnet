@@ -33,9 +33,9 @@ namespace Toon.Format.Internal.Shared
         /// Unescapes the string, supporting \n, \t, \r, \\, \". Invalid sequences throw <see cref="ToonFormatException"/>.
         /// Equivalent to TS unescapeString.
         /// </summary>
-        internal static string UnescapeString(string value)
+        internal static string UnescapeString(ReadOnlySpan<char> value)
         {
-            if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
+            if (value.IsEmpty) return string.Empty;
 
             var sb = new StringBuilder(value.Length);
             int i = 0;
@@ -86,7 +86,7 @@ namespace Toon.Format.Internal.Shared
         /// Finds the position of the next double quote in the string starting from 'start', considering escapes.
         /// Returns -1 if not found. Equivalent to TS findClosingQuote.
         /// </summary>
-        internal static int FindClosingQuote(string content, int start)
+        internal static int FindClosingQuote(ReadOnlySpan<char> content, int start)
         {
             int i = start + 1;
             while (i < content.Length)
@@ -110,7 +110,7 @@ namespace Toon.Format.Internal.Shared
         /// Finds the position of the target character not inside quotes; returns -1 if not found.
         /// Escape sequences inside quotes are skipped. Equivalent to TS findUnquotedChar.
         /// </summary>
-        internal static int FindUnquotedChar(string content, char target, int start = 0)
+        internal static int FindUnquotedChar(ReadOnlySpan<char> content, char target, int start = 0)
         {
             bool inQuotes = false;
             int i = start;

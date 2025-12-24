@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Toon.Format.Internal.Shared
 {
-    internal static class NumericUtils
+    internal static partial class NumericUtils
     {
         /// <summary>
         /// Converts a double to a decimal in canonical form for accurate representation.
@@ -14,15 +14,15 @@ namespace Toon.Format.Internal.Shared
         public static decimal EmitCanonicalDecimalForm(double value)
         {
             var scientificString = value.ToString("G17");
-            var match = Regex.Match(scientificString, @"e[-+]\d+", RegexOptions.IgnoreCase);
+            var match = ExponentRegex().Match(scientificString);
 
             if (!match.Success) return (decimal)value;
 
             // The match is the exponent part, e.g., "E+04"
-            var exponentPart = match.Value;
+            var exponentPart = match.ValueSpan;
 
             // Remove the 'E' or 'e' and the sign to get just the digits
-            var exponentDigits = exponentPart.Substring(2);
+            var exponentDigits = exponentPart.Slice(2);
 
             // Parse the actual exponent value (4 in this example)
             var exponent = int.Parse(exponentDigits);
@@ -34,7 +34,7 @@ namespace Toon.Format.Internal.Shared
             }
 
             var mantissa =
-                scientificString.Substring(0, scientificString.IndexOf(match.Value, StringComparison.Ordinal));
+                scientificString.AsSpan(0, scientificString.IndexOf(match.Value, StringComparison.Ordinal));
 
             var decimalValue = decimal.Parse(mantissa);
 
@@ -44,5 +44,8 @@ namespace Toon.Format.Internal.Shared
 
             return decimalValue;
         }
+
+        [GeneratedRegex(@"e[-+]\d+", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex ExponentRegex();
     }
 }
