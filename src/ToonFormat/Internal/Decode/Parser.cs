@@ -277,6 +277,11 @@ namespace ToonFormat.Internal.Decode
             {
                 var parsedNumber = double.Parse(trimmed, CultureInfo.InvariantCulture);
                 parsedNumber = FloatUtils.NormalizeSignedZero(parsedNumber);
+                if (parsedNumber < 1e-6 || parsedNumber > 1e6)
+                {
+                    return JsonValue.Create(NumericUtils.EmitCanonicalDecimalForm(parsedNumber));
+                }
+
                 return JsonValue.Create(parsedNumber);
             }
 
@@ -362,6 +367,7 @@ namespace ToonFormat.Internal.Decode
             {
                 throw ToonFormatException.Syntax("Missing colon after key");
             }
+
             end++;
 
             return new KeyParseResult { Key = key, End = end, WasQuoted = true };
@@ -392,7 +398,7 @@ namespace ToonFormat.Internal.Decode
         public static bool IsArrayHeaderAfterHyphen(string content)
         {
             return content.Trim().StartsWith(Constants.OPEN_BRACKET.ToString())
-                && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
+                   && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
         }
 
         /// <summary>
