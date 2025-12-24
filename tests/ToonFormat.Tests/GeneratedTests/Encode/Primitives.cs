@@ -255,8 +255,7 @@ line2"            ;
     {
         // Arrange
         var input =
-            @"return
-carriage"            ;
+            @"returncarriage"            ;
 
         var expected =
 """
