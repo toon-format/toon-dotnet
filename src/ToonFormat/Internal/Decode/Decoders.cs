@@ -54,7 +54,7 @@ namespace Toon.Format.Internal.Decode
         {
             var content = line.Content;
             // Look for unquoted colon or quoted key followed by colon
-            if (content.StartsWith("\""))
+            if (content.StartsWith(Constants.DOUBLE_QUOTE))
             {
                 // Quoted key - find the closing quote
                 var closingQuoteIndex = StringUtils.FindClosingQuote(content, 0);

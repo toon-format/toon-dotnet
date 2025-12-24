@@ -54,7 +54,7 @@ namespace Toon.Format.Internal.Decode
                     return null;
 
                 var afterQuote = trimmed.Substring(closingQuoteIndex + 1);
-                if (!afterQuote.StartsWith(Constants.OPEN_BRACKET.ToString()))
+                if (!afterQuote.StartsWith(Constants.OPEN_BRACKET))
                     return null;
 
                 // Calculate position in original content and find bracket after the quoted key
@@ -100,7 +100,7 @@ namespace Toon.Format.Internal.Decode
             if (bracketStart > 0)
             {
                 var rawKey = content.Substring(0, bracketStart).Trim();
-                key = rawKey.StartsWith(Constants.DOUBLE_QUOTE.ToString())
+                key = rawKey.StartsWith(Constants.DOUBLE_QUOTE)
                     ? ParseStringLiteral(rawKey)
                     : rawKey;
             }
@@ -158,12 +158,12 @@ namespace Toon.Format.Internal.Decode
 
             // Check for delimiter suffix
             char delimiter = defaultDelimiter;
-            if (content.EndsWith(Constants.TAB.ToString()))
+            if (content.EndsWith(Constants.TAB))
             {
                 delimiter = Constants.TAB;
                 content = content.Substring(0, content.Length - 1);
             }
-            else if (content.EndsWith(Constants.PIPE.ToString()))
+            else if (content.EndsWith(Constants.PIPE))
             {
                 delimiter = Constants.PIPE;
                 content = content.Substring(0, content.Length - 1);
@@ -256,7 +256,7 @@ namespace Toon.Format.Internal.Decode
                 return JsonValue.Create(string.Empty);
 
             // Quoted string (if starts with quote, it MUST be properly quoted)
-            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
+            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE))
             {
                 return JsonValue.Create(ParseStringLiteral(trimmed));
             }
@@ -296,7 +296,7 @@ namespace Toon.Format.Internal.Decode
         {
             var trimmedToken = token.Trim();
 
-            if (trimmedToken.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
+            if (trimmedToken.StartsWith(Constants.DOUBLE_QUOTE))
             {
                 // Find the closing quote, accounting for escaped quotes
                 var closingQuoteIndex = StringUtils.FindClosingQuote(trimmedToken, 0);
@@ -397,7 +397,7 @@ namespace Toon.Format.Internal.Decode
         /// </summary>
         public static bool IsArrayHeaderAfterHyphen(string content)
         {
-            return content.Trim().StartsWith(Constants.OPEN_BRACKET.ToString())
+            return content.Trim().StartsWith(Constants.OPEN_BRACKET)
                    && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
         }
 

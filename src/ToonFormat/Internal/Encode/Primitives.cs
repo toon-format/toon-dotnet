@@ -140,7 +140,7 @@ namespace Toon.Format.Internal.Encode
         public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter = Constants.COMMA)
         {
             var encoded = values.Select(v => EncodePrimitive(v, delimiter));
-            return string.Join(delimiter.ToString(), encoded);
+            return string.Join(delimiter, encoded);
         }
 
         // #endregion
@@ -180,7 +180,7 @@ namespace Toon.Format.Internal.Encode
             if (fields != null && fields.Count > 0)
             {
                 var quotedFields = fields.Select(EncodeKey);
-                var fieldsStr = string.Join(delimiterChar.ToString(), quotedFields);
+                var fieldsStr = string.Join(delimiterChar, quotedFields);
                 header += $"{Constants.OPEN_BRACE}{fieldsStr}{Constants.CLOSE_BRACE}";
             }
 
