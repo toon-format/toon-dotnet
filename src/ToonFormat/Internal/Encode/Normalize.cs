@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Normalization utilities for converting arbitrary .NET objects to JsonNode representations
@@ -72,18 +72,7 @@ namespace ToonFormat.Internal.Encode
             if (value is DateTimeOffset dto)
                 return JsonValue.Create(dto.ToString("O"));
 
-            // Array/List → JsonArray
-            if (value is IEnumerable enumerable && value is not string)
-            {
-                var jsonArray = new JsonArray();
-                foreach (var item in enumerable)
-                {
-                    jsonArray.Add(NormalizeValue(item));
-                }
-                return jsonArray;
-            }
-
-            // Dictionary/Object → JsonObject
+            // Dictionary/Object → JsonObject (check BEFORE IEnumerable since IDictionary implements IEnumerable)
             if (value is IDictionary dict)
             {
                 var jsonObject = new JsonObject();
@@ -93,6 +82,17 @@ namespace ToonFormat.Internal.Encode
                     jsonObject[key] = NormalizeValue(entry.Value);
                 }
                 return jsonObject;
+            }
+
+            // Array/List → JsonArray
+            if (value is IEnumerable enumerable && value is not string)
+            {
+                var jsonArray = new JsonArray();
+                foreach (var item in enumerable)
+                {
+                    jsonArray.Add(NormalizeValue(item));
+                }
+                return jsonArray;
             }
 
             // Plain object → JsonObject via reflection
@@ -164,17 +164,7 @@ namespace ToonFormat.Internal.Encode
                     return JsonValue.Create(dto.ToString("O"));
             }
 
-            // Collections / dictionaries (pattern checks avoid boxing for value-type T that implement the interfaces)
-            if (value is IEnumerable enumerable && value is not string)
-            {
-                var jsonArray = new JsonArray();
-                foreach (var item in enumerable)
-                {
-                    jsonArray.Add(NormalizeValue(item));
-                }
-                return jsonArray;
-            }
-
+            // Collections / dictionaries (check IDictionary BEFORE IEnumerable since IDictionary implements IEnumerable)
             if (value is IDictionary dict)
             {
                 var jsonObject = new JsonObject();
@@ -184,6 +174,16 @@ namespace ToonFormat.Internal.Encode
                     jsonObject[key] = NormalizeValue(entry.Value);
                 }
                 return jsonObject;
+            }
+
+            if (value is IEnumerable enumerable && value is not string)
+            {
+                var jsonArray = new JsonArray();
+                foreach (var item in enumerable)
+                {
+                    jsonArray.Add(NormalizeValue(item));
+                }
+                return jsonArray;
             }
 
             // Plain object via reflection (boxing for value types here is acceptable and rare)

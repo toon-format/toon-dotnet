@@ -1,6 +1,6 @@
 using CommandLine;
 
-namespace ToonFormat.SpecGenerator;
+namespace Toon.Format.SpecGenerator;
 
 public class SpecGeneratorOptions
 {

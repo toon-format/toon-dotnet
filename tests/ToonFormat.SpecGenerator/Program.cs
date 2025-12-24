@@ -1,7 +1,7 @@
 using CommandLine;
 using Microsoft.Extensions.Logging;
 
-namespace ToonFormat.SpecGenerator;
+namespace Toon.Format.SpecGenerator;
 
 
 public static class Program

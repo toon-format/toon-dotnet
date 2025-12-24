@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace ToonFormat.SpecGenerator;
+namespace Toon.Format.SpecGenerator;
 
 internal static class SpecSerializer
 {

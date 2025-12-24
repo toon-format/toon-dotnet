@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace ToonFormat.SpecGenerator.Util;
+namespace Toon.Format.SpecGenerator.Util;
 
 internal static class GitTool
 {
@@ -23,6 +23,22 @@ internal static class GitTool
 
         process.Start();
 
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+
         process.WaitForExit();
+
+        if (process.ExitCode != 0)
+        {
+            var errorMessage = $"Git clone failed with exit code {process.ExitCode}";
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                errorMessage += $": {error}";
+            }
+            logger?.LogError("{ErrorMessage}", errorMessage);
+            throw new InvalidOperationException(errorMessage);
+        }
+
+        logger?.LogDebug("Git clone output: {Output}", output);
     }
 }

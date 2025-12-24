@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Options for encoding TOON format, aligned with TypeScript ResolvedEncodeOptions.
@@ -358,6 +358,9 @@ namespace ToonFormat.Internal.Encode
 
         /// <summary>
         /// Writes tabular rows to the writer.
+        /// The depth parameter determines the indentation level of the rows.
+        /// Per SPEC v3.0 §10: When writing rows for a tabular array on a hyphen line,
+        /// depth should be +2 relative to the hyphen line (not +1 as in normal cases).
         /// </summary>
         private static void WriteTabularRows(
             IReadOnlyList<JsonObject> rows,
@@ -398,6 +401,9 @@ namespace ToonFormat.Internal.Encode
 
         /// <summary>
         /// Encodes an object as a list item with special formatting for the first property.
+        /// Per SPEC v3.0 §10: When the first field is an array (tabular or list), the array header
+        /// appears on the hyphen line, array contents appear at depth +2, and sibling fields at depth +1.
+        /// This ensures visual clarity and LLM readability for nested structures.
         /// </summary>
         public static void EncodeObjectAsListItem(JsonObject obj, LineWriter writer, int depth, ResolvedEncodeOptions options)
         {
@@ -439,7 +445,8 @@ namespace ToonFormat.Internal.Encode
                         // Tabular format for uniform arrays of objects
                         var formattedHeader = Primitives.FormatHeader(arr.Count, firstKey, header, options.Delimiter);
                         writer.PushListItem(depth, formattedHeader);
-                        WriteTabularRows(objects, header, writer, depth + 1, options);
+                        // SPEC v3.0 §10: Tabular rows MUST appear at depth +2 relative to the hyphen line
+                        WriteTabularRows(objects, header, writer, depth + 2, options);
                     }
                     else
                     {
@@ -447,7 +454,7 @@ namespace ToonFormat.Internal.Encode
                         writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
                         foreach (var itemObj in arr.OfType<JsonObject>())
                         {
-                            EncodeObjectAsListItem(itemObj, writer, depth + 1, options);
+                            EncodeObjectAsListItem(itemObj, writer, depth + 2, options);
                         }
                     }
                 }
@@ -456,10 +463,10 @@ namespace ToonFormat.Internal.Encode
                     // Complex arrays on separate lines (array of arrays, etc.)
                     writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
 
-                    // Encode array contents at depth + 1
+                    // Encode array contents at depth + 2 (SPEC v3.0 §10)
                     foreach (var item in arr)
                     {
-                        EncodeListItemValue(item, writer, depth + 1, options);
+                        EncodeListItemValue(item, writer, depth + 2, options);
                     }
                 }
             }
@@ -512,6 +519,34 @@ namespace ToonFormat.Internal.Encode
             else if (Normalize.IsJsonObject(value))
             {
                 EncodeObjectAsListItem((JsonObject)value!, writer, depth, options);
+            }
+            else if (Normalize.IsJsonArray(value))
+            {
+                var arr = (JsonArray)value!;
+                // Complex array (e.g. array of objects, or array of arrays) as a list item value
+
+                // Check for tabular
+                if (Normalize.IsArrayOfObjects(arr))
+                {
+                    var objects = arr.Cast<JsonObject>().ToList();
+                    var header = ExtractTabularHeader(objects);
+                    if (header != null)
+                    {
+                        var formattedHeader = Primitives.FormatHeader(arr.Count, null, header, options.Delimiter);
+                        writer.PushListItem(depth, formattedHeader);
+                        WriteTabularRows(objects, header, writer, depth + 2, options);
+                        return;
+                    }
+                }
+
+                // Fallback for non-tabular or mixed
+                var headerStr = Primitives.FormatHeader(arr.Count, null, null, options.Delimiter);
+                writer.PushListItem(depth, headerStr);
+
+                foreach (var item in arr)
+                {
+                    EncodeListItemValue(item, writer, depth + 1, options);
+                }
             }
         }
 

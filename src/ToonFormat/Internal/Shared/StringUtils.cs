@@ -1,7 +1,7 @@
 #nullable enable
 using System.Text;
 
-namespace ToonFormat.Internal.Shared
+namespace Toon.Format.Internal.Shared
 {
     /// <summary>
     /// String utilities, aligned with TypeScript version shared/string-utils.ts:
@@ -21,6 +21,7 @@ namespace ToonFormat.Internal.Shared
             if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
 
             return value
+                .Replace("\r\n", "\n")
                 .Replace("\\", $"{Constants.BACKSLASH}{Constants.BACKSLASH}")
                 .Replace("\"", $"{Constants.BACKSLASH}{Constants.DOUBLE_QUOTE}")
                 .Replace("\n", $"{Constants.BACKSLASH}n")

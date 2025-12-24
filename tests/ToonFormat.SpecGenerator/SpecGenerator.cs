@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Nodes;
-using ToonFormat.SpecGenerator.Extensions;
-using ToonFormat.SpecGenerator.Types;
-using ToonFormat.SpecGenerator.Util;
+using Toon.Format.SpecGenerator.Types;
+using Toon.Format.SpecGenerator.Util;
+using Toon.Format.SpecGenerator.Extensions;
 
-namespace ToonFormat.SpecGenerator;
+namespace Toon.Format.SpecGenerator;
 
 internal class SpecGenerator(ILogger<SpecGenerator> logger)
 {
@@ -16,6 +16,9 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
 
         try
         {
+            // Clean up test directory before generating new files
+            CleanTestDirectory(options.AbsoluteOutputPath);
+
             logger.LogDebug("Cloning repository {RepoUrl} to {CloneDirectory}", options.SpecRepoUrl, toonSpecDir);
 
             GitTool.CloneRepository(options.SpecRepoUrl, toonSpecDir,
@@ -50,6 +53,84 @@ internal class SpecGenerator(ILogger<SpecGenerator> logger)
         }
 
         logger.LogInformation("Spec generation completed.");
+    }
+
+    private void CleanTestDirectory(string testDirectory)
+    {
+        if (!Directory.Exists(testDirectory))
+        {
+            logger.LogDebug("Test directory {TestDirectory} does not exist, skipping cleanup", testDirectory);
+            return;
+        }
+
+        logger.LogInformation("Cleaning test directory {TestDirectory}", testDirectory);
+
+        // Delete all subdirectories
+        foreach (var dir in Directory.GetDirectories(testDirectory))
+        {
+            try
+            {
+                Directory.Delete(dir, true);
+                logger.LogDebug("Deleted directory {Directory}", dir);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to delete directory {Directory}", dir);
+            }
+        }
+
+        // Delete all files except .csproj files
+        foreach (var file in Directory.GetFiles(testDirectory))
+        {
+            if (Path.GetExtension(file).Equals(".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                logger.LogDebug("Preserving project file {File}", file);
+                continue;
+            }
+
+            try
+            {
+                File.Delete(file);
+                logger.LogDebug("Deleted file {File}", file);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to delete file {File}", file);
+            }
+        }
+
+        logger.LogInformation("Test directory cleanup completed");
+    }
+
+    private void CopyDirectory(string sourceDir, string destDir)
+    {
+        // Create destination directory if it doesn't exist
+        Directory.CreateDirectory(destDir);
+
+        // Copy all files
+        foreach (var file in Directory.GetFiles(sourceDir))
+        {
+            var fileName = Path.GetFileName(file);
+            var destFile = Path.Combine(destDir, fileName);
+
+            try
+            {
+                File.Copy(file, destFile, overwrite: true);
+                logger.LogDebug("Copied file {SourceFile} to {DestFile}", file, destFile);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to copy file {SourceFile} to {DestFile}", file, destFile);
+            }
+        }
+
+        // Copy all subdirectories recursively
+        foreach (var subDir in Directory.GetDirectories(sourceDir))
+        {
+            var subDirName = Path.GetFileName(subDir);
+            var destSubDir = Path.Combine(destDir, subDirName);
+            CopyDirectory(subDir, destSubDir);
+        }
     }
 
     private void GenerateEncodeFixtures(string specDir, string outputDir, IEnumerable<string> ignores)

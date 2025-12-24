@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Decode
+namespace Toon.Format.Internal.Decode
 {
     /// <summary>
     /// Information about an array header.
@@ -277,6 +277,11 @@ namespace ToonFormat.Internal.Decode
             {
                 var parsedNumber = double.Parse(trimmed, CultureInfo.InvariantCulture);
                 parsedNumber = FloatUtils.NormalizeSignedZero(parsedNumber);
+                if (parsedNumber < 1e-6 || parsedNumber > 1e6)
+                {
+                    return JsonValue.Create(NumericUtils.EmitCanonicalDecimalForm(parsedNumber));
+                }
+
                 return JsonValue.Create(parsedNumber);
             }
 
@@ -317,6 +322,7 @@ namespace ToonFormat.Internal.Decode
         {
             public string Key { get; set; } = string.Empty;
             public int End { get; set; }
+            public bool WasQuoted { get; set; }
         }
 
         public static KeyParseResult ParseUnquotedKey(string content, int start)
@@ -338,7 +344,7 @@ namespace ToonFormat.Internal.Decode
             // Skip the colon
             end++;
 
-            return new KeyParseResult { Key = key, End = end };
+            return new KeyParseResult { Key = key, End = end, WasQuoted = false };
         }
 
         public static KeyParseResult ParseQuotedKey(string content, int start)
@@ -361,9 +367,10 @@ namespace ToonFormat.Internal.Decode
             {
                 throw ToonFormatException.Syntax("Missing colon after key");
             }
+
             end++;
 
-            return new KeyParseResult { Key = key, End = end };
+            return new KeyParseResult { Key = key, End = end, WasQuoted = true };
         }
 
         /// <summary>
@@ -391,7 +398,7 @@ namespace ToonFormat.Internal.Decode
         public static bool IsArrayHeaderAfterHyphen(string content)
         {
             return content.Trim().StartsWith(Constants.OPEN_BRACKET.ToString())
-                && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
+                   && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
         }
 
         /// <summary>

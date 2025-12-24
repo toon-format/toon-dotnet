@@ -1,7 +1,7 @@
 #nullable enable
 using System.Globalization;
 
-namespace ToonFormat.Internal.Shared
+namespace Toon.Format.Internal.Shared
 {
     /// <summary>
     /// Literal judgment utilities, aligned with TypeScript version shared/literal-utils.ts.

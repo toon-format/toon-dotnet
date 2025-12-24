@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Encode
+namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Primitive value encoding, key encoding, and header formatting utilities.
@@ -14,6 +14,54 @@ namespace ToonFormat.Internal.Encode
     /// </summary>
     internal static class Primitives
     {
+        /// <summary>
+        /// Formats a double value in non-exponential decimal form per SPEC v3.0 §2.
+        /// Converts -0 to 0, and ensures no scientific notation (e.g., 1E-06 → 0.000001).
+        /// Preserves up to 16 significant digits while removing spurious trailing zeros.
+        /// </summary>
+        private static string FormatNumber(double value)
+        {
+            // SPEC v3.0 §2: Convert -0 to 0
+            if (value == 0.0)
+                return "0";
+
+            // Use G16 first to get the value with proper precision
+            var gFormat = value.ToString("G16", CultureInfo.InvariantCulture);
+
+            // If it contains 'E' (scientific notation), convert to decimal format
+            if (gFormat.Contains('E') || gFormat.Contains('e'))
+            {
+                // Use "F" format with enough decimal places to preserve precision
+                // For very small numbers, we need sufficient decimal places
+                var absValue = Math.Abs(value);
+                int decimalPlaces = 0;
+
+                if (absValue < 1.0 && absValue > 0.0)
+                {
+                    // Calculate how many decimal places we need
+                    decimalPlaces = Math.Max(0, -(int)Math.Floor(Math.Log10(absValue)) + 15);
+                }
+                else
+                {
+                    decimalPlaces = 15;
+                }
+
+                var result = value.ToString("F" + decimalPlaces, CultureInfo.InvariantCulture);
+
+                // Remove trailing zeros after decimal point
+                if (result.Contains('.'))
+                {
+                    result = result.TrimEnd('0');
+                    if (result.EndsWith('.'))
+                        result = result.TrimEnd('.');
+                }
+
+                return result;
+            }
+
+            return gFormat;
+        }
+
         // #region Primitive encoding
 
         /// <summary>
@@ -38,10 +86,7 @@ namespace ToonFormat.Internal.Encode
                     return longVal.ToString(CultureInfo.InvariantCulture);
 
                 if (jsonValue.TryGetValue<double>(out var doubleVal))
-                    return doubleVal.ToString("G17", CultureInfo.InvariantCulture);
-
-                if (jsonValue.TryGetValue<decimal>(out var decimalVal))
-                    return decimalVal.ToString(CultureInfo.InvariantCulture);
+                    return FormatNumber(doubleVal);
 
                 // String
                 if (jsonValue.TryGetValue<string>(out var strVal))

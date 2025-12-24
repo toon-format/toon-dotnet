@@ -5,8 +5,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ToonFormat;
-using ToonFormat.Internal.Encode;
+using Toon.Format;
+using Toon.Format.Internal.Encode;
 
 namespace Toon.Format;
 

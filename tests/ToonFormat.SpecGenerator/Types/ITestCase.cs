@@ -1,4 +1,4 @@
-namespace ToonFormat.SpecGenerator.Types;
+namespace Toon.Format.SpecGenerator.Types;
 
 public interface ITestCase<TInput, TExpected>
 {

@@ -1,4 +1,4 @@
-namespace ToonFormat.SpecGenerator.Types;
+namespace Toon.Format.SpecGenerator.Types;
 
 public record Fixtures<TTestCase, TIn, TOut>
     where TTestCase : ITestCase<TIn, TOut>

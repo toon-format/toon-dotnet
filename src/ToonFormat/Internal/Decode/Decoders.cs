@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
-using ToonFormat.Internal.Shared;
+using Toon.Format.Internal.Shared;
 
-namespace ToonFormat.Internal.Decode
+namespace Toon.Format.Internal.Decode
 {
     /// <summary>
     /// Main decoding functions for converting TOON format to JSON values.
@@ -18,7 +18,10 @@ namespace ToonFormat.Internal.Decode
         /// <summary>
         /// Decodes TOON content from a line cursor into a JSON value.
         /// </summary>
-        public static JsonNode? DecodeValueFromLines(LineCursor cursor, ResolvedDecodeOptions options)
+        /// <param name="cursor">The line cursor for reading input</param>
+        /// <param name="options">Decoding options</param>
+        /// <param name="quotedKeys">Optional set to populate with keys that were quoted in the source</param>
+        public static JsonNode? DecodeValueFromLines(LineCursor cursor, ResolvedDecodeOptions options, HashSet<string>? quotedKeys = null)
         {
             var first = cursor.Peek();
             if (first == null)
@@ -44,7 +47,7 @@ namespace ToonFormat.Internal.Decode
             }
 
             // Default to object
-            return DecodeObject(cursor, 0, options);
+            return DecodeObject(cursor, 0, options, quotedKeys);
         }
 
         private static bool IsKeyValueLine(ParsedLine line)
@@ -72,7 +75,7 @@ namespace ToonFormat.Internal.Decode
 
         // #region Object decoding
 
-        private static JsonObject DecodeObject(LineCursor cursor, int baseDepth, ResolvedDecodeOptions options)
+        private static JsonObject DecodeObject(LineCursor cursor, int baseDepth, ResolvedDecodeOptions options, HashSet<string>? quotedKeys = null)
         {
             var obj = new JsonObject();
 
@@ -92,8 +95,14 @@ namespace ToonFormat.Internal.Decode
 
                 if (line.Depth == computedDepth)
                 {
-                    var (key, value) = DecodeKeyValuePair(line, cursor, computedDepth.Value, options);
+                    var (key, value, wasQuoted) = DecodeKeyValuePair(line, cursor, computedDepth.Value, options);
                     obj[key] = value;
+
+                    // Track quoted keys at the root level
+                    if (wasQuoted && quotedKeys != null && baseDepth == 0)
+                    {
+                        quotedKeys.Add(key);
+                    }
                 }
                 else
                 {
@@ -110,25 +119,41 @@ namespace ToonFormat.Internal.Decode
             public string Key { get; set; } = string.Empty;
             public JsonNode? Value { get; set; }
             public int FollowDepth { get; set; }
+            public bool WasQuoted { get; set; }
         }
 
+        /// <summary>
+        /// Decodes a key-value pair from a line of TOON content.
+        /// Per SPEC v3.0 §10: When decoding an array that is the first field of a list item
+        /// (isListItemFirstField=true), the array contents are expected at depth +2 relative
+        /// to the hyphen line. This method adjusts the effective depth accordingly.
+        /// </summary>
         private static KeyValueDecodeResult DecodeKeyValue(
             string content,
             LineCursor cursor,
             int baseDepth,
-            ResolvedDecodeOptions options)
+
+            ResolvedDecodeOptions options,
+            bool isListItemFirstField = false)
         {
             // Check for array header first (before parsing key)
             var arrayHeader = Parser.ParseArrayHeaderLine(content, Constants.DEFAULT_DELIMITER_CHAR);
             if (arrayHeader != null && arrayHeader.Header.Key != null)
             {
-                var value = DecodeArrayFromHeader(arrayHeader.Header, arrayHeader.InlineValues, cursor, baseDepth, options);
+                // SPEC v3.0 §10: Arrays (tabular or list) on the hyphen line MUST appear at depth +2
+                // Normal arrays are at depth +1 relative to header.
+                // So if we are on the hyphen line (isListItemFirstField), we treat baseDepth as +1 higher
+                // so that the array decoder looks for items at (baseDepth + 1) + 1 = baseDepth + 2.
+                var effectiveDepth = isListItemFirstField ? baseDepth + 1 : baseDepth;
+
+                var value = DecodeArrayFromHeader(arrayHeader.Header, arrayHeader.InlineValues, cursor, effectiveDepth, options);
                 // After an array, subsequent fields are at baseDepth + 1 (where array content is)
                 return new KeyValueDecodeResult
                 {
                     Key = arrayHeader.Header.Key,
                     Value = value,
-                    FollowDepth = baseDepth + 1
+                    FollowDepth = baseDepth + 1,
+                    WasQuoted = false // Array headers are never quoted in the key part
                 };
             }
 
@@ -143,18 +168,18 @@ namespace ToonFormat.Internal.Decode
                 if (nextLine != null && nextLine.Depth > baseDepth)
                 {
                     var nested = DecodeObject(cursor, baseDepth + 1, options);
-                    return new KeyValueDecodeResult { Key = keyResult.Key, Value = nested, FollowDepth = baseDepth + 1 };
+                    return new KeyValueDecodeResult { Key = keyResult.Key, Value = nested, FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
                 }
                 // Empty object
-                return new KeyValueDecodeResult { Key = keyResult.Key, Value = new JsonObject(), FollowDepth = baseDepth + 1 };
+                return new KeyValueDecodeResult { Key = keyResult.Key, Value = new JsonObject(), FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
             }
 
             // Inline primitive value
             var primitiveValue = Parser.ParsePrimitiveToken(rest);
-            return new KeyValueDecodeResult { Key = keyResult.Key, Value = primitiveValue, FollowDepth = baseDepth + 1 };
+            return new KeyValueDecodeResult { Key = keyResult.Key, Value = primitiveValue, FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
         }
 
-        private static (string key, JsonNode? value) DecodeKeyValuePair(
+        private static (string key, JsonNode? value, bool wasQuoted) DecodeKeyValuePair(
             ParsedLine line,
             LineCursor cursor,
             int baseDepth,
@@ -162,7 +187,7 @@ namespace ToonFormat.Internal.Decode
         {
             cursor.Advance();
             var result = DecodeKeyValue(line.Content, cursor, baseDepth, options);
-            return (result.Key, result.Value);
+            return (result.Key, result.Value, result.WasQuoted);
         }
 
         // #endregion
@@ -410,6 +435,11 @@ namespace ToonFormat.Internal.Decode
             return Parser.ParsePrimitiveToken(afterHyphen);
         }
 
+        /// <summary>
+        /// Decodes an object from a list item, handling the first field specially.
+        /// Per SPEC v3.0 §10: The first field may be an array on the hyphen line,
+        /// in which case its contents appear at depth +2 and sibling fields at depth +1.
+        /// </summary>
         private static JsonObject DecodeObjectFromListItem(
             ParsedLine firstLine,
             LineCursor cursor,
@@ -417,7 +447,7 @@ namespace ToonFormat.Internal.Decode
             ResolvedDecodeOptions options)
         {
             var afterHyphen = firstLine.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
-            var firstField = DecodeKeyValue(afterHyphen, cursor, baseDepth, options);
+            var firstField = DecodeKeyValue(afterHyphen, cursor, baseDepth, options, isListItemFirstField: true);
 
             var obj = new JsonObject { [firstField.Key] = firstField.Value };
 
@@ -430,7 +460,7 @@ namespace ToonFormat.Internal.Decode
 
                 if (line.Depth == firstField.FollowDepth && !line.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
                 {
-                    var (k, v) = DecodeKeyValuePair(line, cursor, firstField.FollowDepth, options);
+                    var (k, v, _) = DecodeKeyValuePair(line, cursor, firstField.FollowDepth, options);
                     obj[k] = v;
                 }
                 else
