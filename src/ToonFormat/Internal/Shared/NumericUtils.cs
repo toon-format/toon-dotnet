@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Toon.Format.Internal.Shared
 {
-    internal static class NumericUtils
+    internal static partial class NumericUtils
     {
         /// <summary>
         /// Converts a double to a decimal in canonical form for accurate representation.
