@@ -101,7 +101,7 @@ namespace Toon.Format
     /// TOON's unified options configuration, styled to align with System.Text.Json. Used to control indentation,
     /// delimiters, strict mode, length markers, and underlying JSON behavior.
     /// </summary>
-    public enum ToonDelimiter
+    public enum ToonDelimiter : byte
     {
         /// <summary>Comma ,</summary>
         COMMA,
