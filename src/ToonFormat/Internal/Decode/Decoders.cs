@@ -52,9 +52,9 @@ namespace Toon.Format.Internal.Decode
 
         private static bool IsKeyValueLine(ParsedLine line)
         {
-            var content = line.Content;
+            var content = line.Content.AsSpan();
             // Look for unquoted colon or quoted key followed by colon
-            if (content.StartsWith("\""))
+            if (content.StartsWith(Constants.DOUBLE_QUOTE))
             {
                 // Quoted key - find the closing quote
                 var closingQuoteIndex = StringUtils.FindClosingQuote(content, 0);
@@ -62,7 +62,7 @@ namespace Toon.Format.Internal.Decode
                     return false;
 
                 // Check if colon exists after quoted key (may have array/brace syntax between)
-                return content.Substring(closingQuoteIndex + 1).Contains(Constants.COLON);
+                return content.Slice(closingQuoteIndex + 1).Contains(Constants.COLON);
             }
             else
             {
@@ -129,10 +129,9 @@ namespace Toon.Format.Internal.Decode
         /// to the hyphen line. This method adjusts the effective depth accordingly.
         /// </summary>
         private static KeyValueDecodeResult DecodeKeyValue(
-            string content,
+            ReadOnlySpan<char> content,
             LineCursor cursor,
             int baseDepth,
-
             ResolvedDecodeOptions options,
             bool isListItemFirstField = false)
         {
@@ -159,10 +158,10 @@ namespace Toon.Format.Internal.Decode
 
             // Regular key-value pair
             var keyResult = Parser.ParseKeyToken(content, 0);
-            var rest = content.Substring(keyResult.End).Trim();
+            var rest = content.Slice(keyResult.End).Trim();
 
             // No value after colon - expect nested object or empty
-            if (string.IsNullOrEmpty(rest))
+            if (rest.IsEmpty)
             {
                 var nextLine = cursor.Peek();
                 if (nextLine != null && nextLine.Depth > baseDepth)
@@ -393,16 +392,17 @@ namespace Toon.Format.Internal.Decode
             }
 
             // Check for list item (with or without space after hyphen)
-            string afterHyphen;
+            ReadOnlySpan<char> afterHyphen;
 
             // Empty list item should be an empty object
             if (line.Content == "-")
             {
                 return new JsonObject();
             }
-            else if (line.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
+
+            if (line.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
             {
-                afterHyphen = line.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
+                afterHyphen = line.Content.AsSpan(Constants.LIST_ITEM_PREFIX.Length);
             }
             else
             {
@@ -410,7 +410,7 @@ namespace Toon.Format.Internal.Decode
             }
 
             // Empty content after list item should also be an empty object
-            if (string.IsNullOrWhiteSpace(afterHyphen))
+            if (afterHyphen.IsEmpty)
             {
                 return new JsonObject();
             }
@@ -446,7 +446,7 @@ namespace Toon.Format.Internal.Decode
             int baseDepth,
             ResolvedDecodeOptions options)
         {
-            var afterHyphen = firstLine.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
+            var afterHyphen = firstLine.Content.AsSpan(Constants.LIST_ITEM_PREFIX.Length);
             var firstField = DecodeKeyValue(afterHyphen, cursor, baseDepth, options, isListItemFirstField: true);
 
             var obj = new JsonObject { [firstField.Key] = firstField.Value };

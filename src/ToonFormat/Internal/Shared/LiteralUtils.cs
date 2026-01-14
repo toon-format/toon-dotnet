@@ -14,11 +14,11 @@ namespace Toon.Format.Internal.Shared
         /// Checks if the token is a boolean or null literal: true, false, null.
         /// Equivalent to TS: isBooleanOrNullLiteral
         /// </summary>
-        internal static bool IsBooleanOrNullLiteral(string token)
+        internal static bool IsBooleanOrNullLiteral(ReadOnlySpan<char> token)
         {
-            return string.Equals(token, Constants.TRUE_LITERAL, StringComparison.Ordinal)
-                || string.Equals(token, Constants.FALSE_LITERAL, StringComparison.Ordinal)
-                || string.Equals(token, Constants.NULL_LITERAL, StringComparison.Ordinal);
+            return token.Equals(Constants.TRUE_LITERAL, StringComparison.Ordinal)
+                   || token.Equals(Constants.FALSE_LITERAL, StringComparison.Ordinal)
+                   || token.Equals(Constants.NULL_LITERAL, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -27,9 +27,9 @@ namespace Toon.Format.Internal.Shared
         /// - Rejects leading zeros (except "0" itself or decimals like "0.xxx")
         /// - Parses successfully and is a finite number (not NaN/Infinity)
         /// </summary>
-        internal static bool IsNumericLiteral(string token)
+        internal static bool IsNumericLiteral(ReadOnlySpan<char> token)
         {
-            if (string.IsNullOrEmpty(token))
+            if (token.IsEmpty)
                 return false;
 
             // Must not have leading zeros (except "0" itself or decimals like "0.5")

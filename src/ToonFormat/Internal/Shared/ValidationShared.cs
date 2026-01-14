@@ -46,9 +46,9 @@ namespace Toon.Format.Internal.Shared
         };
 
         /// <summary>Whether the key name can be without quotes.</summary>
-        internal static bool IsValidUnquotedKey(string key)
+        internal static bool IsValidUnquotedKey(ReadOnlySpan<char> key)
         {
-            if (string.IsNullOrEmpty(key))
+            if (key.IsEmpty)
                 return false;
 
             return ValidUnquotedKeyRegex.IsMatch(key);
@@ -63,12 +63,12 @@ namespace Toon.Format.Internal.Shared
         }
 
         /// <summary>Whether the string value can be safely without quotes.</summary>
-        internal static bool IsSafeUnquoted(string value, ToonDelimiter delimiter = Constants.DEFAULT_DELIMITER_ENUM)
+        internal static bool IsSafeUnquoted(ReadOnlySpan<char> value, ToonDelimiter delimiter = Constants.DEFAULT_DELIMITER_ENUM)
         {
-            if (string.IsNullOrEmpty(value))
+            if (value.IsEmpty)
                 return false;
 
-            if (!string.Equals(value, value.Trim(), StringComparison.Ordinal))
+            if (!value.Equals(value.Trim(), StringComparison.Ordinal))
                 return false;
 
             if (LiteralUtils.IsBooleanOrNullLiteral(value) || IsNumericLike(value))
@@ -96,9 +96,9 @@ namespace Toon.Format.Internal.Shared
             return true;
         }
 
-        private static bool IsNumericLike(string value)
+        private static bool IsNumericLike(ReadOnlySpan<char> value)
         {
-            if (string.IsNullOrEmpty(value))
+            if (value.IsEmpty)
                 return false;
 
             return NumericLikeRegex.IsMatch(value) || LeadingZeroIntegerRegex.IsMatch(value);

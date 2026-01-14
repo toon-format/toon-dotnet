@@ -127,6 +127,7 @@ namespace Toon.Format.Internal.Encode
             }
 
             var escaped = StringUtils.EscapeString(key);
+
             return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
         }
 
@@ -140,7 +141,7 @@ namespace Toon.Format.Internal.Encode
         public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter = Constants.COMMA)
         {
             var encoded = values.Select(v => EncodePrimitive(v, delimiter));
-            return string.Join(delimiter.ToString(), encoded);
+            return string.Join(delimiter, encoded);
         }
 
         // #endregion
@@ -170,17 +171,21 @@ namespace Toon.Format.Internal.Encode
             }
 
             // Add array length with optional marker and delimiter
-            var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
-                ? delimiterChar.ToString()
-                : string.Empty;
-
-            header += $"{Constants.OPEN_BRACKET}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
+            if (delimiterChar != Constants.DEFAULT_DELIMITER_CHAR)
+            {
+                header += $"{Constants.OPEN_BRACKET}{length}{delimiterChar}{Constants.CLOSE_BRACKET}";
+            }
+            else
+            {
+                // default delimiter does not need to be rendered
+                header += $"{Constants.OPEN_BRACKET}{length}{Constants.CLOSE_BRACKET}";
+            }
 
             // Add field names for tabular format
             if (fields != null && fields.Count > 0)
             {
                 var quotedFields = fields.Select(EncodeKey);
-                var fieldsStr = string.Join(delimiterChar.ToString(), quotedFields);
+                var fieldsStr = string.Join(delimiterChar, quotedFields);
                 header += $"{Constants.OPEN_BRACE}{fieldsStr}{Constants.CLOSE_BRACE}";
             }
 
