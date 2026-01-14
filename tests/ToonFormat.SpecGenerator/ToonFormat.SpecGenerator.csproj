@@ -18,4 +18,9 @@
     <Compile Remove="ManualTests\**\*.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="ManualTests\**\*.cs" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Remove="ManualTests\**\*.cs" />
+  </ItemGroup>
+
 </Project>
