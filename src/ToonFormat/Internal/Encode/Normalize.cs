@@ -22,6 +22,7 @@ namespace Toon.Format.Internal.Encode
         /// Normalizes an arbitrary .NET value to a JsonNode representation.
         /// Handles primitives, collections, dates, and custom objects.
         /// </summary>
+        /// <param name="value">The value to be normalized.</param>
         public static JsonNode? NormalizeValue(object? value)
         {
             // null
@@ -40,7 +41,7 @@ namespace Toon.Format.Internal.Encode
             {
                 // Canonicalize signed zero via FloatUtils
                 var dn = FloatUtils.NormalizeSignedZero(d);
-                if (!double.IsFinite(dn))
+                if (!NumericUtils.IsFinite(dn))
                     return null;
                 return JsonValue.Create(dn);
             }
@@ -49,7 +50,7 @@ namespace Toon.Format.Internal.Encode
             {
                 // Canonicalize signed zero via FloatUtils
                 var fn = FloatUtils.NormalizeSignedZero(f);
-                if (!float.IsFinite(fn))
+                if (!NumericUtils.IsFinite(fn))
                     return null;
                 return JsonValue.Create(fn);
             }
@@ -138,11 +139,16 @@ namespace Toon.Format.Internal.Encode
                     return JsonValue.Create(l);
                 case double d:
                     if (BitConverter.DoubleToInt64Bits(d) == BitConverter.DoubleToInt64Bits(-0.0)) return JsonValue.Create(0.0);
-                    if (!double.IsFinite(d)) return null;
+                    if (!NumericUtils.IsFinite(d)) return null;
                     return JsonValue.Create(d);
                 case float f:
+#if NETSTANDARD2_0
+                    // netstandard does not have BitConverter.SingleToInt32Bits
+                    if (FloatUtils.NormalizeSignedZero(f).Equals(0.0f)) return JsonValue.Create(0.0f);
+#else
                     if (BitConverter.SingleToInt32Bits(f) == BitConverter.SingleToInt32Bits(-0.0f)) return JsonValue.Create(0.0f);
-                    if (!float.IsFinite(f)) return null;
+#endif
+                    if (!NumericUtils.IsFinite(f)) return null;
                     return JsonValue.Create(f);
                 case decimal dec:
                     return JsonValue.Create(dec);

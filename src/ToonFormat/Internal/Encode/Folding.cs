@@ -46,7 +46,7 @@ namespace Toon.Format.Internal.Encode
 
     internal static class Folding
     {
-        public static FoldResult? TryFoldKeyChain(string key, JsonNode? value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, IReadOnlySet<string>? rootLiteralKeys = null,
+        public static FoldResult? TryFoldKeyChain(string key, JsonNode? value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, IReadOnlyCollection<string>? rootLiteralKeys = null,
             string? pathPrefix = null, int? flattenDepth = null)
         {
             // Only fold when safe mode is enabled
@@ -149,7 +149,11 @@ namespace Toon.Format.Internal.Encode
 
         private static string BuildFoldedKey(IReadOnlyCollection<string> segments)
         {
+#if NETSTANDARD2_0
+            return string.Join(Constants.DOT.ToString(), segments);
+#else
             return string.Join(Constants.DOT, segments);
+#endif
         }
     }
 }

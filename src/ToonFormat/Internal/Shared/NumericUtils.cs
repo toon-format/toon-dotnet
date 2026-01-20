@@ -1,9 +1,12 @@
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Toon.Format.Internal.Shared
 {
     internal static class NumericUtils
     {
+        internal const ulong PositiveInfinityBits = 0x7FF0_0000_0000_0000;
+
         /// <summary>
         /// Converts a double to a decimal in canonical form for accurate representation.
         /// </summary>
@@ -43,6 +46,24 @@ namespace Toon.Format.Internal.Shared
             decimalValue *= (decimal)Math.Pow(10, exponent);
 
             return decimalValue;
+        }
+
+        public static bool IsFinite(double value)
+        {
+#if NETSTANDARD2_0
+            return !(double.IsNaN(value) || double.IsInfinity(value));
+#else
+            return double.IsFinite(value);
+#endif
+        }
+
+        public static bool IsFinite(float value)
+        {
+#if NETSTANDARD2_0
+            return !(float.IsNaN(value) || float.IsInfinity(value));
+#else
+            return float.IsFinite(value);
+#endif
         }
     }
 }

@@ -52,7 +52,11 @@ namespace Toon.Format.Internal.Encode
                 if (result.Contains('.'))
                 {
                     result = result.TrimEnd('0');
-                    if (result.EndsWith('.'))
+#if NETSTANDARD2_0
+                    if (result.EndsWith(Constants.DOT.ToString()))
+#else
+                    if (result.EndsWith(Constants.DOT))
+#endif
                         result = result.TrimEnd('.');
                 }
 

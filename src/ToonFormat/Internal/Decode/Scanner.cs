@@ -188,9 +188,9 @@ namespace Toon.Format.Internal.Decode
                 }
                 parsed.Add(new ParsedLine
                 {
-                    Raw = new string(lineSpan),
+                    Raw = lineSpan.ToString(),
+                    Content = contentSpan.ToString(),
                     Indent = indent,
-                    Content = new string(contentSpan),
                     Depth = lineDepth,
                     LineNumber = lineNumber
                 });
