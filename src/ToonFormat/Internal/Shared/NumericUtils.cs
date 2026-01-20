@@ -5,8 +5,6 @@ namespace Toon.Format.Internal.Shared
 {
     internal static class NumericUtils
     {
-        internal const ulong PositiveInfinityBits = 0x7FF0_0000_0000_0000;
-
         /// <summary>
         /// Converts a double to a decimal in canonical form for accurate representation.
         /// </summary>
