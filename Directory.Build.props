@@ -1,0 +1,35 @@
+<Project>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <!-- 
+        1. CI Builds only run tests on modern supported frameworks 
+        2. Local builds run tests on .NET Framework 4.8.1 (Windows only) and modern supported frameworks
+    -->
+    <Choose>
+        <When Condition=" '$(CI)' == 'true'">
+            <PropertyGroup>
+                <TestTargetFrameworks>net8.0;net9.0;net10.0</TestTargetFrameworks>
+            </PropertyGroup>
+        </When>
+
+        <Otherwise>
+
+            <Choose>
+                <When Condition=" $([MSBuild]::IsOsPlatform('Windows')) ">
+                    <PropertyGroup>
+                        <TestTargetFrameworks>net481;net8.0;net9.0;net10.0</TestTargetFrameworks>
+                    </PropertyGroup>
+                </When>
+
+                <Otherwise>
+                    <PropertyGroup>
+                        <TestTargetFrameworks>net8.0;net9.0;net10.0</TestTargetFrameworks>
+                    </PropertyGroup>
+                </Otherwise>
+            </Choose>
+
+        </Otherwise>
+    </Choose>
+</Project>
