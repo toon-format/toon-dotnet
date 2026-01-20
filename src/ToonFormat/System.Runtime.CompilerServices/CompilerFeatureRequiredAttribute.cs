@@ -12,8 +12,8 @@ namespace System.Runtime.CompilerServices
     /// Indicates that a compiler feature is required.
     /// </summary>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-    public sealed class CompilerFeatureRequiredAttribute : Attribute 
-    { 
+    public sealed class CompilerFeatureRequiredAttribute : Attribute
+    {
         public CompilerFeatureRequiredAttribute(string featureName)
         {
         }
