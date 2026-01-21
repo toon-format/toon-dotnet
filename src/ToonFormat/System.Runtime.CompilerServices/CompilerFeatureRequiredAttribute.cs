@@ -12,6 +12,7 @@ namespace System.Runtime.CompilerServices
     {
         public CompilerFeatureRequiredAttribute(string featureName)
         {
+            FeatureName = featureName;
         }
 
         public string FeatureName { get; }
