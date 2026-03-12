@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Toon.Format.Internal.Shared
@@ -43,6 +44,24 @@ namespace Toon.Format.Internal.Shared
             decimalValue *= (decimal)Math.Pow(10, exponent);
 
             return decimalValue;
+        }
+
+        public static bool IsFinite(double value)
+        {
+#if NETSTANDARD2_0
+            return !(double.IsNaN(value) || double.IsInfinity(value));
+#else
+            return double.IsFinite(value);
+#endif
+        }
+
+        public static bool IsFinite(float value)
+        {
+#if NETSTANDARD2_0
+            return !(float.IsNaN(value) || float.IsInfinity(value));
+#else
+            return float.IsFinite(value);
+#endif
         }
     }
 }

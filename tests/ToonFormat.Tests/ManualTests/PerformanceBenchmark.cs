@@ -37,7 +37,7 @@ public class PerformanceBenchmark
         sw.Stop();
 
         _output.WriteLine($"Simple encoding: {sw.ElapsedMilliseconds}ms for 10,000 iterations");
-        _output.WriteLine($"Average: {sw.Elapsed.TotalMicroseconds / 10000:F2}μs per encode");
+        _output.WriteLine($"Average: {sw.Elapsed.Ticks / 100000:F2}μs per encode");
 
         // Baseline: should complete in reasonable time (< 5 seconds for 10k iterations)
         Assert.True(sw.ElapsedMilliseconds < 5000, $"Encoding took {sw.ElapsedMilliseconds}ms, expected < 5000ms");
@@ -61,7 +61,7 @@ users[3]{id,name,role}:
         sw.Stop();
 
         _output.WriteLine($"Simple decoding: {sw.ElapsedMilliseconds}ms for 10,000 iterations");
-        _output.WriteLine($"Average: {sw.Elapsed.TotalMicroseconds / 10000:F2}μs per decode");
+        _output.WriteLine($"Average: {sw.Elapsed.Ticks / 100000:F2}μs per decode");
 
         // Baseline: should complete in reasonable time (< 5 seconds for 10k iterations)
         Assert.True(sw.ElapsedMilliseconds < 5000, $"Decoding took {sw.ElapsedMilliseconds}ms, expected < 5000ms");
@@ -95,7 +95,7 @@ users[3]{id,name,role}:
         sw.Stop();
 
         _output.WriteLine($"Section 10 encoding: {sw.ElapsedMilliseconds}ms for 10,000 iterations");
-        _output.WriteLine($"Average: {sw.Elapsed.TotalMicroseconds / 10000:F2}μs per encode");
+        _output.WriteLine($"Average: {sw.Elapsed.Ticks / 100000:F2}μs per encode");
 
         // Baseline: should complete in reasonable time
         Assert.True(sw.ElapsedMilliseconds < 5000, $"Section 10 encoding took {sw.ElapsedMilliseconds}ms, expected < 5000ms");
@@ -123,7 +123,7 @@ users[3]{id,name,role}:
         sw.Stop();
 
         _output.WriteLine($"Round-trip: {sw.ElapsedMilliseconds}ms for 5,000 iterations");
-        _output.WriteLine($"Average: {sw.Elapsed.TotalMicroseconds / 5000:F2}μs per round-trip");
+        _output.WriteLine($"Average: {sw.Elapsed.Ticks / 50000:F2}μs per round-trip");
 
         // Baseline: should complete in reasonable time
         Assert.True(sw.ElapsedMilliseconds < 5000, $"Round-trip took {sw.ElapsedMilliseconds}ms, expected < 5000ms");

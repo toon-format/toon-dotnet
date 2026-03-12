@@ -57,7 +57,7 @@ namespace Toon.Format.Internal.Encode
         /// <summary>
         /// Encodes a JsonObject as key-value pairs.
         /// </summary>
-        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options, IReadOnlySet<string>? rootLiteralKeys = null,
+        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options, IReadOnlyCollection<string>? rootLiteralKeys = null,
             string? pathPrefix = null, int? remainingDepth = null)
         {
             var keys = (value as IDictionary<string, JsonNode>).Keys!;
@@ -96,7 +96,7 @@ namespace Toon.Format.Internal.Encode
             int depth,
             ResolvedEncodeOptions options,
             IReadOnlyCollection<string>? siblings = null,
-            IReadOnlySet<string>? rootLiteralKeys = null,
+            IReadOnlyCollection<string>? rootLiteralKeys = null,
             string? pathPrefix = null,
             int? flattenDepth = null)
         {

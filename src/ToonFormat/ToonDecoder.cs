@@ -184,8 +184,14 @@ public static class ToonDecoder
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
+
+#if NETSTANDARD2_0
+        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+#else
         using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
+#endif
         var text = reader.ReadToEnd();
+
         return Decode(text, options ?? new ToonDecodeOptions());
     }
 
@@ -209,8 +215,15 @@ public static class ToonDecoder
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
+
+#if NETSTANDARD2_0
+        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+#else
         using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
+#endif
+
         var text = reader.ReadToEnd();
+
         return Decode<T>(text, options ?? new ToonDecodeOptions());
     }
 
@@ -296,9 +309,14 @@ public static class ToonDecoder
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
+#if NETSTANDARD2_0
+        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+        var text = await reader.ReadToEndAsync().ConfigureAwait(false);
+#else
         using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
         var text = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-        return Decode(text, options ?? new ToonDecodeOptions());
+#endif
+        return await DecodeAsync(text, options ?? new ToonDecodeOptions(), cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -327,9 +345,14 @@ public static class ToonDecoder
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
+#if NETSTANDARD2_0
+        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+        var text = await reader.ReadToEndAsync().ConfigureAwait(false);
+#else
         using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
         var text = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-        return Decode<T>(text, options ?? new ToonDecodeOptions());
+#endif
+        return await DecodeAsync<T>(text, options ?? new ToonDecodeOptions(), cancellationToken: cancellationToken);
     }
 
     #endregion
