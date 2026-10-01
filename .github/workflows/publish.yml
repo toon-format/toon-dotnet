@@ -27,7 +27,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Pack
-        run: dotnet pack --configuration Release --no-build --output ./artifacts
+        run: dotnet pack src/ToonFormat --configuration Release --no-build --output ./artifacts
 
       - name: NuGet login
         id: login
