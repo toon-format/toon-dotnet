@@ -51,6 +51,9 @@ users[2]{id,name,role}:
 dotnet add package Toon.Format
 ```
 
+> [!NOTE]
+> `Toon.Format` is not on NuGet yet ([#29](https://github.com/toon-format/toon-dotnet/issues/29)). Until the first release, reference `src/ToonFormat` from a clone of this repository.
+
 ## Type Conversions
 
 .NET-specific types are automatically normalized for LLM-safe output:
