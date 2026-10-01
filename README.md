@@ -258,7 +258,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 - [📘 TOON Specification](https://github.com/toon-format/spec/blob/main/SPEC.md) - Official specification
 - [🔧 API Tests](./tests/ToonFormat.Tests/) - Comprehensive test suite with examples
-- [📋 Project Plan](SPEC_V3_PROJECT_PLAN.md) - Implementation details and compliance checklist
 - [🤝 Contributing](CONTRIBUTING.md) - Contribution guidelines
 - [🏠 Main Repository](https://github.com/toon-format/toon) - TOON format home
 - [📊 Benchmarks](https://github.com/toon-format/toon#benchmarks) - Performance comparisons
