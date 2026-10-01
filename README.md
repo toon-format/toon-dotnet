@@ -5,9 +5,9 @@
 [![.NET version](https://img.shields.io/badge/.NET-8.0%20%7C%209.0%20%7C10.0-512BD4)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-**Token-Oriented Object Notation** is a compact, human-readable encoding of the JSON data model that minimizes tokens and makes structure easy for models to follow. Combines YAML-like indentation with CSV-like tabular arrays. Fully compatible with the [official TOON specification v3.0](https://github.com/toon-format/spec).
+**Token-Oriented Object Notation** is a compact, human-readable encoding of the JSON data model that minimizes tokens and makes structure easy for models to follow. Combines YAML-like indentation with CSV-like tabular arrays.
 
-**Key Features:** Minimal syntax • TOON Encoding and Decoding • Tabular arrays for uniform data • Path expansion • Strict mode validation • .NET Standard, .NET 8.0, 9.0 and 10.0 • 520+ tests with 99.7% spec coverage.
+**Key Features:** Minimal syntax • TOON Encoding and Decoding • Tabular arrays for uniform data • Path expansion • Strict mode validation • .NET Standard, .NET 8.0, 9.0 and 10.0.
 
 ## Quick Start
 
@@ -247,20 +247,13 @@ For more examples and options, see the [tests](./tests/ToonFormat.Tests/).
 
 ## Project Status
 
-**This project is 100% compliant with TOON Specification v3.0**
-
-This implementation:
-- Passes 370+ specification tests (100% coverage)
-- Supports all TOON v3.0 features
-- Handles all edge cases and strict mode validations
-- Fully documented with XML comments
-- Production-ready for .NET Standard 2.0, .NET 8.0, .NET 9.0 and .NET 10.0
+This implementation targets [TOON specification v3.0](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md) (`toon-spec: 3.0`).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## Documentation
 
-- [📘 TOON Specification v3.0](https://github.com/toon-format/spec/blob/main/SPEC.md) - Official specification
+- [📘 TOON Specification](https://github.com/toon-format/spec/blob/main/SPEC.md) - Official specification
 - [🔧 API Tests](./tests/ToonFormat.Tests/) - Comprehensive test suite with examples
 - [📋 Project Plan](SPEC_V3_PROJECT_PLAN.md) - Implementation details and compliance checklist
 - [🤝 Contributing](CONTRIBUTING.md) - Contribution guidelines
