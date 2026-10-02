@@ -230,62 +230,6 @@ public static class ToonDecoder
     #region Async Methods
 
     /// <summary>
-    /// Asynchronously decodes a TOON-formatted string into a JsonNode with default options.
-    /// </summary>
-    /// <param name="toonString">The TOON-formatted string to decode.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the decoded JsonNode.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when toonString is null.</exception>
-    /// <exception cref="ToonFormatException">Thrown when the TOON format is invalid.</exception>
-    public static Task<JsonNode?> DecodeAsync(string toonString, CancellationToken cancellationToken = default)
-    {
-        return DecodeAsync(toonString, new ToonDecodeOptions(), cancellationToken);
-    }
-
-    /// <summary>
-    /// Asynchronously decodes a TOON-formatted string into a JsonNode with custom options.
-    /// </summary>
-    /// <param name="toonString">The TOON-formatted string to decode.</param>
-    /// <param name="options">Decoding options to customize parsing behavior.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the decoded JsonNode.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when toonString or options is null.</exception>
-    /// <exception cref="ToonFormatException">Thrown when the TOON format is invalid.</exception>
-    public static Task<JsonNode?> DecodeAsync(string toonString, ToonDecodeOptions? options, CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        var result = Decode(toonString, options);
-        return Task.FromResult(result);
-    }
-
-    /// <summary>
-    /// Asynchronously decodes a TOON-formatted string into the specified type with default options.
-    /// </summary>
-    /// <typeparam name="T">Target type to deserialize into.</typeparam>
-    /// <param name="toonString">The TOON-formatted string to decode.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the deserialized value.</returns>
-    public static Task<T?> DecodeAsync<T>(string toonString, CancellationToken cancellationToken = default)
-    {
-        return DecodeAsync<T>(toonString, new ToonDecodeOptions(), cancellationToken);
-    }
-
-    /// <summary>
-    /// Asynchronously decodes a TOON-formatted string into the specified type with custom options.
-    /// </summary>
-    /// <typeparam name="T">Target type to deserialize into.</typeparam>
-    /// <param name="toonString">The TOON-formatted string to decode.</param>
-    /// <param name="options">Decoding options to customize parsing behavior.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the deserialized value.</returns>
-    public static Task<T?> DecodeAsync<T>(string toonString, ToonDecodeOptions? options, CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        var result = Decode<T>(toonString, options);
-        return Task.FromResult(result);
-    }
-
-    /// <summary>
     /// Asynchronously decodes TOON data from a stream (UTF-8) into a JsonNode with default options.
     /// </summary>
     /// <param name="stream">The input stream to read from.</param>
@@ -316,7 +260,7 @@ public static class ToonDecoder
         using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
         var text = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 #endif
-        return await DecodeAsync(text, options ?? new ToonDecodeOptions(), cancellationToken: cancellationToken);
+        return Decode(text, options ?? new ToonDecodeOptions());
     }
 
     /// <summary>
@@ -352,7 +296,7 @@ public static class ToonDecoder
         using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
         var text = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 #endif
-        return await DecodeAsync<T>(text, options ?? new ToonDecodeOptions(), cancellationToken: cancellationToken);
+        return Decode<T>(text, options ?? new ToonDecodeOptions());
     }
 
     #endregion
