@@ -1,15 +1,19 @@
-# TOON Format for .NET
+# TOON for .NET
 
-[![NuGet version](https://img.shields.io/nuget/v/Toon.Format.svg)](https://www.nuget.org/packages/Toon.Format/)
-[![.NET version](https://img.shields.io/badge/.NET-Standard%202.0-512BD4)](https://dotnet.microsoft.com/)
-[![.NET version](https://img.shields.io/badge/.NET-8.0%20%7C%209.0%20%7C10.0-512BD4)](https://dotnet.microsoft.com/)
+[![SPEC v3.0](https://img.shields.io/badge/spec-v3.0-lightgrey)](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-**Token-Oriented Object Notation** is a compact, human-readable encoding of the JSON data model that minimizes tokens and makes structure easy for models to follow. Combines YAML-like indentation with CSV-like tabular arrays.
+Encodes .NET values to [TOON (Token-Oriented Object Notation)](https://github.com/toon-format/toon) and decodes TOON back. TOON is a compact, indentation-based encoding of the JSON data model for LLM input.
 
-**Key Features:** Minimal syntax • TOON Encoding and Decoding • Tabular arrays for uniform data • Path expansion • Strict mode validation • .NET Standard, .NET 8.0, 9.0 and 10.0.
+## Installation
 
-## Quick Start
+```bash
+dotnet add package Toon.Format
+```
+
+`Toon.Format` is not on NuGet yet ([#29](https://github.com/toon-format/toon-dotnet/issues/29)) – until the first release, reference `src/ToonFormat` from a clone of this repository.
+
+## Usage
 
 ```csharp
 using Toon.Format;
@@ -18,255 +22,48 @@ var data = new
 {
     users = new[]
     {
-        new { id = 1, name = "Alice", role = "admin" },
+        new { id = 1, name = "Ada", role = "admin" },
         new { id = 2, name = "Bob", role = "user" }
     }
 };
 
-Console.WriteLine(ToonEncoder.Encode(data));
-```
-
-**Output:**
-
-```
-users[2]{id,name,role}:
-  1,Alice,admin
-  2,Bob,user
-```
-
-**Compared to JSON (30-60% token reduction):**
-
-```json
-{
-  "users": [
-    { "id": 1, "name": "Alice", "role": "admin" },
-    { "id": 2, "name": "Bob", "role": "user" }
-  ]
-}
-```
-
-## Installation
-
-```bash
-dotnet add package Toon.Format
-```
-
-> [!NOTE]
-> `Toon.Format` is not on NuGet yet ([#29](https://github.com/toon-format/toon-dotnet/issues/29)). Until the first release, reference `src/ToonFormat` from a clone of this repository.
-
-## Type Conversions
-
-.NET-specific types are automatically normalized for LLM-safe output:
-
-| Input Type | Output |
-| --- | --- |
-| Number (finite) | Decimal form; `-0` → `0`; no scientific notation |
-| Number (`NaN`, `±Infinity`) | `null` |
-| `decimal`, `double`, `float` | Decimal number |
-| `DateTime`, `DateTimeOffset` | ISO 8601 string in quotes |
-| `Guid` | String in quotes |
-| `IDictionary<,>`, `Dictionary<,>` | Object with string keys |
-| `IEnumerable<>`, arrays | Arrays |
-| Nullable types | Unwrapped value or `null` |
-
-## API
-
-### `ToonEncoder.Encode(object value): string`
-
-### `ToonEncoder.Encode(object value, ToonEncodeOptions options): string`
-
-Converts any .NET object to TOON format.
-
-**Parameters:**
-
-- `value` – Any .NET object (class, record, dictionary, list, or primitive). Non-serializable values are converted to `null`. DateTime types are converted to ISO strings.
-- `options` – Optional encoding options:
-  - `Indent` – Number of spaces per indentation level (default: `2`)
-  - `Delimiter` – Delimiter for array values: `ToonDelimiter.COMMA` (default), `TAB`, or `PIPE`
-  - `KeyFolding` – Collapse nested single-key objects: `ToonKeyFolding.Off` or `Safe` (default: `Off`)
-
-**Returns:**
-
-A TOON-formatted string with no trailing newline or spaces.
-
-**Example:**
-
-```csharp
-using Toon.Format;
-
-record Item(string Sku, int Qty, double Price);
-record Data(List<Item> Items);
-
-var item1 = new Item("A1", 2, 9.99);
-var item2 = new Item("B2", 1, 14.5);
-var data = new Data(new List<Item> { item1, item2 });
-
-Console.WriteLine(ToonEncoder.Encode(data));
-```
-
-**Output:**
-
-```
-Items[2]{Sku,Qty,Price}:
-  A1,2,9.99
-  B2,1,14.5
-```
-
-#### Delimiter Options
-
-Alternative delimiters can provide additional token savings:
-
-**Tab Delimiter:**
-
-```csharp
-var options = new ToonEncodeOptions
-{
-    Delimiter = ToonDelimiter.TAB
-};
-Console.WriteLine(ToonEncoder.Encode(data, options));
-```
-
-**Output:**
-
-```
-Items[2	]{Sku	Qty	Price}:
-  A1	2	9.99
-  B2	1	14.5
-```
-
-**Pipe Delimiter:**
-
-```csharp
-var options = new ToonEncodeOptions
-{
-    Delimiter = ToonDelimiter.PIPE
-};
-Console.WriteLine(ToonEncoder.Encode(data, options));
-```
-
-**Output:**
-
-```
-Items[2|]{Sku|Qty|Price}:
-  A1|2|9.99
-  B2|1|14.5
-```
-
-#### Key Folding
-
-Collapse nested single-key objects for more compact output:
-
-```csharp
-var data = new { user = new { profile = new { name = "Alice" } } };
-
-var options = new ToonEncodeOptions
-{
-    KeyFolding = ToonKeyFolding.Safe
-};
-Console.WriteLine(ToonEncoder.Encode(data, options));
-// Output: user.profile.name: Alice
-```
-
-### `ToonDecoder.Decode(string toon): JsonNode`
-
-### `ToonDecoder.Decode(string toon, ToonDecodeOptions options): JsonNode`
-
-### `ToonDecoder.Decode<T>(string toon): T`
-
-### `ToonDecoder.Decode<T>(string toon, ToonDecodeOptions options): T`
-
-Converts TOON-formatted strings back to .NET objects.
-
-**Parameters:**
-
-- `toon` – TOON-formatted input string
-- `options` – Optional decoding options:
-  - `Indent` – Number of spaces per indentation level (default: `2`)
-  - `Strict` – Enable validation mode (default: `true`). When `true`, throws `ToonFormatException` on invalid input.
-  - `ExpandPaths` – Expand dotted keys: `ToonPathExpansion.Off` (default) or `ToonPathExpansion.Safe`
-
-**Returns:**
-
-For generic overloads: Returns a `JsonNode` (JsonObject, JsonArray, or JsonValue) or deserialized type `T`.
-
-**Example:**
-
-```csharp
-using Toon.Format;
-
-string toon = """
-users[2]{id,name,role}:
-  1,Alice,admin
-  2,Bob,user
-""";
-
-// Decode to JsonNode
-var result = ToonDecoder.Decode(toon);
-
-// Decode to specific type
-var users = ToonDecoder.Decode<List<User>>(toon);
-```
-
-#### Path Expansion
-
-Expand dotted keys into nested objects:
-
-```csharp
-string toon = "a.b.c: 1";
-
-var options = new ToonDecodeOptions
-{
-    ExpandPaths = ToonPathExpansion.Safe
-};
-
-var result = ToonDecoder.Decode(toon, options);
-// Result: { "a": { "b": { "c": 1 } } }
-```
-
-#### Round-Trip Conversion
-
-```csharp
-using Toon.Format;
-
-// Original data
-var data = new
-{
-    id = 123,
-    name = "Ada",
-    tags = new[] { "dev", "admin" }
-};
-
-// Encode to TOON
 string toon = ToonEncoder.Encode(data);
+// users[2]{id,name,role}:
+//   1,Ada,admin
+//   2,Bob,user
 
-// Decode back to objects
-var decoded = ToonDecoder.Decode(toon);
-
-// Or decode to specific type
-var typed = ToonDecoder.Decode<MyType>(toon);
+var node = ToonDecoder.Decode(toon);
+// {"users":[{"id":1,"name":"Ada","role":"admin"},{"id":2,"name":"Bob","role":"user"}]}
 ```
 
-For more examples and options, see the [tests](./tests/ToonFormat.Tests/).
+`ToonDecoder.Decode` returns a `JsonNode`; `ToonDecoder.Decode<T>` deserializes into `T` through `System.Text.Json`. Pass a `ToonEncodeOptions` or `ToonDecodeOptions` as the second argument:
 
-## Project Status
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `Indent` | `2` | Spaces per indentation level (encode and decode) |
+| `Delimiter` | `ToonDelimiter.COMMA` | Array delimiter: `COMMA`, `TAB`, or `PIPE` (encode) |
+| `KeyFolding` | `ToonKeyFolding.Off` | `Safe` folds single-key object chains into dotted keys (encode) |
+| `FlattenDepth` | `int.MaxValue` | Maximum segments per folded key (encode) |
+| `Strict` | `true` | Throw `ToonFormatException` on count mismatches and invalid input (decode) |
+| `ExpandPaths` | `ToonPathExpansion.Off` | `Safe` expands dotted keys into nested objects (decode) |
 
-This implementation targets [TOON specification v3.0](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md) (`toon-spec: 3.0`).
+## Specification
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+Targets [TOON spec v3.0](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md), and the test suite runs the spec's conformance fixtures.
 
-## Documentation
+- **Numbers decode to `double`** – a token beyond `double` range stays a string and integers beyond 2^53 lose precision ([§4](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md#4-decoding-interpretation-reference-decoder))
+- **`int`, `long`, and `double` encode as numbers** – `NaN` and `±Infinity` become `null`, `DateTime` and `DateTimeOffset` become ISO 8601 strings, dictionaries become objects with string keys, other enumerables become arrays, and public properties of other objects become fields ([§3](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md#3-encoding-normalization-reference-encoder))
 
-- [📘 TOON Specification](https://github.com/toon-format/spec/blob/main/SPEC.md) - Official specification
-- [🔧 API Tests](./tests/ToonFormat.Tests/) - Comprehensive test suite with examples
-- [🤝 Contributing](CONTRIBUTING.md) - Contribution guidelines
-- [🏠 Main Repository](https://github.com/toon-format/toon) - TOON format home
-- [📊 Benchmarks](https://github.com/toon-format/toon#benchmarks) - Performance comparisons
-- [🌐 Other Implementations](https://github.com/toon-format/toon#other-implementations) - TypeScript, Java, Python, etc.
+## Resources
+
+- **Specification:** [SPEC.md](https://github.com/toon-format/spec/blob/main/SPEC.md) – Normative rules and conformance checklists
+- **Format Overview:** [toonformat.dev](https://toonformat.dev/guide/format-overview) – Every form with examples
+- **Other Implementations:** [toonformat.dev](https://toonformat.dev/ecosystem/implementations) – TOON in other languages
 
 ## Contributing
 
-Interested in contributing? Check out the [specification](https://github.com/toon-format/spec/blob/main/SPEC.md) and [contribution guidelines](CONTRIBUTING.md)!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the development setup and pull request guidelines.
 
 ## License
 
-MIT License © 2025-PRESENT [Johann Schopplich](https://github.com/johannschopplich)
+[MIT](./LICENSE) License © 2025-PRESENT Daniel Destouche and [Johann Schopplich](https://github.com/johannschopplich)
