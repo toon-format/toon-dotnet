@@ -8,21 +8,18 @@ on:
 
 jobs:
   test:
-    name: .NET ${{ matrix.dotnet-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        dotnet-version: ["8.0", "9.0", "10.0"]
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - name: Setup .NET ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: Restore dependencies
         run: dotnet restore
@@ -32,15 +29,3 @@ jobs:
 
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal
-
-      - name: Run tests with coverage
-        if: matrix.os == 'ubuntu-latest' && matrix.dotnet-version == '10.0'
-        run: |
-          dotnet test --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-      - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && matrix.dotnet-version == '10.0'
-        uses: codecov/codecov-action@v4
-        with:
-          directory: ./coverage
-          fail_ci_if_error: false
