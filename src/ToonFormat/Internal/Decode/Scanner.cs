@@ -81,21 +81,6 @@ namespace Toon.Format.Internal.Decode
         }
 
         public int Length => _lines.Count;
-
-        public ParsedLine? PeekAtDepth(int targetDepth)
-        {
-            var line = Peek();
-            if (line == null || line.Depth < targetDepth)
-                return null;
-            if (line.Depth == targetDepth)
-                return line;
-            return null;
-        }
-
-        public bool HasMoreAtDepth(int targetDepth)
-        {
-            return PeekAtDepth(targetDepth) != null;
-        }
     }
 
     /// <summary>

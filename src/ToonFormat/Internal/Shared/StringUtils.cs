@@ -139,14 +139,5 @@ namespace Toon.Format.Internal.Shared
 
             return -1;
         }
-
-        /// <summary>
-        /// Generates a quoted string literal, escaping internal characters as necessary.
-        /// Note: Whether quotes are needed should be determined by the caller based on ValidationShared rules.
-        /// </summary>
-        internal static string Quote(string value)
-        {
-            return $"\"{EscapeString(value)}\"";
-        }
     }
 }

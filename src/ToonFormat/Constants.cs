@@ -13,7 +13,6 @@ namespace Toon.Format
         public const char COLON = ':';
         public const char SPACE = ' ';
         public const char PIPE = '|';
-        public const char HASH = '#';
         public const char DOT = '.';
         // #endregion
 
@@ -58,13 +57,6 @@ namespace Toon.Format
             PIPE => ToonDelimiter.PIPE,
             _ => ToonDelimiter.COMMA
         };
-
-        public static bool IsDelimiterChar(char c) => c == COMMA || c == TAB || c == PIPE;
-
-        public static bool IsWhitespace(char c) => c == SPACE || c == TAB;
-
-        public static bool IsStructural(char c)
-            => c == COLON || c == OPEN_BRACKET || c == CLOSE_BRACKET || c == OPEN_BRACE || c == CLOSE_BRACE;
         // #endregion
     }
 
