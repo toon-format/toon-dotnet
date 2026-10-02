@@ -13,7 +13,7 @@ namespace Toon.Format.Internal.Encode
         /// <summary>
         /// The folded key with dot-separated segments (e.g., "data.metadata.items")
         /// </summary>
-        public required string FoldedKey { get; set; }
+        public string FoldedKey { get; set; } = null!;
 
         /// <summary>
         /// The remainder value after folding:
@@ -28,20 +28,20 @@ namespace Toon.Format.Internal.Encode
         /// The leaf value at the end of the folded chain.
         /// Used to avoid redundant traversal when encoding the folded value.
         /// </summary>
-        public required JsonNode LeafValue { get; set; }
+        public JsonNode LeafValue { get; set; } = null!;
 
         /// <summary>
         /// The number of segments that were folded.
         /// Used to calculate remaining depth budget for nested encoding.
         /// </summary>
-        public required int SegmentCount { get; set; }
+        public int SegmentCount { get; set; }
     }
 
     internal class KeyChain
     {
-        public required IReadOnlyCollection<string> Segments { get; set; }
+        public IReadOnlyCollection<string> Segments { get; set; } = null!;
         public JsonNode? Tail { get; set; }
-        public required JsonNode LeafValue { get; set; }
+        public JsonNode LeafValue { get; set; } = null!;
     }
 
     internal static class Folding
