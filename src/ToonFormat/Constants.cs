@@ -8,35 +8,27 @@ namespace Toon.Format
 
         public const string LIST_ITEM_PREFIX = "- ";
 
-        // #region Structural characters
         public const char COMMA = ',';
         public const char COLON = ':';
         public const char SPACE = ' ';
         public const char PIPE = '|';
         public const char DOT = '.';
-        // #endregion
 
-        // #region Brackets and braces
         public const char OPEN_BRACKET = '[';
         public const char CLOSE_BRACKET = ']';
         public const char OPEN_BRACE = '{';
         public const char CLOSE_BRACE = '}';
-        // #endregion
 
-        // #region Literals
         public const string NULL_LITERAL = "null";
         public const string TRUE_LITERAL = "true";
         public const string FALSE_LITERAL = "false";
-        // #endregion
 
-        // #region Escape/control characters
         public const char BACKSLASH = '\\';
         public const char DOUBLE_QUOTE = '"';
         public const char NEWLINE = '\n';
         public const char CARRIAGE_RETURN = '\r';
         public const char TAB = '\t';
 
-        // #region Delimiter defaults and mapping
         public const ToonDelimiter DEFAULT_DELIMITER_ENUM = ToonDelimiter.COMMA;
 
         public const char DEFAULT_DELIMITER_CHAR = COMMA;
@@ -57,7 +49,6 @@ namespace Toon.Format
             PIPE => ToonDelimiter.PIPE,
             _ => ToonDelimiter.COMMA
         };
-        // #endregion
     }
 
     /// <summary>

@@ -33,7 +33,7 @@ namespace Toon.Format.Internal.Decode
     /// </summary>
     internal static class Parser
     {
-        // #region Array header parsing
+        #region Array header parsing
 
         /// <summary>
         /// Parses an array header line like "key[3]:" or "users[#2,]{name,age}:".
@@ -177,9 +177,9 @@ namespace Toon.Format.Internal.Decode
             };
         }
 
-        // #endregion
+        #endregion
 
-        // #region Delimited value parsing
+        #region Delimited value parsing
 
         /// <summary>
         /// Parses a delimiter-separated string into individual values, respecting quotes.
@@ -236,9 +236,9 @@ namespace Toon.Format.Internal.Decode
             return values.Select(v => ParsePrimitiveToken(v)).ToList();
         }
 
-        // #endregion
+        #endregion
 
-        // #region Primitive and key parsing
+        #region Primitive and key parsing
 
         /// <summary>
         /// Parses a primitive token (null, boolean, number, or string).
@@ -374,9 +374,9 @@ namespace Toon.Format.Internal.Decode
             }
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array content detection helpers
+        #region Array content detection helpers
 
         /// <summary>
         /// Checks if content after hyphen starts with an array header.
@@ -395,6 +395,6 @@ namespace Toon.Format.Internal.Decode
             return StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
         }
 
-        // #endregion
+        #endregion
     }
 }

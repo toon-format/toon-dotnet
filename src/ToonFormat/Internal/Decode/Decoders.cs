@@ -12,7 +12,7 @@ namespace Toon.Format.Internal.Decode
     /// </summary>
     internal static class Decoders
     {
-        // #region Entry decoding
+        #region Entry decoding
 
         /// <summary>
         /// Decodes TOON content from a line cursor into a JSON value.
@@ -64,9 +64,9 @@ namespace Toon.Format.Internal.Decode
             }
         }
 
-        // #endregion
+        #endregion
 
-        // #region Object decoding
+        #region Object decoding
 
         private static JsonObject DecodeObject(LineCursor cursor, int baseDepth, ResolvedDecodeOptions options, HashSet<string>? quotedKeys = null)
         {
@@ -177,9 +177,9 @@ namespace Toon.Format.Internal.Decode
             return (result.Key, result.Value, result.WasQuoted);
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array decoding
+        #region Array decoding
 
         private static JsonNode DecodeArrayFromHeader(
             ArrayHeaderInfo header,
@@ -354,9 +354,9 @@ namespace Toon.Format.Internal.Decode
             return objects;
         }
 
-        // #endregion
+        #endregion
 
-        // #region List item decoding
+        #region List item decoding
 
         private static JsonNode? DecodeListItem(
             LineCursor cursor,
@@ -445,6 +445,6 @@ namespace Toon.Format.Internal.Decode
             return obj;
         }
 
-        // #endregion
+        #endregion
     }
 }

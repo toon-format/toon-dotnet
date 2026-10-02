@@ -19,7 +19,7 @@ namespace Toon.Format.Internal.Encode
     /// </summary>
     internal static class Encoders
     {
-        // #region Encode normalized JsonValue
+        #region Encode normalized JsonValue
 
         /// <summary>
         /// Encodes a normalized JsonNode value to TOON format string.
@@ -45,9 +45,9 @@ namespace Toon.Format.Internal.Encode
             return writer.ToString();
         }
 
-        // #endregion
+        #endregion
 
-        // #region Object encoding
+        #region Object encoding
 
         /// <summary>
         /// Encodes a JsonObject as key-value pairs.
@@ -169,9 +169,9 @@ namespace Toon.Format.Internal.Encode
             }
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array encoding
+        #region Array encoding
 
         /// <summary>
         /// Encodes a JsonArray with appropriate formatting (inline, tabular, or expanded).
@@ -227,9 +227,9 @@ namespace Toon.Format.Internal.Encode
             EncodeMixedArrayAsListItems(key, value, writer, depth, options);
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array of arrays (expanded format)
+        #region Array of arrays (expanded format)
 
         /// <summary>
         /// Encodes an array of arrays as list items.
@@ -273,9 +273,9 @@ namespace Toon.Format.Internal.Encode
             return $"{header} {joinedValue}";
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array of objects (tabular format)
+        #region Array of objects (tabular format)
 
         /// <summary>
         /// Encodes an array of objects in tabular format.
@@ -366,9 +366,9 @@ namespace Toon.Format.Internal.Encode
             }
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array of objects (expanded format)
+        #region Array of objects (expanded format)
 
         /// <summary>
         /// Encodes a mixed array as list items (expanded format).
@@ -477,9 +477,9 @@ namespace Toon.Format.Internal.Encode
             }
         }
 
-        // #endregion
+        #endregion
 
-        // #region List item encoding helpers
+        #region List item encoding helpers
 
         /// <summary>
         /// Encodes a value as a list item.
@@ -531,6 +531,6 @@ namespace Toon.Format.Internal.Encode
             }
         }
 
-        // #endregion
+        #endregion
     }
 }

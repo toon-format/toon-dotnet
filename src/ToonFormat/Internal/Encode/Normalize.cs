@@ -15,7 +15,7 @@ namespace Toon.Format.Internal.Encode
     /// </summary>
     internal static class Normalize
     {
-        // #region Normalization (object → JsonNode)
+        #region Normalization (object → JsonNode)
 
         /// <summary>
         /// Normalizes an arbitrary .NET value to a JsonNode representation.
@@ -218,9 +218,9 @@ namespace Toon.Format.Internal.Encode
             return type.IsClass || type.IsValueType;
         }
 
-        // #endregion
+        #endregion
 
-        // #region Type guards
+        #region Type guards
 
         /// <summary>
         /// Checks if a JsonNode is a primitive value (null, string, number, or boolean).
@@ -269,9 +269,9 @@ namespace Toon.Format.Internal.Encode
             return IsJsonObject(value) && (value as IDictionary<string, JsonNode>)?.Keys?.Count == 0;
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array type detection
+        #region Array type detection
 
         /// <summary>
         /// Checks if a JsonArray contains only primitive values.
@@ -297,6 +297,6 @@ namespace Toon.Format.Internal.Encode
             return array.All(item => IsJsonObject(item));
         }
 
-        // #endregion
+        #endregion
     }
 }
