@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Nodes;
 
@@ -78,7 +77,7 @@ namespace Toon.Format.Internal.Encode
                     writer,
                     depth,
                     options,
-                    keys.ToImmutableArray(),
+                    keys.ToArray(),
                     rootLiteralKeys,
                     pathPrefix,
                     effectiveFlattenDepth
