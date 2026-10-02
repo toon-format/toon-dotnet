@@ -12,7 +12,6 @@ namespace Toon.Format.Internal.Encode
     /// <summary>
     /// Normalization utilities for converting arbitrary .NET objects to JsonNode representations
     /// and type guards for JSON value classification.
-    /// Aligned with TypeScript encode/normalize.ts
     /// </summary>
     internal static class Normalize
     {
@@ -25,11 +24,9 @@ namespace Toon.Format.Internal.Encode
         /// <param name="value">The value to be normalized.</param>
         public static JsonNode? NormalizeValue(object? value)
         {
-            // null
             if (value == null)
                 return null;
 
-            // Primitives: string, boolean
             if (value is string str)
                 return JsonValue.Create(str);
 
@@ -53,7 +50,6 @@ namespace Toon.Format.Internal.Encode
                 return JsonValue.Create(fn);
             }
 
-            // Other numeric types
             if (value is int i) return JsonValue.Create(i);
             if (value is long l) return JsonValue.Create(l);
             if (value is decimal dec) return JsonValue.Create(dec);
@@ -64,9 +60,8 @@ namespace Toon.Format.Internal.Encode
             if (value is uint ui) return JsonValue.Create(ui);
             if (value is ulong ul) return JsonValue.Create(ul);
 
-            // DateTime → ISO string
             if (value is DateTime dt)
-                return JsonValue.Create(dt.ToString("O")); // ISO 8601 format
+                return JsonValue.Create(dt.ToString("O"));
 
             if (value is DateTimeOffset dto)
                 return JsonValue.Create(dto.ToString("O"));
@@ -83,7 +78,6 @@ namespace Toon.Format.Internal.Encode
                 return jsonObject;
             }
 
-            // Array/List → JsonArray
             if (value is IEnumerable enumerable && value is not string)
             {
                 var jsonArray = new JsonArray();
@@ -94,7 +88,6 @@ namespace Toon.Format.Internal.Encode
                 return jsonArray;
             }
 
-            // Plain object → JsonObject via reflection
             if (IsPlainObject(value))
             {
                 var jsonObject = new JsonObject();
@@ -120,7 +113,6 @@ namespace Toon.Format.Internal.Encode
         /// </summary>
         public static JsonNode? NormalizeValue<T>(T value)
         {
-            // null
             if (value is null)
                 return null;
 
@@ -217,15 +209,12 @@ namespace Toon.Format.Internal.Encode
 
             var type = value.GetType();
 
-            // Exclude primitives, strings, and special types
             if (type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || type == typeof(DateTimeOffset))
                 return false;
 
-            // Exclude collections
             if (typeof(IEnumerable).IsAssignableFrom(type))
                 return false;
 
-            // Accept class or struct types
             return type.IsClass || type.IsValueType;
         }
 
@@ -243,7 +232,6 @@ namespace Toon.Format.Internal.Encode
 
             if (value is JsonValue jsonValue)
             {
-                // Check if it's a primitive type
                 return jsonValue.TryGetValue<string>(out _)
                     || jsonValue.TryGetValue<bool>(out _)
                     || jsonValue.TryGetValue<int>(out _)

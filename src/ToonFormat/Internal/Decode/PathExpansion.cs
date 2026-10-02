@@ -32,16 +32,13 @@ namespace Toon.Format.Internal.Decode
                 // Skip expansion for quoted keys (they should remain as literal dotted keys)
                 bool wasQuoted = quotedKeys != null && quotedKeys.Contains(key);
 
-                // Check if key contains dots and is eligible for expansion
                 if (!wasQuoted && key.Contains(Constants.DOT) && IsExpandable(key))
                 {
-                    // Split and expand
                     var segments = key.Split(Constants.DOT);
                     SetNestedValue(result, segments, value, strict);
                 }
                 else
                 {
-                    // Not expandable or was quoted, set directly
                     SetValue(result, key, value, strict);
                 }
             }
@@ -76,12 +73,10 @@ namespace Toon.Format.Internal.Decode
 
                     if (existing is JsonObject existingObj)
                     {
-                        // Continue traversing
                         current = existingObj;
                     }
                     else
                     {
-                        // Conflict: path requires object but found non-object
                         if (strict)
                         {
                             throw ToonPathExpansionException.TraversalConflict(
@@ -102,14 +97,12 @@ namespace Toon.Format.Internal.Decode
                 }
                 else
                 {
-                    // Create new object at this segment
                     var newObj = new JsonObject();
                     current[segment] = newObj;
                     current = newObj;
                 }
             }
 
-            // Set the final value
             var lastSegment = segments[segments.Length - 1];
             SetValue(current, lastSegment, value, strict);
         }
@@ -123,7 +116,6 @@ namespace Toon.Format.Internal.Decode
             {
                 var existing = target[key];
 
-                // Check for conflicts
                 bool conflict = false;
 
                 if (value is JsonObject && !(existing is JsonObject))
@@ -148,7 +140,6 @@ namespace Toon.Format.Internal.Decode
                     // LWW: just overwrite
                 }
 
-                // If both are objects, deep merge
                 if (value is JsonObject valueObj && existing is JsonObject existingObj)
                 {
                     DeepMerge(existingObj, valueObj, strict);
@@ -156,7 +147,6 @@ namespace Toon.Format.Internal.Decode
                 }
             }
 
-            // Set or overwrite
             target[key] = value?.DeepClone();
         }
 

@@ -6,9 +6,6 @@ using System.Text.Json.Nodes;
 
 namespace Toon.Format.Internal.Encode
 {
-    /// <summary>
-    /// Options for encoding TOON format, aligned with TypeScript ResolvedEncodeOptions.
-    /// </summary>
     internal class ResolvedEncodeOptions
     {
         public int Indent { get; set; } = 2;
@@ -19,7 +16,6 @@ namespace Toon.Format.Internal.Encode
 
     /// <summary>
     /// Main encoding functions for converting normalized JsonNode values to TOON format.
-    /// Aligned with TypeScript encode/encoders.ts
     /// </summary>
     internal static class Encoders
     {
@@ -194,7 +190,6 @@ namespace Toon.Format.Internal.Encode
                 return;
             }
 
-            // Primitive array
             if (Normalize.IsArrayOfPrimitives(value))
             {
                 var formatted = EncodeInlineArrayLine(value, options.Delimiter, key);
@@ -202,7 +197,6 @@ namespace Toon.Format.Internal.Encode
                 return;
             }
 
-            // Array of arrays (all primitives)
             if (Normalize.IsArrayOfArrays(value))
             {
                 var allPrimitiveArrays = value.All(item =>
@@ -215,7 +209,6 @@ namespace Toon.Format.Internal.Encode
                 }
             }
 
-            // Array of objects
             if (Normalize.IsArrayOfObjects(value))
             {
                 var objects = value.Cast<JsonObject>().ToList();
@@ -231,7 +224,6 @@ namespace Toon.Format.Internal.Encode
                 return;
             }
 
-            // Mixed array: fallback to expanded format
             EncodeMixedArrayAsListItems(key, value, writer, depth, options);
         }
 
@@ -341,7 +333,6 @@ namespace Toon.Format.Internal.Encode
                 if (keys.Count != header.Count)
                     return false;
 
-                // Check that all header keys exist in the row and all values are primitives
                 foreach (var key in header)
                 {
                     if (!row.ContainsKey(key))
@@ -429,19 +420,16 @@ namespace Toon.Format.Internal.Encode
 
                 if (Normalize.IsArrayOfPrimitives(arr))
                 {
-                    // Inline format for primitive arrays
                     var formatted = EncodeInlineArrayLine(arr, options.Delimiter, firstKey);
                     writer.PushListItem(depth, formatted);
                 }
                 else if (Normalize.IsArrayOfObjects(arr))
                 {
-                    // Check if array of objects can use tabular format
                     var objects = arr.Cast<JsonObject>().ToList();
                     var header = ExtractTabularHeader(objects);
 
                     if (header != null)
                     {
-                        // Tabular format for uniform arrays of objects
                         var formattedHeader = Primitives.FormatHeader(arr.Count, firstKey, header, options.Delimiter);
                         writer.PushListItem(depth, formattedHeader);
                         // SPEC v3.0 §10: Tabular rows MUST appear at depth +2 relative to the hyphen line
@@ -449,7 +437,6 @@ namespace Toon.Format.Internal.Encode
                     }
                     else
                     {
-                        // Fall back to list format for non-uniform arrays of objects
                         writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
                         foreach (var itemObj in arr.OfType<JsonObject>())
                         {
@@ -459,7 +446,6 @@ namespace Toon.Format.Internal.Encode
                 }
                 else
                 {
-                    // Complex arrays on separate lines (array of arrays, etc.)
                     writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
 
                     // Encode array contents at depth + 2 (SPEC v3.0 §10)
@@ -484,7 +470,6 @@ namespace Toon.Format.Internal.Encode
                 }
             }
 
-            // Remaining keys on indented lines
             for (int i = 1; i < keys.Count; i++)
             {
                 var key = keys[i];
@@ -522,9 +507,7 @@ namespace Toon.Format.Internal.Encode
             else if (Normalize.IsJsonArray(value))
             {
                 var arr = (JsonArray)value!;
-                // Complex array (e.g. array of objects, or array of arrays) as a list item value
 
-                // Check for tabular
                 if (Normalize.IsArrayOfObjects(arr))
                 {
                     var objects = arr.Cast<JsonObject>().ToList();
@@ -538,7 +521,6 @@ namespace Toon.Format.Internal.Encode
                     }
                 }
 
-                // Fallback for non-tabular or mixed
                 var headerStr = Primitives.FormatHeader(arr.Count, null, null, options.Delimiter);
                 writer.PushListItem(depth, headerStr);
 

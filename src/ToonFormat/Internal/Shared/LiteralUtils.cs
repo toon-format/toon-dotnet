@@ -3,16 +3,10 @@ using System.Globalization;
 
 namespace Toon.Format.Internal.Shared
 {
-    /// <summary>
-    /// Literal judgment utilities, aligned with TypeScript version shared/literal-utils.ts.
-    /// - IsBooleanOrNullLiteral: Determines if it is true/false/null
-    /// - IsNumericLiteral: Determines if it is a numeric literal, rejecting invalid leading zero forms
-    /// </summary>
     internal static class LiteralUtils
     {
         /// <summary>
         /// Checks if the token is a boolean or null literal: true, false, null.
-        /// Equivalent to TS: isBooleanOrNullLiteral
         /// </summary>
         internal static bool IsBooleanOrNullLiteral(string token)
         {

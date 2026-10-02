@@ -38,7 +38,6 @@ namespace Toon.Format.Internal.Decode
 
     /// <summary>
     /// Cursor for navigating through parsed lines during decoding.
-    /// Aligned with TypeScript decode/scanner.ts LineCursor
     /// </summary>
     internal class LineCursor
     {
@@ -85,7 +84,6 @@ namespace Toon.Format.Internal.Decode
 
     /// <summary>
     /// Scanner utilities for parsing source text into structured lines.
-    /// Aligned with TypeScript decode/scanner.ts
     /// </summary>
     internal static class Scanner
     {
@@ -112,7 +110,6 @@ namespace Toon.Format.Internal.Decode
             while (!span.IsEmpty)
             {
                 lineNumber++;
-                // find the end of this line
                 int newlineIdx = span.IndexOf('\n');
                 ReadOnlySpan<char> lineSpan;
                 if (newlineIdx >= 0)
@@ -125,12 +122,10 @@ namespace Toon.Format.Internal.Decode
                     lineSpan = span;
                     span = ReadOnlySpan<char>.Empty;
                 }
-                // remove trailing carriage return if present
                 if (!lineSpan.IsEmpty && lineSpan[lineSpan.Length - 1] == '\r')
                 {
                     lineSpan = lineSpan.Slice(0, lineSpan.Length - 1);
                 }
-                // calculate indentation
                 int indent = 0;
                 while (indent < lineSpan.Length && lineSpan[indent] == Constants.SPACE)
                 {

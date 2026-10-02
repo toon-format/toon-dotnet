@@ -6,7 +6,6 @@ namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Helper class for building indented lines of TOON output.
-    /// Aligned with TypeScript encode/writer.ts
     /// </summary>
     internal class LineWriter
     {

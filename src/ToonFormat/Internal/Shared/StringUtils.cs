@@ -3,18 +3,10 @@ using System.Text;
 
 namespace Toon.Format.Internal.Shared
 {
-    /// <summary>
-    /// String utilities, aligned with TypeScript version shared/string-utils.ts:
-    /// - EscapeString: Escapes special characters during encoding
-    /// - UnescapeString: Restores escape sequences during decoding
-    /// - FindClosingQuote: Finds the position of the matching closing quote, considering escapes
-    /// - FindUnquotedChar: Finds the position of the target character not inside quotes
-    /// </summary>
     internal static class StringUtils
     {
         /// <summary>
         /// Escapes special characters: backslash, quotes, newlines, carriage returns, tabs.
-        /// Equivalent to TS escapeString.
         /// </summary>
         internal static string EscapeString(string value)
         {
@@ -31,7 +23,6 @@ namespace Toon.Format.Internal.Shared
 
         /// <summary>
         /// Unescapes the string, supporting \n, \t, \r, \\, \". Invalid sequences throw <see cref="ToonFormatException"/>.
-        /// Equivalent to TS unescapeString.
         /// </summary>
         internal static string UnescapeString(string value)
         {
@@ -84,7 +75,7 @@ namespace Toon.Format.Internal.Shared
 
         /// <summary>
         /// Finds the position of the next double quote in the string starting from 'start', considering escapes.
-        /// Returns -1 if not found. Equivalent to TS findClosingQuote.
+        /// Returns -1 if not found.
         /// </summary>
         internal static int FindClosingQuote(string content, int start)
         {
@@ -108,7 +99,7 @@ namespace Toon.Format.Internal.Shared
 
         /// <summary>
         /// Finds the position of the target character not inside quotes; returns -1 if not found.
-        /// Escape sequences inside quotes are skipped. Equivalent to TS findUnquotedChar.
+        /// Escape sequences inside quotes are skipped.
         /// </summary>
         internal static int FindUnquotedChar(string content, char target, int start = 0)
         {

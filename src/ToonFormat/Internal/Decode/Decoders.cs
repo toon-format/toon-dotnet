@@ -9,7 +9,6 @@ namespace Toon.Format.Internal.Decode
 {
     /// <summary>
     /// Main decoding functions for converting TOON format to JSON values.
-    /// Aligned with TypeScript decode/decoders.ts
     /// </summary>
     internal static class Decoders
     {
@@ -29,34 +28,29 @@ namespace Toon.Format.Internal.Decode
                 throw ToonFormatException.Syntax("No content to decode");
             }
 
-            // Check for root array
             if (Parser.IsArrayHeaderAfterHyphen(first.Content))
             {
                 var headerInfo = Parser.ParseArrayHeaderLine(first.Content, Constants.DEFAULT_DELIMITER_CHAR);
                 if (headerInfo != null)
                 {
-                    cursor.Advance(); // Move past the header line
+                    cursor.Advance();
                     return DecodeArrayFromHeader(headerInfo.Header, headerInfo.InlineValues, cursor, 0, options);
                 }
             }
 
-            // Check for single primitive value
             if (cursor.Length == 1 && !IsKeyValueLine(first))
             {
                 return Parser.ParsePrimitiveToken(first.Content.Trim());
             }
 
-            // Default to object
             return DecodeObject(cursor, 0, options, quotedKeys);
         }
 
         private static bool IsKeyValueLine(ParsedLine line)
         {
             var content = line.Content;
-            // Look for unquoted colon or quoted key followed by colon
             if (content.StartsWith("\""))
             {
-                // Quoted key - find the closing quote
                 var closingQuoteIndex = StringUtils.FindClosingQuote(content, 0);
                 if (closingQuoteIndex == -1)
                     return false;
@@ -66,7 +60,6 @@ namespace Toon.Format.Internal.Decode
             }
             else
             {
-                // Unquoted key - look for first colon not inside quotes
                 return content.Contains(Constants.COLON);
             }
         }
@@ -106,7 +99,6 @@ namespace Toon.Format.Internal.Decode
                 }
                 else
                 {
-                    // Different depth (shallower or deeper) - stop object parsing
                     break;
                 }
             }
@@ -136,7 +128,6 @@ namespace Toon.Format.Internal.Decode
             ResolvedDecodeOptions options,
             bool isListItemFirstField = false)
         {
-            // Check for array header first (before parsing key)
             var arrayHeader = Parser.ParseArrayHeaderLine(content, Constants.DEFAULT_DELIMITER_CHAR);
             if (arrayHeader != null && arrayHeader.Header.Key != null)
             {
@@ -157,11 +148,9 @@ namespace Toon.Format.Internal.Decode
                 };
             }
 
-            // Regular key-value pair
             var keyResult = Parser.ParseKeyToken(content, 0);
             var rest = content.Substring(keyResult.End).Trim();
 
-            // No value after colon - expect nested object or empty
             if (string.IsNullOrEmpty(rest))
             {
                 var nextLine = cursor.Peek();
@@ -170,11 +159,9 @@ namespace Toon.Format.Internal.Decode
                     var nested = DecodeObject(cursor, baseDepth + 1, options);
                     return new KeyValueDecodeResult { Key = keyResult.Key, Value = nested, FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
                 }
-                // Empty object
                 return new KeyValueDecodeResult { Key = keyResult.Key, Value = new JsonObject(), FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
             }
 
-            // Inline primitive value
             var primitiveValue = Parser.ParsePrimitiveToken(rest);
             return new KeyValueDecodeResult { Key = keyResult.Key, Value = primitiveValue, FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
         }
@@ -201,7 +188,6 @@ namespace Toon.Format.Internal.Decode
             int baseDepth,
             ResolvedDecodeOptions options)
         {
-            // Inline primitive array
             if (inlineValues != null)
             {
                 // For inline arrays, cursor should already be advanced or will be by caller
@@ -211,14 +197,12 @@ namespace Toon.Format.Internal.Decode
             // For multi-line arrays (tabular or list), the cursor should already be positioned
             // at the array header line, but we haven't advanced past it yet
 
-            // Tabular array
             if (header.Fields != null && header.Fields.Count > 0)
             {
                 var tabularResult = DecodeTabularArray(header, cursor, baseDepth, options);
                 return new JsonArray(tabularResult.Cast<JsonNode?>().ToArray());
             }
 
-            // List array
             var listResult = DecodeListArray(header, cursor, baseDepth, options);
             return new JsonArray(listResult.ToArray());
         }
@@ -266,7 +250,6 @@ namespace Toon.Format.Internal.Decode
 
                 if (line.Depth == itemDepth && isListItem)
                 {
-                    // Track first and last item line numbers
                     if (startLine == null)
                         startLine = line.LineNumber;
                     endLine = line.LineNumber;
@@ -274,7 +257,6 @@ namespace Toon.Format.Internal.Decode
                     var item = DecodeListItem(cursor, itemDepth, options);
                     items.Add(item);
 
-                    // Update endLine to the current cursor position (after item was decoded)
                     var currentLine = cursor.Current();
                     if (currentLine != null)
                         endLine = currentLine.LineNumber;
@@ -287,7 +269,6 @@ namespace Toon.Format.Internal.Decode
 
             Validation.AssertExpectedCount(items.Count, header.Length, "list array items", options);
 
-            // In strict mode, check for blank lines inside the array
             if (options.Strict && startLine != null && endLine != null)
             {
                 Validation.ValidateNoBlankLinesInRange(
@@ -299,7 +280,6 @@ namespace Toon.Format.Internal.Decode
                 );
             }
 
-            // In strict mode, check for extra items
             if (options.Strict)
             {
                 Validation.ValidateNoExtraListItems(cursor, itemDepth, header.Length);
@@ -329,7 +309,6 @@ namespace Toon.Format.Internal.Decode
 
                 if (line.Depth == rowDepth)
                 {
-                    // Track first and last row line numbers
                     if (startLine == null)
                         startLine = line.LineNumber;
                     endLine = line.LineNumber;
@@ -356,7 +335,6 @@ namespace Toon.Format.Internal.Decode
 
             Validation.AssertExpectedCount(objects.Count, header.Length, "tabular rows", options);
 
-            // In strict mode, check for blank lines inside the array
             if (options.Strict && startLine != null && endLine != null)
             {
                 Validation.ValidateNoBlankLinesInRange(
@@ -368,7 +346,6 @@ namespace Toon.Format.Internal.Decode
                 );
             }
 
-            // In strict mode, check for extra rows
             if (options.Strict)
             {
                 Validation.ValidateNoExtraTabularRows(cursor, rowDepth, header);
@@ -415,7 +392,6 @@ namespace Toon.Format.Internal.Decode
                 return new JsonObject();
             }
 
-            // Check for array header after hyphen
             if (Parser.IsArrayHeaderAfterHyphen(afterHyphen))
             {
                 var arrayHeader = Parser.ParseArrayHeaderLine(afterHyphen, Constants.DEFAULT_DELIMITER_CHAR);
@@ -425,13 +401,11 @@ namespace Toon.Format.Internal.Decode
                 }
             }
 
-            // Check for object first field after hyphen
             if (Parser.IsObjectFirstFieldAfterHyphen(afterHyphen))
             {
                 return DecodeObjectFromListItem(line, cursor, baseDepth, options);
             }
 
-            // Primitive value
             return Parser.ParsePrimitiveToken(afterHyphen);
         }
 
@@ -451,7 +425,6 @@ namespace Toon.Format.Internal.Decode
 
             var obj = new JsonObject { [firstField.Key] = firstField.Value };
 
-            // Read subsequent fields
             while (!cursor.AtEnd())
             {
                 var line = cursor.Peek();

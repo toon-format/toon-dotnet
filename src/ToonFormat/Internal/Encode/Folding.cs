@@ -49,18 +49,14 @@ namespace Toon.Format.Internal.Encode
         public static FoldResult? TryFoldKeyChain(string key, JsonNode? value, IReadOnlyCollection<string> siblings, ResolvedEncodeOptions options, IReadOnlyCollection<string>? rootLiteralKeys = null,
             string? pathPrefix = null, int? flattenDepth = null)
         {
-            // Only fold when safe mode is enabled
             if (options.KeyFolding != ToonKeyFolding.Safe)
                 return null;
 
-            // Can only fold objects
             if (!Normalize.IsJsonObject(value))
                 return null;
 
-            // Use provided flattenDepth or fall back to options default
             var effectiveFlattenDepth = flattenDepth ?? options.FlattenDepth;
 
-            // Collect the chain of single-key objects
             var keyChain = CollectSingleKeyChain(key, value, effectiveFlattenDepth);
 
             var segments = keyChain.Segments;
@@ -71,14 +67,11 @@ namespace Toon.Format.Internal.Encode
             if (segments.Count < 2)
                 return null;
 
-            // Validate all segments are safe identifiers
             if (!segments.All(ValidationShared.IsIdentifierSegment))
                 return null;
 
-            // Build the folded key (relative to current nesting level)
             var foldedKey = BuildFoldedKey(segments);
 
-            // Build the absolute path from root
             var absolutePath = pathPrefix != null ? $"{pathPrefix}{Constants.DOT}{foldedKey}" : foldedKey;
 
             // Check for collision with existing literal sibling keys (at current level)
@@ -103,18 +96,14 @@ namespace Toon.Format.Internal.Encode
             List<string> segments = [startKey];
             var currentValue = startValue;
 
-            // Traverse nested single-key objects, collecting each key into segments array
-            // Stop when we encounter: multi-key object, array, primitive, or depth limit
             while (segments.Count < maxDepth)
             {
-                // must be an object to continue
                 if (!Normalize.IsJsonObject(currentValue))
                     break;
 
                 var jsonObject = currentValue?.AsObject();
                 var keys = (jsonObject as IDictionary<string, JsonNode>)!.Keys;
 
-                // must have exactly one key to continue the chain
                 if (keys == null || keys.Count != 1)
                     break;
 
@@ -125,10 +114,8 @@ namespace Toon.Format.Internal.Encode
                 currentValue = nextValue;
             }
 
-            // determine the tail
             if (!Normalize.IsJsonObject(currentValue) || Normalize.IsEmptyObject(currentValue))
             {
-                // Array, primitive, null, or empty object - this is a leaf value
                 return new KeyChain
                 {
                     Segments =
@@ -138,7 +125,6 @@ namespace Toon.Format.Internal.Encode
                 };
             }
 
-            // has keys -return as tail (remainder)
             return new KeyChain
             {
                 Segments = segments,

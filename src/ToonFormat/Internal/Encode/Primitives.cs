@@ -10,7 +10,6 @@ namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Primitive value encoding, key encoding, and header formatting utilities.
-    /// Aligned with TypeScript encode/primitives.ts
     /// </summary>
     internal static class Primitives
     {
@@ -78,11 +77,9 @@ namespace Toon.Format.Internal.Encode
 
             if (value is JsonValue jsonValue)
             {
-                // Boolean
                 if (jsonValue.TryGetValue<bool>(out var boolVal))
                     return boolVal ? Constants.TRUE_LITERAL : Constants.FALSE_LITERAL;
 
-                // Number
                 if (jsonValue.TryGetValue<int>(out var intVal))
                     return intVal.ToString(CultureInfo.InvariantCulture);
 
@@ -92,7 +89,6 @@ namespace Toon.Format.Internal.Encode
                 if (jsonValue.TryGetValue<double>(out var doubleVal))
                     return FormatNumber(doubleVal);
 
-                // String
                 if (jsonValue.TryGetValue<string>(out var strVal))
                     return EncodeStringLiteral(strVal ?? string.Empty, delimiter);
             }
@@ -167,20 +163,17 @@ namespace Toon.Format.Internal.Encode
             var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
             var header = string.Empty;
 
-            // Add key if present
             if (!string.IsNullOrEmpty(key))
             {
                 header += EncodeKey(key);
             }
 
-            // Add array length with optional marker and delimiter
             var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
                 ? delimiterChar.ToString()
                 : string.Empty;
 
             header += $"{Constants.OPEN_BRACKET}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
 
-            // Add field names for tabular format
             if (fields != null && fields.Count > 0)
             {
                 var quotedFields = fields.Select(EncodeKey);
