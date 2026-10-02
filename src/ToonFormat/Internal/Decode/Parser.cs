@@ -280,7 +280,7 @@ namespace Toon.Format.Internal.Decode
             if (LiteralUtils.IsNumericLiteral(trimmed))
             {
                 var parsedNumber = double.Parse(trimmed, CultureInfo.InvariantCulture);
-                parsedNumber = FloatUtils.NormalizeSignedZero(parsedNumber);
+                parsedNumber = parsedNumber == 0 ? 0.0 : parsedNumber;
                 if (parsedNumber < 1e-6 || parsedNumber > 1e6)
                 {
                     return JsonValue.Create(NumericUtils.EmitCanonicalDecimalForm(parsedNumber));

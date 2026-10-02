@@ -39,8 +39,7 @@ namespace Toon.Format.Internal.Encode
             // Numbers: canonicalize -0 to +0, handle NaN and Infinity
             if (value is double d)
             {
-                // Canonicalize signed zero via FloatUtils
-                var dn = FloatUtils.NormalizeSignedZero(d);
+                var dn = d == 0 ? 0.0 : d;
                 if (!NumericUtils.IsFinite(dn))
                     return null;
                 return JsonValue.Create(dn);
@@ -48,8 +47,7 @@ namespace Toon.Format.Internal.Encode
 
             if (value is float f)
             {
-                // Canonicalize signed zero via FloatUtils
-                var fn = FloatUtils.NormalizeSignedZero(f);
+                var fn = f == 0 ? 0.0f : f;
                 if (!NumericUtils.IsFinite(fn))
                     return null;
                 return JsonValue.Create(fn);
@@ -142,12 +140,7 @@ namespace Toon.Format.Internal.Encode
                     if (!NumericUtils.IsFinite(d)) return null;
                     return JsonValue.Create(d);
                 case float f:
-#if NETSTANDARD2_0
-                    // netstandard does not have BitConverter.SingleToInt32Bits
-                    if (FloatUtils.NormalizeSignedZero(f).Equals(0.0f)) return JsonValue.Create(0.0f);
-#else
-                    if (BitConverter.SingleToInt32Bits(f) == BitConverter.SingleToInt32Bits(-0.0f)) return JsonValue.Create(0.0f);
-#endif
+                    if (f == 0) return JsonValue.Create(0.0f);
                     if (!NumericUtils.IsFinite(f)) return null;
                     return JsonValue.Create(f);
                 case decimal dec:
