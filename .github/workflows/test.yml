@@ -28,10 +28,4 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v7
-        with:
-          directory: ./coverage
-          fail_ci_if_error: false
+        run: dotnet test --no-build --configuration Release --verbosity normal
