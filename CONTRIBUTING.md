@@ -5,14 +5,14 @@
 Building needs the .NET 10 SDK – the library targets `netstandard2.0`, `net8.0`, `net9.0`, and `net10.0`. On Windows, tests also run on `net481`, which needs the .NET Framework 4.8.1 developer pack.
 
 ```bash
-git clone https://github.com/toon-format/toon-dotnet.git
+git clone --recurse-submodules https://github.com/toon-format/toon-dotnet.git
 cd toon-dotnet
 dotnet restore
 dotnet build
 dotnet test
 ```
 
-The conformance tests in `tests/ToonFormat.Tests/GeneratedTests` are generated from the spec's fixtures. Regenerate them with `specgen.sh` or `specgen.ps1`, which pin the spec tag.
+`SpecFixtureTests` runs the fixtures from the `tests/spec` submodule, pinned to the spec tag this port targets. To move to a later spec, bump the submodule and update `tests/ToonFormat.Tests/known-failures.txt`.
 
 ## Coding Standards
 

@@ -21,6 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\spec\tests\fixtures\**\*.json" LinkBase="fixtures" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="known-failures.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\ToonFormat\ToonFormat.csproj" />
   </ItemGroup>
 
