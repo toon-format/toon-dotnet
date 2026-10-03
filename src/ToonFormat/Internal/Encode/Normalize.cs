@@ -12,11 +12,10 @@ namespace Toon.Format.Internal.Encode
     /// <summary>
     /// Normalization utilities for converting arbitrary .NET objects to JsonNode representations
     /// and type guards for JSON value classification.
-    /// Aligned with TypeScript encode/normalize.ts
     /// </summary>
     internal static class Normalize
     {
-        // #region Normalization (object → JsonNode)
+        #region Normalization (object → JsonNode)
 
         /// <summary>
         /// Normalizes an arbitrary .NET value to a JsonNode representation.
@@ -25,11 +24,9 @@ namespace Toon.Format.Internal.Encode
         /// <param name="value">The value to be normalized.</param>
         public static JsonNode? NormalizeValue(object? value)
         {
-            // null
             if (value == null)
                 return null;
 
-            // Primitives: string, boolean
             if (value is string str)
                 return JsonValue.Create(str);
 
@@ -39,8 +36,7 @@ namespace Toon.Format.Internal.Encode
             // Numbers: canonicalize -0 to +0, handle NaN and Infinity
             if (value is double d)
             {
-                // Canonicalize signed zero via FloatUtils
-                var dn = FloatUtils.NormalizeSignedZero(d);
+                var dn = d == 0 ? 0.0 : d;
                 if (!NumericUtils.IsFinite(dn))
                     return null;
                 return JsonValue.Create(dn);
@@ -48,14 +44,12 @@ namespace Toon.Format.Internal.Encode
 
             if (value is float f)
             {
-                // Canonicalize signed zero via FloatUtils
-                var fn = FloatUtils.NormalizeSignedZero(f);
+                var fn = f == 0 ? 0.0f : f;
                 if (!NumericUtils.IsFinite(fn))
                     return null;
                 return JsonValue.Create(fn);
             }
 
-            // Other numeric types
             if (value is int i) return JsonValue.Create(i);
             if (value is long l) return JsonValue.Create(l);
             if (value is decimal dec) return JsonValue.Create(dec);
@@ -66,9 +60,8 @@ namespace Toon.Format.Internal.Encode
             if (value is uint ui) return JsonValue.Create(ui);
             if (value is ulong ul) return JsonValue.Create(ul);
 
-            // DateTime → ISO string
             if (value is DateTime dt)
-                return JsonValue.Create(dt.ToString("O")); // ISO 8601 format
+                return JsonValue.Create(dt.ToString("O"));
 
             if (value is DateTimeOffset dto)
                 return JsonValue.Create(dto.ToString("O"));
@@ -85,7 +78,6 @@ namespace Toon.Format.Internal.Encode
                 return jsonObject;
             }
 
-            // Array/List → JsonArray
             if (value is IEnumerable enumerable && value is not string)
             {
                 var jsonArray = new JsonArray();
@@ -96,7 +88,6 @@ namespace Toon.Format.Internal.Encode
                 return jsonArray;
             }
 
-            // Plain object → JsonObject via reflection
             if (IsPlainObject(value))
             {
                 var jsonObject = new JsonObject();
@@ -122,7 +113,6 @@ namespace Toon.Format.Internal.Encode
         /// </summary>
         public static JsonNode? NormalizeValue<T>(T value)
         {
-            // null
             if (value is null)
                 return null;
 
@@ -142,12 +132,7 @@ namespace Toon.Format.Internal.Encode
                     if (!NumericUtils.IsFinite(d)) return null;
                     return JsonValue.Create(d);
                 case float f:
-#if NETSTANDARD2_0
-                    // netstandard does not have BitConverter.SingleToInt32Bits
-                    if (FloatUtils.NormalizeSignedZero(f).Equals(0.0f)) return JsonValue.Create(0.0f);
-#else
-                    if (BitConverter.SingleToInt32Bits(f) == BitConverter.SingleToInt32Bits(-0.0f)) return JsonValue.Create(0.0f);
-#endif
+                    if (f == 0) return JsonValue.Create(0.0f);
                     if (!NumericUtils.IsFinite(f)) return null;
                     return JsonValue.Create(f);
                 case decimal dec:
@@ -224,21 +209,18 @@ namespace Toon.Format.Internal.Encode
 
             var type = value.GetType();
 
-            // Exclude primitives, strings, and special types
             if (type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || type == typeof(DateTimeOffset))
                 return false;
 
-            // Exclude collections
             if (typeof(IEnumerable).IsAssignableFrom(type))
                 return false;
 
-            // Accept class or struct types
             return type.IsClass || type.IsValueType;
         }
 
-        // #endregion
+        #endregion
 
-        // #region Type guards
+        #region Type guards
 
         /// <summary>
         /// Checks if a JsonNode is a primitive value (null, string, number, or boolean).
@@ -250,7 +232,6 @@ namespace Toon.Format.Internal.Encode
 
             if (value is JsonValue jsonValue)
             {
-                // Check if it's a primitive type
                 return jsonValue.TryGetValue<string>(out _)
                     || jsonValue.TryGetValue<bool>(out _)
                     || jsonValue.TryGetValue<int>(out _)
@@ -288,9 +269,9 @@ namespace Toon.Format.Internal.Encode
             return IsJsonObject(value) && (value as IDictionary<string, JsonNode>)?.Keys?.Count == 0;
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array type detection
+        #region Array type detection
 
         /// <summary>
         /// Checks if a JsonArray contains only primitive values.
@@ -316,6 +297,6 @@ namespace Toon.Format.Internal.Encode
             return array.All(item => IsJsonObject(item));
         }
 
-        // #endregion
+        #endregion
     }
 }

@@ -5,13 +5,6 @@ using Toon.Format;
 
 namespace Toon.Format.Internal.Shared
 {
-    /// <summary>
-    /// Validation utilities aligned with TypeScript version shared/validation.ts:
-    /// - IsValidUnquotedKey: Whether the key name can be without quotes
-    /// - IsSafeUnquoted: Whether the string value can be without quotes
-    /// - IsBooleanOrNullLiteral: Whether it is true/false/null
-    /// - IsNumericLike: Whether it looks like numeric text (including leading zero integers)
-    /// </summary>
     internal static class ValidationShared
     {
         private static readonly Regex ValidUnquotedKeyRegex = new(

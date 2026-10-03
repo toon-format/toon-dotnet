@@ -2,17 +2,17 @@
 
 ## Development Setup
 
-Building needs the .NET 10 SDK – the library targets `netstandard2.0`, `net8.0`, `net9.0`, and `net10.0`. On Windows, tests also run on `net481`, which needs the .NET Framework 4.8.1 developer pack.
+Building needs the .NET 10 SDK – the library targets `netstandard2.0` and `net10.0`. On Windows, tests also run on `net481`, which needs the .NET Framework 4.8.1 developer pack.
 
 ```bash
-git clone https://github.com/toon-format/toon-dotnet.git
+git clone --recurse-submodules https://github.com/toon-format/toon-dotnet.git
 cd toon-dotnet
 dotnet restore
 dotnet build
 dotnet test
 ```
 
-The conformance tests in `tests/ToonFormat.Tests/GeneratedTests` are generated from the spec's fixtures. Regenerate them with `specgen.sh` or `specgen.ps1`, which pin the spec tag.
+`SpecFixtureTests` runs the fixtures from the `tests/spec` submodule, pinned to the spec tag this port targets. To move to a later spec, bump the submodule and update `tests/ToonFormat.Tests/known-failures.txt`.
 
 ## Coding Standards
 
@@ -21,7 +21,7 @@ The conformance tests in `tests/ToonFormat.Tests/GeneratedTests` are generated f
 
 ## Pull Requests
 
-Add tests for every behavior change and use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages. Changes to the format itself belong in [toon-format/spec](https://github.com/toon-format/spec).
+Spec behavior is tested through the spec fixtures – a missing case goes to [toon-format/spec](https://github.com/toon-format/spec) as a fixture. Changes to the format itself belong there too. .NET-specific behavior, such as `Decode<T>`, streams, and async, gets a test under `tests/ToonFormat.Tests/ManualTests/`. Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
 
 ## Maintainers
 

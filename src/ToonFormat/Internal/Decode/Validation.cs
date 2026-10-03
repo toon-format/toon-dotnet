@@ -17,7 +17,6 @@ namespace Toon.Format.Internal.Decode
 
     /// <summary>
     /// Validation utilities for TOON decoding.
-    /// Aligned with TypeScript decode/validation.ts
     /// </summary>
     internal static class Validation
     {
@@ -110,7 +109,6 @@ namespace Toon.Format.Internal.Decode
             if (!strict)
                 return;
 
-            // Find blank lines within the range
             // Note: We don't filter by depth because ANY blank line between array items is an error,
             // regardless of its indentation level
             var blanksInRange = blankLines.Where(

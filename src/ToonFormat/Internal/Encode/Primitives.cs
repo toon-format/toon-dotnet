@@ -10,7 +10,6 @@ namespace Toon.Format.Internal.Encode
 {
     /// <summary>
     /// Primitive value encoding, key encoding, and header formatting utilities.
-    /// Aligned with TypeScript encode/primitives.ts
     /// </summary>
     internal static class Primitives
     {
@@ -66,7 +65,7 @@ namespace Toon.Format.Internal.Encode
             return gFormat;
         }
 
-        // #region Primitive encoding
+        #region Primitive encoding
 
         /// <summary>
         /// Encodes a primitive JSON value (null, boolean, number, or string) to its TOON representation.
@@ -78,11 +77,9 @@ namespace Toon.Format.Internal.Encode
 
             if (value is JsonValue jsonValue)
             {
-                // Boolean
                 if (jsonValue.TryGetValue<bool>(out var boolVal))
                     return boolVal ? Constants.TRUE_LITERAL : Constants.FALSE_LITERAL;
 
-                // Number
                 if (jsonValue.TryGetValue<int>(out var intVal))
                     return intVal.ToString(CultureInfo.InvariantCulture);
 
@@ -92,7 +89,6 @@ namespace Toon.Format.Internal.Encode
                 if (jsonValue.TryGetValue<double>(out var doubleVal))
                     return FormatNumber(doubleVal);
 
-                // String
                 if (jsonValue.TryGetValue<string>(out var strVal))
                     return EncodeStringLiteral(strVal ?? string.Empty, delimiter);
             }
@@ -116,9 +112,9 @@ namespace Toon.Format.Internal.Encode
             return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
         }
 
-        // #endregion
+        #endregion
 
-        // #region Key encoding
+        #region Key encoding
 
         /// <summary>
         /// Encodes a key, adding quotes if necessary.
@@ -134,9 +130,9 @@ namespace Toon.Format.Internal.Encode
             return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
         }
 
-        // #endregion
+        #endregion
 
-        // #region Value joining
+        #region Value joining
 
         /// <summary>
         /// Encodes and joins an array of primitive values with the specified delimiter.
@@ -147,9 +143,9 @@ namespace Toon.Format.Internal.Encode
             return string.Join(delimiter.ToString(), encoded);
         }
 
-        // #endregion
+        #endregion
 
-        // #region Header formatters
+        #region Header formatters
 
         /// <summary>
         /// Formats an array header with optional key, length marker, delimiter, and field names.
@@ -167,20 +163,17 @@ namespace Toon.Format.Internal.Encode
             var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
             var header = string.Empty;
 
-            // Add key if present
             if (!string.IsNullOrEmpty(key))
             {
                 header += EncodeKey(key);
             }
 
-            // Add array length with optional marker and delimiter
             var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
                 ? delimiterChar.ToString()
                 : string.Empty;
 
             header += $"{Constants.OPEN_BRACKET}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
 
-            // Add field names for tabular format
             if (fields != null && fields.Count > 0)
             {
                 var quotedFields = fields.Select(EncodeKey);
@@ -193,6 +186,6 @@ namespace Toon.Format.Internal.Encode
             return header;
         }
 
-        // #endregion
+        #endregion
     }
 }

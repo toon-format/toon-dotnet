@@ -30,11 +30,10 @@ namespace Toon.Format.Internal.Decode
 
     /// <summary>
     /// Parsing utilities for TOON format tokens, headers, and values.
-    /// Aligned with TypeScript decode/parser.ts
     /// </summary>
     internal static class Parser
     {
-        // #region Array header parsing
+        #region Array header parsing
 
         /// <summary>
         /// Parses an array header line like "key[3]:" or "users[#2,]{name,age}:".
@@ -61,14 +60,12 @@ namespace Toon.Format.Internal.Decode
                 if (!afterQuote.StartsWith(Constants.OPEN_BRACKET.ToString()))
                     return null;
 
-                // Calculate position in original content and find bracket after the quoted key
                 var leadingWhitespace = content.Length - trimmed.Length;
                 var keyEndIndex = leadingWhitespace + closingQuoteIndex + 1;
                 bracketStart = content.IndexOf(Constants.OPEN_BRACKET, keyEndIndex);
             }
             else
             {
-                // Unquoted key - find first bracket
                 bracketStart = content.IndexOf(Constants.OPEN_BRACKET);
             }
 
@@ -94,12 +91,10 @@ namespace Toon.Format.Internal.Decode
                 }
             }
 
-            // Now find colon after brackets and braces
             colonIndex = content.IndexOf(Constants.COLON, Math.Max(bracketEnd, braceEnd));
             if (colonIndex == -1)
                 return null;
 
-            // Extract and parse the key (might be quoted)
             string? key = null;
             if (bracketStart > 0)
             {
@@ -112,7 +107,6 @@ namespace Toon.Format.Internal.Decode
             var afterColon = content.Substring(colonIndex + 1).Trim();
             var bracketContent = content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1);
 
-            // Try to parse bracket segment
             BracketSegmentResult parsedBracket;
             try
             {
@@ -123,7 +117,6 @@ namespace Toon.Format.Internal.Decode
                 return null;
             }
 
-            // Check for fields segment
             List<string>? fields = null;
             if (braceStart != -1 && braceStart < colonIndex)
             {
@@ -160,7 +153,6 @@ namespace Toon.Format.Internal.Decode
         {
             var content = seg;
 
-            // Check for delimiter suffix
             char delimiter = defaultDelimiter;
             if (content.EndsWith(Constants.TAB.ToString()))
             {
@@ -185,16 +177,16 @@ namespace Toon.Format.Internal.Decode
             };
         }
 
-        // #endregion
+        #endregion
 
-        // #region Delimited value parsing
+        #region Delimited value parsing
 
         /// <summary>
         /// Parses a delimiter-separated string into individual values, respecting quotes.
         /// </summary>
         public static List<string> ParseDelimitedValues(string input, char delimiter)
         {
-            var values = new List<string>(16); // pre-allocate for performance
+            var values = new List<string>(16);
             var current = new System.Text.StringBuilder(input.Length);
             bool inQuotes = false;
 
@@ -244,9 +236,9 @@ namespace Toon.Format.Internal.Decode
             return values.Select(v => ParsePrimitiveToken(v)).ToList();
         }
 
-        // #endregion
+        #endregion
 
-        // #region Primitive and key parsing
+        #region Primitive and key parsing
 
         /// <summary>
         /// Parses a primitive token (null, boolean, number, or string).
@@ -255,7 +247,6 @@ namespace Toon.Format.Internal.Decode
         {
             var trimmed = token.Trim();
 
-            // Empty token
             if (string.IsNullOrEmpty(trimmed))
                 return JsonValue.Create(string.Empty);
 
@@ -265,7 +256,6 @@ namespace Toon.Format.Internal.Decode
                 return JsonValue.Create(ParseStringLiteral(trimmed));
             }
 
-            // Boolean or null literals
             if (LiteralUtils.IsBooleanOrNullLiteral(trimmed))
             {
                 if (trimmed == Constants.TRUE_LITERAL)
@@ -276,11 +266,10 @@ namespace Toon.Format.Internal.Decode
                     return null;
             }
 
-            // Numeric literal
             if (LiteralUtils.IsNumericLiteral(trimmed))
             {
                 var parsedNumber = double.Parse(trimmed, CultureInfo.InvariantCulture);
-                parsedNumber = FloatUtils.NormalizeSignedZero(parsedNumber);
+                parsedNumber = parsedNumber == 0 ? 0.0 : parsedNumber;
                 if (parsedNumber < 1e-6 || parsedNumber > 1e6)
                 {
                     return JsonValue.Create(NumericUtils.EmitCanonicalDecimalForm(parsedNumber));
@@ -289,7 +278,6 @@ namespace Toon.Format.Internal.Decode
                 return JsonValue.Create(parsedNumber);
             }
 
-            // Unquoted string
             return JsonValue.Create(trimmed);
         }
 
@@ -302,7 +290,6 @@ namespace Toon.Format.Internal.Decode
 
             if (trimmedToken.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
             {
-                // Find the closing quote, accounting for escaped quotes
                 var closingQuoteIndex = StringUtils.FindClosingQuote(trimmedToken, 0);
 
                 if (closingQuoteIndex == -1)
@@ -337,7 +324,6 @@ namespace Toon.Format.Internal.Decode
                 end++;
             }
 
-            // Validate that a colon was found
             if (end >= content.Length || content[end] != Constants.COLON)
             {
                 throw ToonFormatException.Syntax("Missing colon after key");
@@ -345,7 +331,6 @@ namespace Toon.Format.Internal.Decode
 
             var key = content.Substring(start, end - start).Trim();
 
-            // Skip the colon
             end++;
 
             return new KeyParseResult { Key = key, End = end, WasQuoted = false };
@@ -353,7 +338,6 @@ namespace Toon.Format.Internal.Decode
 
         public static KeyParseResult ParseQuotedKey(string content, int start)
         {
-            // Find the closing quote, accounting for escaped quotes
             var closingQuoteIndex = StringUtils.FindClosingQuote(content, start);
 
             if (closingQuoteIndex == -1)
@@ -361,12 +345,10 @@ namespace Toon.Format.Internal.Decode
                 throw ToonFormatException.Syntax("Unterminated quoted key");
             }
 
-            // Extract and unescape the key content
             var keyContent = content.Substring(start + 1, closingQuoteIndex - start - 1);
             var key = StringUtils.UnescapeString(keyContent);
             int end = closingQuoteIndex + 1;
 
-            // Validate and skip colon after quoted key
             if (end >= content.Length || content[end] != Constants.COLON)
             {
                 throw ToonFormatException.Syntax("Missing colon after key");
@@ -392,9 +374,9 @@ namespace Toon.Format.Internal.Decode
             }
         }
 
-        // #endregion
+        #endregion
 
-        // #region Array content detection helpers
+        #region Array content detection helpers
 
         /// <summary>
         /// Checks if content after hyphen starts with an array header.
@@ -413,6 +395,6 @@ namespace Toon.Format.Internal.Decode
             return StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
         }
 
-        // #endregion
+        #endregion
     }
 }
