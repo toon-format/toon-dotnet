@@ -17,7 +17,7 @@ namespace Toon.Format.Internal.Shared
 
         /// <summary>
         /// Checks if the token is a valid numeric literal.
-        /// Rules aligned with TS:
+        /// Rules:
         /// - Rejects leading zeros (except "0" itself or decimals like "0.xxx")
         /// - Parses successfully and is a finite number (not NaN/Infinity)
         /// </summary>
