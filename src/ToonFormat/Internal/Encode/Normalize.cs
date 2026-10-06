@@ -70,32 +70,14 @@ namespace Toon.Format.Internal.Encode
                     return jsonArray;
             }
 
-            if (!IsPlainObject(value))
+            // The primitives left here, char and the native integers, have no JSON form.
+            if (value.GetType().IsPrimitive)
                 return null;
 
             var properties = new JsonObject();
             foreach (var prop in value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.CanRead))
                 properties[prop.Name] = NormalizeValue(prop.GetValue(value));
             return properties;
-        }
-
-        /// <summary>
-        /// Determines if a value is a plain object (not a primitive, collection, or special type).
-        /// </summary>
-        private static bool IsPlainObject(object value)
-        {
-            if (value == null)
-                return false;
-
-            var type = value.GetType();
-
-            if (type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || type == typeof(DateTimeOffset))
-                return false;
-
-            if (typeof(IEnumerable).IsAssignableFrom(type))
-                return false;
-
-            return type.IsClass || type.IsValueType;
         }
 
         // A lone surrogate has no UTF-8 form, so emitting it would silently substitute U+FFFD.
