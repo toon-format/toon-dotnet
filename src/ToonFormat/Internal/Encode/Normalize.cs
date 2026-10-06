@@ -11,8 +11,7 @@ using Toon.Format.Internal.Shared;
 namespace Toon.Format.Internal.Encode
 {
     /// <summary>
-    /// Normalization utilities for converting arbitrary .NET objects to JsonNode representations
-    /// and type guards for JSON value classification.
+    /// Maps .NET values onto the JSON data model and classifies the resulting nodes.
     /// </summary>
     internal static class Normalize
     {
@@ -99,7 +98,7 @@ namespace Toon.Format.Internal.Encode
         #region Type guards
 
         /// <summary>
-        /// Checks if a JsonNode is a primitive value (null, string, number, or boolean).
+        /// Whether the node is null, a string, a number, or a boolean.
         /// </summary>
         public static bool IsJsonPrimitive(JsonNode? value)
         {
@@ -123,17 +122,11 @@ namespace Toon.Format.Internal.Encode
 
         #region Array type detection
 
-        /// <summary>
-        /// Checks if a JsonArray contains only primitive values.
-        /// </summary>
         public static bool IsArrayOfPrimitives(JsonArray array)
         {
             return array.All(item => IsJsonPrimitive(item));
         }
 
-        /// <summary>
-        /// Checks if a JsonArray contains only objects.
-        /// </summary>
         public static bool IsArrayOfObjects(JsonArray array)
         {
             return array.All(item => item is JsonObject);

@@ -110,9 +110,6 @@ namespace Toon.Format.Internal.Encode
 
         #region Value joining
 
-        /// <summary>
-        /// Encodes and joins an array of primitive values with the specified delimiter.
-        /// </summary>
         public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter)
         {
             var encoded = values.Select(v => EncodePrimitive(v, delimiter));

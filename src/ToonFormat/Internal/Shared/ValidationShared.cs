@@ -24,10 +24,10 @@ namespace Toon.Format.Internal.Shared
             Constants.CLOSE_BRACE
         };
 
-        /// <summary>Whether the key name can be without quotes.</summary>
+        /// <summary>Whether the key may stay unquoted.</summary>
         internal static bool IsValidUnquotedKey(string key) => ValidUnquotedKeyRegex.IsMatch(key);
 
-        /// <summary>Whether the string value can be safely without quotes.</summary>
+        /// <summary>Whether the string value may stay unquoted under the active delimiter.</summary>
         internal static bool IsSafeUnquoted(string value, char delimiter)
         {
             if (string.IsNullOrEmpty(value))
