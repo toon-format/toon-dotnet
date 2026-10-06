@@ -153,7 +153,7 @@ namespace Toon.Format.Internal.Encode
             var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
             var header = string.Empty;
 
-            if (!string.IsNullOrEmpty(key))
+            if (key != null)
             {
                 header += EncodeKey(key);
             }
