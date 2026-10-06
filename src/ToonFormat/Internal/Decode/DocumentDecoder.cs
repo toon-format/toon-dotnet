@@ -42,7 +42,9 @@ namespace Toon.Format.Internal.Decode
                 if (header != null)
                 {
                     _cursor.Next();
-                    return DecodeArrayFromHeader(header.Header, header.InlineValues, 0, first);
+                    var array = DecodeArrayFromHeader(header.Header, header.InlineValues, 0, first);
+                    AssertFullyConsumed();
+                    return array;
                 }
             }
 
@@ -343,6 +345,22 @@ namespace Toon.Format.Internal.Decode
 
             AssertNotScalarLine(line);
             _cursor.Next();
+        }
+
+        // Strict decoding never silently discards input, so a line after the root form is an error.
+        // Non-strict decoding skips it, except a bare token, which errors in both modes.
+        private void AssertFullyConsumed()
+        {
+            if (!_strict)
+            {
+                for (var line = _cursor.Next(); line != null; line = _cursor.Next())
+                    AssertNotScalarLine(line);
+                return;
+            }
+
+            var trailing = _cursor.Peek();
+            if (trailing != null)
+                throw ToonFormatException.Validation("Unexpected content after the document root", trailing.LineNumber, sourceLine: trailing.Raw);
         }
 
         // Both modes reject a bare token outside root primitive position, so it must not reach the
