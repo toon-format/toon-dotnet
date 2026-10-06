@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Toon.Format;
 
 namespace Toon.Format.Internal.Shared
 {

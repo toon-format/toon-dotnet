@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Toon.Format.Internal.Shared;
 
 namespace Toon.Format.Internal.Decode

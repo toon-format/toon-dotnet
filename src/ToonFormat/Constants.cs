@@ -1,5 +1,3 @@
-using System;
-
 namespace Toon.Format
 {
     internal static class Constants
