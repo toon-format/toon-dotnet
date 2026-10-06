@@ -41,52 +41,32 @@ namespace Toon.Format.Internal.Shared
         /// </summary>
         internal static string UnescapeString(string value)
         {
-            if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
-
             var sb = new StringBuilder(value.Length);
-            int i = 0;
-            while (i < value.Length)
+            for (var i = 0; i < value.Length; i++)
             {
-                var ch = value[i];
-                if (ch == Constants.BACKSLASH)
+                if (value[i] != Constants.BACKSLASH)
                 {
-                    if (i + 1 >= value.Length)
-                        throw ToonFormatException.Syntax("Invalid escape sequence: backslash at end of string");
-
-                    var next = value[i + 1];
-                    switch (next)
-                    {
-                        case 'n':
-                            sb.Append(Constants.NEWLINE);
-                            i += 2;
-                            continue;
-                        case 't':
-                            sb.Append(Constants.TAB);
-                            i += 2;
-                            continue;
-                        case 'r':
-                            sb.Append(Constants.CARRIAGE_RETURN);
-                            i += 2;
-                            continue;
-                        case '\\':
-                            sb.Append(Constants.BACKSLASH);
-                            i += 2;
-                            continue;
-                        case '"':
-                            sb.Append(Constants.DOUBLE_QUOTE);
-                            i += 2;
-                            continue;
-                        case 'u':
-                            sb.Append(ParseUnicodeEscape(value, i));
-                            i += 6;
-                            continue;
-                        default:
-                            throw ToonFormatException.Syntax($"Invalid escape sequence: \\{next}");
-                    }
+                    sb.Append(value[i]);
+                    continue;
                 }
 
-                sb.Append(ch);
-                i++;
+                if (i + 1 >= value.Length)
+                    throw ToonFormatException.Syntax("Invalid escape sequence: backslash at end of string");
+
+                var next = value[++i];
+                sb.Append(next switch
+                {
+                    'n' => Constants.NEWLINE,
+                    't' => Constants.TAB,
+                    'r' => Constants.CARRIAGE_RETURN,
+                    '\\' => Constants.BACKSLASH,
+                    '"' => Constants.DOUBLE_QUOTE,
+                    'u' => ParseUnicodeEscape(value, i - 1),
+                    _ => throw ToonFormatException.Syntax($"Invalid escape sequence: \\{next}"),
+                });
+
+                if (next == 'u')
+                    i += 4;
             }
 
             return sb.ToString();
