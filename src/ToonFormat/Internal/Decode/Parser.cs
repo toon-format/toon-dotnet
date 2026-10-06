@@ -104,7 +104,7 @@ namespace Toon.Format.Internal.Decode
                     : rawKey;
             }
 
-            var afterColon = content.Substring(colonIndex + 1).Trim();
+            var afterColon = StringUtils.TrimSpaces(content.Substring(colonIndex + 1));
             var bracketContent = content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1);
 
             BracketSegmentResult parsedBracket;
@@ -125,7 +125,7 @@ namespace Toon.Format.Internal.Decode
                 {
                     var fieldsContent = content.Substring(braceStart + 1, foundBraceEnd - braceStart - 1);
                     fields = ParseDelimitedValues(fieldsContent, parsedBracket.Delimiter)
-                        .Select(field => ParseStringLiteral(field.Trim()))
+                        .Select(field => ParseStringLiteral(field))
                         .ToList();
                 }
             }
@@ -212,7 +212,7 @@ namespace Toon.Format.Internal.Decode
 
                 if (ch == delimiter && !inQuotes)
                 {
-                    values.Add(current.ToString().Trim());
+                    values.Add(StringUtils.TrimSpaces(current.ToString()));
                     current.Clear();
                     continue;
                 }
@@ -222,7 +222,7 @@ namespace Toon.Format.Internal.Decode
 
             if (current.Length > 0 || values.Count > 0)
             {
-                values.Add(current.ToString().Trim());
+                values.Add(StringUtils.TrimSpaces(current.ToString()));
             }
 
             return values;
@@ -245,7 +245,7 @@ namespace Toon.Format.Internal.Decode
         /// </summary>
         public static JsonNode? ParsePrimitiveToken(string token)
         {
-            var trimmed = token.Trim();
+            var trimmed = StringUtils.TrimSpaces(token);
 
             if (string.IsNullOrEmpty(trimmed))
                 return JsonValue.Create(string.Empty);
@@ -286,7 +286,7 @@ namespace Toon.Format.Internal.Decode
         /// </summary>
         public static string ParseStringLiteral(string token)
         {
-            var trimmedToken = token.Trim();
+            var trimmedToken = StringUtils.TrimSpaces(token);
 
             if (trimmedToken.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
             {
@@ -328,7 +328,7 @@ namespace Toon.Format.Internal.Decode
                 throw ToonFormatException.Syntax("Missing colon after key");
             }
 
-            var key = content.Substring(start, end - start).Trim();
+            var key = StringUtils.TrimSpaces(content.Substring(start, end - start));
 
             end++;
 

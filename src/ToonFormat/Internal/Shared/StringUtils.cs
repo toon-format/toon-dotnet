@@ -7,6 +7,12 @@ namespace Toon.Format.Internal.Shared
     internal static class StringUtils
     {
         /// <summary>
+        /// Trims U+0020 spaces only: other whitespace, such as NBSP or a tab outside its delimiter role,
+        /// is part of the token.
+        /// </summary>
+        internal static string TrimSpaces(string value) => value.Trim(Constants.SPACE);
+
+        /// <summary>
         /// Escapes backslash, quote, newline, carriage return, and tab, and every other control character as <c>\uXXXX</c>.
         /// </summary>
         internal static string EscapeString(string value)

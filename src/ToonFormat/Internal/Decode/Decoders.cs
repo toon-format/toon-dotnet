@@ -39,7 +39,7 @@ namespace Toon.Format.Internal.Decode
 
             if (cursor.Length == 1 && !IsKeyValueLine(first))
             {
-                return Parser.ParsePrimitiveToken(first.Content.Trim());
+                return Parser.ParsePrimitiveToken(first.Content);
             }
 
             return DecodeObject(cursor, 0, options);
@@ -140,7 +140,7 @@ namespace Toon.Format.Internal.Decode
             }
 
             var keyResult = Parser.ParseKeyToken(content, 0);
-            var rest = content.Substring(keyResult.End).Trim();
+            var rest = StringUtils.TrimSpaces(content.Substring(keyResult.End));
 
             if (string.IsNullOrEmpty(rest))
             {
@@ -203,7 +203,7 @@ namespace Toon.Format.Internal.Decode
             string inlineValues,
             ResolvedDecodeOptions options)
         {
-            if (string.IsNullOrWhiteSpace(inlineValues))
+            if (StringUtils.TrimSpaces(inlineValues).Length == 0)
             {
                 Validation.AssertExpectedCount(0, header.Length, "inline array items", options);
                 return new List<JsonNode?>();
@@ -378,7 +378,7 @@ namespace Toon.Format.Internal.Decode
             }
 
             // Empty content after list item should also be an empty object
-            if (string.IsNullOrWhiteSpace(afterHyphen))
+            if (StringUtils.TrimSpaces(afterHyphen).Length == 0)
             {
                 return new JsonObject();
             }
