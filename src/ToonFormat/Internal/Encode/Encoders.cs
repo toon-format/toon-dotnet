@@ -148,7 +148,7 @@ namespace Toon.Format.Internal.Encode
             }
             else if (value is JsonArray array)
             {
-                // A list item has no `- []` form, so an empty inner array keeps its `[0]:` header.
+                // Encoders must not emit `- []`, so an empty inner array keeps its `[0]:` header.
                 if (Normalize.IsArrayOfPrimitives(array))
                 {
                     writer.PushListItem(depth, EncodeInlineArrayLine(array, options.Delimiter, null));
