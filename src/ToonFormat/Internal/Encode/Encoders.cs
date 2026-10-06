@@ -23,7 +23,7 @@ namespace Toon.Format.Internal.Encode
             if (Normalize.IsJsonPrimitive(value))
             {
                 // Unquoted, a leading U+FEFF would read as the document's byte-order mark and vanish on decode.
-                if (value is JsonValue jsonValue && jsonValue.TryGetValue<string>(out var text) && text.StartsWith("﻿", StringComparison.Ordinal))
+                if (value is JsonValue jsonValue && jsonValue.TryGetValue<string>(out var text) && text.Length > 0 && text[0] == Constants.BYTE_ORDER_MARK)
                     return Primitives.Quote(text);
 
                 return Primitives.EncodePrimitive(value, options.Delimiter);

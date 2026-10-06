@@ -28,6 +28,7 @@ namespace Toon.Format
         public const char NEWLINE = '\n';
         public const char CARRIAGE_RETURN = '\r';
         public const char TAB = '\t';
+        public const char BYTE_ORDER_MARK = '\uFEFF';
 
         public const char DEFAULT_DELIMITER_CHAR = COMMA;
 

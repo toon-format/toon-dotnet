@@ -63,7 +63,7 @@ namespace Toon.Format.Internal.Decode
                 var raw = rawLines[i];
                 var lineNumber = i + 1;
 
-                if (lineNumber == 1 && raw.Length > 0 && raw[0] == '\uFEFF')
+                if (lineNumber == 1 && raw.Length > 0 && raw[0] == Constants.BYTE_ORDER_MARK)
                     raw = raw.Substring(1);
 
                 // A trailing carriage return belongs to the CRLF terminator, not to the content.
