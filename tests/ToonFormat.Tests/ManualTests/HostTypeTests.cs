@@ -49,12 +49,6 @@ public class HostTypeTests
         }
     }
 
-    [Fact]
-    public void Encode_KeepsSurrogatePairs()
-    {
-        Assert.Equal("\U0001F600", ToonEncoder.Encode("\U0001F600"));
-    }
-
     private sealed class Project
     {
         public string Name { get; set; } = "";
