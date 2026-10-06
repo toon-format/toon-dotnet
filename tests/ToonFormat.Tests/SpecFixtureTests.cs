@@ -5,19 +5,13 @@ using System.Text.Json.Nodes;
 namespace Toon.Format.Tests;
 
 /// <summary>
-/// Runs the toon-format/spec fixtures from the <c>tests/spec</c> submodule. A case listed in
-/// <c>known-failures.txt</c> must keep failing, so the list can only shrink.
+/// Runs every case of the toon-format/spec fixtures from the <c>tests/spec</c> submodule.
 /// </summary>
 public class SpecFixtureTests
 {
     private static readonly string FixtureRoot = Path.Combine(AppContext.BaseDirectory, "fixtures");
 
     private static readonly JsonElement NoOptions = JsonDocument.Parse("{}").RootElement;
-
-    private static readonly HashSet<string> KnownFailures = new(
-        File.ReadLines(Path.Combine(AppContext.BaseDirectory, "known-failures.txt"))
-            .Where(line => line.Length > 0 && !line.StartsWith("#")),
-        StringComparer.Ordinal);
 
     public static IEnumerable<object[]> Cases() =>
         from path in Directory.GetFiles(FixtureRoot, "*.json", SearchOption.AllDirectories).OrderBy(path => path, StringComparer.Ordinal)
@@ -33,15 +27,7 @@ public class SpecFixtureTests
             .GetProperty("tests").EnumerateArray()
             .First(candidate => candidate.GetProperty("name").GetString() == name);
 
-        if (!KnownFailures.Contains($"{file}: {name}"))
-        {
-            Run(file, testCase);
-            return;
-        }
-
-        Assert.True(
-            Record.Exception(() => Run(file, testCase)) != null,
-            $"Remove the passing case from known-failures.txt: {file}: {name}");
+        Run(file, testCase);
     }
 
     private static void Run(string file, JsonElement testCase)
@@ -52,8 +38,8 @@ public class SpecFixtureTests
         if (file.StartsWith("encode/"))
         {
             var encodeOptions = new ToonEncodeOptions();
-            if (options.TryGetProperty("indent", out var indent))
-                encodeOptions.Indent = indent.GetInt32();
+            if (options.TryGetProperty("indentSize", out var indentSize))
+                encodeOptions.Indent = indentSize.GetInt32();
             if (options.TryGetProperty("delimiter", out var delimiter))
             {
                 encodeOptions.Delimiter = delimiter.GetString() switch
@@ -63,10 +49,6 @@ public class SpecFixtureTests
                     _ => ToonDelimiter.COMMA,
                 };
             }
-            if (options.TryGetProperty("keyFolding", out var keyFolding))
-                encodeOptions.KeyFolding = keyFolding.GetString() == "safe" ? ToonKeyFolding.Safe : ToonKeyFolding.Off;
-            if (options.TryGetProperty("flattenDepth", out var flattenDepth))
-                encodeOptions.FlattenDepth = flattenDepth.GetInt32();
 
             var input = ToClr(testCase.GetProperty("input"));
             if (shouldError)
@@ -80,18 +62,15 @@ public class SpecFixtureTests
         }
 
         var decodeOptions = new ToonDecodeOptions();
-        if (options.TryGetProperty("indent", out var decodeIndent))
-            decodeOptions.Indent = decodeIndent.GetInt32();
+        if (options.TryGetProperty("indentSize", out var decodeIndentSize))
+            decodeOptions.Indent = decodeIndentSize.GetInt32();
         if (options.TryGetProperty("strict", out var strict))
             decodeOptions.Strict = strict.GetBoolean();
-        if (options.TryGetProperty("expandPaths", out var expandPaths))
-            decodeOptions.ExpandPaths = expandPaths.GetString() == "safe" ? ToonPathExpansion.Safe : ToonPathExpansion.Off;
 
         var toon = testCase.GetProperty("input").GetString()!;
         if (shouldError)
         {
-            var error = Record.Exception(() => ToonDecoder.Decode(toon, decodeOptions));
-            Assert.True(error is ToonFormatException or ToonPathExpansionException, $"Expected a decode error, got {error?.GetType().Name ?? "none"}");
+            Assert.ThrowsAny<ToonFormatException>(() => ToonDecoder.Decode(toon, decodeOptions));
             return;
         }
 

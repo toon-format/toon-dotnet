@@ -12,7 +12,7 @@ dotnet build
 dotnet test
 ```
 
-`SpecFixtureTests` runs the fixtures from the `tests/spec` submodule, pinned to the spec tag this port targets. To move to a later spec, bump the submodule and update `tests/ToonFormat.Tests/known-failures.txt`.
+`SpecFixtureTests` runs the fixtures from the `tests/spec` submodule, pinned to the spec tag this port targets. To move to a later spec, bump the submodule.
 
 ## Coding Standards
 
