@@ -374,14 +374,6 @@ internal sealed class DocumentDecoder
                 throw header.Keyed ? KeylessKeyedHeaderError(line) : ToonFormatException.Syntax("Keyless header with a field list is only valid at the document root", line.LineNumber, sourceLine: line.Raw);
         }
 
-        // A first field carrying a field list sits on the hyphen line, and its rows at depth + 2.
-        if (header?.Key != null && header.Fields != null)
-        {
-            var obj = new JsonObject { [header.Key] = DecodeArrayFromHeader(header, itemDepth + 1, itemLine) };
-            FollowSiblingFields(obj, itemDepth + 1);
-            return obj;
-        }
-
         if (IsKeyValueContent(afterHyphen))
         {
             var obj = new JsonObject();
