@@ -14,55 +14,42 @@ namespace Toon.Format.Internal.Encode
     internal static class Primitives
     {
         /// <summary>
-        /// Formats a double value in non-exponential decimal form per SPEC v3.0 §2.
-        /// Converts -0 to 0, and ensures no scientific notation (e.g., 1E-06 → 0.000001).
-        /// Preserves up to 16 significant digits while removing spurious trailing zeros.
+        /// Formats a double with its shortest round-trip digits, in plain decimal form for 1e-6 ≤ |n| &lt; 1e21
+        /// and in JSON exponent form (<c>1e-7</c>, <c>1e+21</c>) outside that range; -0 becomes 0.
         /// </summary>
         private static string FormatNumber(double value)
         {
-            // SPEC v3.0 §2: Convert -0 to 0
-            if (value == 0.0)
+            if (value == 0)
                 return "0";
 
-            // Use G16 first to get the value with proper precision
-            var gFormat = value.ToString("G16", CultureInfo.InvariantCulture);
+            var roundTrip = value.ToString("R", CultureInfo.InvariantCulture);
+            var exponentIndex = roundTrip.IndexOf('E');
+            var mantissa = (exponentIndex < 0 ? roundTrip : roundTrip.Substring(0, exponentIndex)).TrimStart('-');
+            var exponent = exponentIndex < 0 ? 0 : int.Parse(roundTrip.Substring(exponentIndex + 1), CultureInfo.InvariantCulture);
 
-            // If it contains 'E' (scientific notation), convert to decimal format
-            if (gFormat.Contains('E') || gFormat.Contains('e'))
+            var pointIndex = mantissa.IndexOf('.');
+            var digits = mantissa.Replace(".", "");
+            var decimalPoint = (pointIndex < 0 ? mantissa.Length : pointIndex) + exponent;
+            var significant = digits.TrimStart('0');
+            decimalPoint -= digits.Length - significant.Length;
+            digits = significant.TrimEnd('0');
+
+            var abs = Math.Abs(value);
+            string formatted;
+            if (abs < 1e-6 || abs >= 1e21)
             {
-                // Use "F" format with enough decimal places to preserve precision
-                // For very small numbers, we need sufficient decimal places
-                var absValue = Math.Abs(value);
-                int decimalPlaces = 0;
-
-                if (absValue < 1.0 && absValue > 0.0)
-                {
-                    // Calculate how many decimal places we need
-                    decimalPlaces = Math.Max(0, -(int)Math.Floor(Math.Log10(absValue)) + 15);
-                }
-                else
-                {
-                    decimalPlaces = 15;
-                }
-
-                var result = value.ToString("F" + decimalPlaces, CultureInfo.InvariantCulture);
-
-                // Remove trailing zeros after decimal point
-                if (result.Contains('.'))
-                {
-                    result = result.TrimEnd('0');
-#if NETSTANDARD2_0
-                    if (result.EndsWith(Constants.DOT.ToString()))
-#else
-                    if (result.EndsWith(Constants.DOT))
-#endif
-                        result = result.TrimEnd('.');
-                }
-
-                return result;
+                var scientificExponent = decimalPoint - 1;
+                formatted = (digits.Length > 1 ? $"{digits[0]}.{digits.Substring(1)}" : digits)
+                    + (scientificExponent < 0 ? "e-" : "e+") + Math.Abs(scientificExponent).ToString(CultureInfo.InvariantCulture);
             }
+            else if (decimalPoint <= 0)
+                formatted = "0." + new string('0', -decimalPoint) + digits;
+            else if (decimalPoint >= digits.Length)
+                formatted = digits + new string('0', decimalPoint - digits.Length);
+            else
+                formatted = digits.Substring(0, decimalPoint) + "." + digits.Substring(decimalPoint);
 
-            return gFormat;
+            return value < 0 ? "-" + formatted : formatted;
         }
 
         #region Primitive encoding
