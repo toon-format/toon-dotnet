@@ -4,20 +4,17 @@ using Toon.Format;
 namespace Toon.Format;
 
 /// <summary>
-/// Options for encoding data to TOON format.
+/// Options for <see cref="ToonEncoder"/>.
 /// </summary>
 public class ToonEncodeOptions
 {
     /// <summary>
-    /// Number of spaces per indentation level.
+    /// Spaces per indentation level. Default is 2.
     /// </summary>
-    /// <remarks>Default is 2</remarks>
     public int IndentSize { get; set; } = 2;
 
     /// <summary>
-    /// Delimiter to use for tabular array rows and inline primitive arrays.
-    /// Default is comma (,).
+    /// Delimiter between inline array values and tabular row cells. Default is <see cref="ToonDelimiter.COMMA"/>.
     /// </summary>
-    /// <remarks>Default is <see cref="ToonDelimiter.COMMA"/></remarks>
     public ToonDelimiter Delimiter { get; set; } = ToonDelimiter.COMMA;
 }

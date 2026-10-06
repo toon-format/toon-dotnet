@@ -2,19 +2,18 @@
 namespace Toon.Format;
 
 /// <summary>
-/// Options for decoding TOON format strings.
+/// Options for <see cref="ToonDecoder"/>.
 /// </summary>
 public class ToonDecodeOptions
 {
     /// <summary>
-    /// Number of spaces per indentation level.
-    /// Default is 2.
+    /// Spaces per indentation level. Default is 2.
     /// </summary>
     public int IndentSize { get; set; } = 2;
 
     /// <summary>
-    /// When true, enforce strict validation of array lengths and tabular row counts.
-    /// Default is true.
+    /// Whether to throw on input that strict mode rejects, such as length mismatches, blank lines
+    /// inside arrays, and duplicate keys. Default is true.
     /// </summary>
     public bool Strict { get; set; } = true;
 }
