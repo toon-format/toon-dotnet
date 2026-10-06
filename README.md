@@ -1,6 +1,6 @@
 # TOON for .NET
 
-[![SPEC v3.0](https://img.shields.io/badge/spec-v3.0-lightgrey)](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md)
+[![SPEC v4.3](https://img.shields.io/badge/spec-v4.3-lightgrey)](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 Encodes .NET values to [TOON (Token-Oriented Object Notation)](https://github.com/toon-format/toon) and decodes TOON back. TOON is a compact, indentation-based encoding of the JSON data model for LLM input.
@@ -46,10 +46,14 @@ var node = ToonDecoder.Decode(toon);
 
 ## Specification
 
-Targets [TOON spec v3.0](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md), and the test suite runs the spec's conformance fixtures.
+Targets [TOON spec v4.3](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md), and the test suite runs the spec's conformance fixtures.
 
-- **Numbers decode to `double`** – a token beyond `double` range stays a string and integers beyond 2^53 lose precision ([§4](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md#4-decoding-interpretation-reference-decoder))
-- **`int`, `long`, and `double` encode as numbers** – `NaN` and `±Infinity` become `null`, `DateTime` and `DateTimeOffset` become ISO 8601 strings, dictionaries become objects with string keys, other enumerables become arrays, and public properties of other objects become fields ([§3](https://github.com/toon-format/spec/blob/v3.0.0/SPEC.md#3-encoding-normalization-reference-encoder))
+- **Integers in `long` range decode to `long`, every other number to `double`** – integers beyond `long` range lose precision and a token beyond `double` range (e.g. `1e999`) decodes as a string ([§4](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md#4-decoding-interpretation-reference-decoder))
+- **`int`, `long`, and `double` encode as numbers** – `NaN` and `±Infinity` become `null`, `DateTime` and `DateTimeOffset` become ISO 8601 strings, dictionaries become objects with string keys, other enumerables become arrays, and public properties of other objects become fields ([§3](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md#3-encoding-normalization-reference-encoder))
+
+### Migrating from spec v3.0
+
+Spec v4 dropped key folding and path expansion, along with the `KeyFolding`, `FlattenDepth`, and `ExpandPaths` options, and reads a line whose first non-space character is `#` as a comment. Decode documents written with folded keys or `#`-leading lines using a v3.0 build (with `ExpandPaths = ToonPathExpansion.Safe` for folded keys), then encode the result again with this one.
 
 ## Resources
 
