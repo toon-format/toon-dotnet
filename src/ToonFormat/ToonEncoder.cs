@@ -15,12 +15,7 @@ public static class ToonEncoder
     {
         options ??= new ToonEncodeOptions();
 
-        var resolvedOptions = new ResolvedEncodeOptions
-        {
-            IndentSize = options.IndentSize,
-            Delimiter = Constants.ToDelimiterChar(options.Delimiter),
-        };
-
+        var resolvedOptions = new ResolvedEncodeOptions(options.IndentSize, Constants.ToDelimiterChar(options.Delimiter));
         return Encoders.EncodeValue(Normalize.NormalizeValue(data), resolvedOptions);
     }
 

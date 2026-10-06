@@ -3,10 +3,10 @@ using Toon.Format.Internal.Shared;
 
 namespace Toon.Format.Internal.Encode;
 
-internal class ResolvedEncodeOptions
+internal sealed class ResolvedEncodeOptions(int indentSize, char delimiter)
 {
-    public int IndentSize { get; set; } = 2;
-    public char Delimiter { get; set; } = Constants.COMMA;
+    public int IndentSize { get; } = indentSize;
+    public char Delimiter { get; } = delimiter;
 }
 
 /// <summary>
