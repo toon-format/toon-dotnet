@@ -16,16 +16,16 @@ public class SpecFixtureTests
     public static IEnumerable<object[]> Cases() =>
         from path in Directory.GetFiles(FixtureRoot, "*.json", SearchOption.AllDirectories).OrderBy(path => path, StringComparer.Ordinal)
         let file = $"{Path.GetFileName(Path.GetDirectoryName(path))}/{Path.GetFileName(path)}"
-        from testCase in JsonDocument.Parse(File.ReadAllText(path)).RootElement.GetProperty("tests").EnumerateArray()
-        select new object[] { file, testCase.GetProperty("name").GetString()! };
+        let cases = JsonDocument.Parse(File.ReadAllText(path)).RootElement.GetProperty("tests")
+        from index in Enumerable.Range(0, cases.GetArrayLength())
+        select new object[] { file, index, cases[index].GetProperty("name").GetString()! };
 
     [Theory]
     [MemberData(nameof(Cases))]
-    public void Fixture(string file, string name)
+    public void Fixture(string file, int index, string name)
     {
-        var testCase = JsonDocument.Parse(File.ReadAllText(Path.Combine(FixtureRoot, file))).RootElement
-            .GetProperty("tests").EnumerateArray()
-            .First(candidate => candidate.GetProperty("name").GetString() == name);
+        var testCase = JsonDocument.Parse(File.ReadAllText(Path.Combine(FixtureRoot, file))).RootElement.GetProperty("tests")[index];
+        Assert.Equal(name, testCase.GetProperty("name").GetString());
 
         Run(file, testCase);
     }
