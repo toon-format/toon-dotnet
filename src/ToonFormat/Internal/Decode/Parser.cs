@@ -39,7 +39,8 @@ internal static class Parser
         error = null;
         int bracketStart;
 
-        var trimmed = content.TrimStart();
+        // Only spaces lead into a key; an NBSP or tab there is part of it.
+        var trimmed = content.TrimStart(Constants.Space);
         if (trimmed.StartsWith("\"", StringComparison.Ordinal))
         {
             var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed);
