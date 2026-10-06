@@ -266,19 +266,7 @@ namespace Toon.Format.Internal.Decode
                     return null;
             }
 
-            if (LiteralUtils.IsNumericLiteral(trimmed))
-            {
-                var parsedNumber = double.Parse(trimmed, CultureInfo.InvariantCulture);
-                parsedNumber = parsedNumber == 0 ? 0.0 : parsedNumber;
-                if (parsedNumber < 1e-6 || parsedNumber > 1e6)
-                {
-                    return JsonValue.Create(NumericUtils.EmitCanonicalDecimalForm(parsedNumber));
-                }
-
-                return JsonValue.Create(parsedNumber);
-            }
-
-            return JsonValue.Create(trimmed);
+            return LiteralUtils.ParseNumber(trimmed) ?? JsonValue.Create(trimmed);
         }
 
         /// <summary>
