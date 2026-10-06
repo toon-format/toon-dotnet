@@ -25,9 +25,11 @@ namespace Toon.Format.Internal.Decode
         public JsonNode? DecodeDocument()
         {
             var first = _cursor.Peek();
+            var skippedLeading = false;
             while (first != null && first.Depth != 0)
             {
                 SkipOverIndentedLine(first, 0);
+                skippedLeading = true;
                 first = _cursor.Peek();
             }
 
@@ -45,8 +47,13 @@ namespace Toon.Format.Internal.Decode
             }
 
             _cursor.Next();
-            if (_cursor.Peek() == null && !IsKeyValueLine(first))
+            var following = _cursor.Peek();
+            // A skipped leading line makes the document multi-line, so no root primitive.
+            if (following == null && !skippedLeading && !IsKeyValueLine(first))
                 return At(first, () => Parser.ParsePrimitiveToken(first.Content));
+
+            if (!IsKeyValueLine(first) && following?.Depth == 0)
+                throw ToonFormatException.Syntax("Top-level document must start with a key-value or array-header line", first.LineNumber, sourceLine: first.Raw);
 
             var root = new JsonObject();
             DecodeKeyValue(first, root, 0);
@@ -334,7 +341,17 @@ namespace Toon.Format.Internal.Decode
             if (_strict)
                 throw ToonFormatException.Indentation($"Over-indented line: expected depth {contentDepth}, but found {line.Depth}", line.LineNumber, sourceLine: line.Raw);
 
+            AssertNotScalarLine(line);
             _cursor.Next();
+        }
+
+        // Both modes reject a bare token outside root primitive position, so it must not reach the
+        // non-strict paths that drop an over-indented line. A hyphen-leading line reaching here is
+        // off item depth, so it is no list item either.
+        private static void AssertNotScalarLine(ParsedLine line)
+        {
+            if (StringUtils.FindUnquotedChar(line.Content, Constants.COLON) == -1)
+                throw ToonFormatException.Syntax("Unexpected bare token line outside root primitive position", line.LineNumber, sourceLine: line.Raw);
         }
 
         /// <summary>
