@@ -1,4 +1,3 @@
-#nullable enable
 using System.Globalization;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;

@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace Toon.Format;
+﻿namespace Toon.Format;
 
 /// <summary>
 /// Options for <see cref="ToonDecoder"/>.

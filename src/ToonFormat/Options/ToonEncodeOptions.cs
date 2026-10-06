@@ -1,4 +1,3 @@
-#nullable enable
 using Toon.Format;
 
 namespace Toon.Format;
