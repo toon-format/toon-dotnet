@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using Toon.Format.Internal.Shared;
@@ -28,26 +29,15 @@ internal static class Normalize
                 return JsonValue.Create(b);
             case double d:
                 return NumericUtils.IsFinite(d) ? JsonValue.Create(d) : null;
+            // Through the shortest digits, so 0.1f encodes as 0.1 rather than 0.10000000149011612.
             case float f:
-                return NumericUtils.IsFinite(f) ? JsonValue.Create(f) : null;
-            case int i:
-                return JsonValue.Create(i);
-            case long l:
-                return JsonValue.Create(l);
+                return NumericUtils.IsFinite(f) ? JsonValue.Create(ParseDouble(f.ToString("R", CultureInfo.InvariantCulture))) : null;
             case decimal dec:
-                return JsonValue.Create(dec);
-            case byte by:
-                return JsonValue.Create(by);
-            case sbyte sb:
-                return JsonValue.Create(sb);
-            case short sh:
-                return JsonValue.Create(sh);
-            case ushort us:
-                return JsonValue.Create(us);
-            case uint ui:
-                return JsonValue.Create(ui);
-            case ulong ul:
-                return JsonValue.Create(ul);
+                return JsonValue.Create(ParseDouble(dec.ToString(CultureInfo.InvariantCulture)));
+            case ulong ul when ul > long.MaxValue:
+                return JsonValue.Create((double)ul);
+            case sbyte or byte or short or ushort or int or uint or long or ulong:
+                return JsonValue.Create(Convert.ToInt64(value, CultureInfo.InvariantCulture));
             case DateTime dt:
                 return JsonValue.Create(dt.ToString("O"));
             case DateTimeOffset dto:
@@ -74,6 +64,8 @@ internal static class Normalize
         return properties;
     }
 
+    private static double ParseDouble(string number) => double.Parse(number, CultureInfo.InvariantCulture);
+
     // A lone surrogate has no UTF-8 form, so emitting it would silently substitute U+FFFD.
     private static string RequireScalarValues(string value, string context)
     {
@@ -95,23 +87,7 @@ internal static class Normalize
     /// <summary>
     /// Whether the node is null, a string, a number, or a boolean.
     /// </summary>
-    public static bool IsJsonPrimitive(JsonNode? value)
-    {
-        if (value == null)
-            return true;
-
-        if (value is JsonValue jsonValue)
-        {
-            return jsonValue.TryGetValue<string>(out _)
-                || jsonValue.TryGetValue<bool>(out _)
-                || jsonValue.TryGetValue<int>(out _)
-                || jsonValue.TryGetValue<long>(out _)
-                || jsonValue.TryGetValue<double>(out _)
-                || jsonValue.TryGetValue<decimal>(out _);
-        }
-
-        return false;
-    }
+    public static bool IsJsonPrimitive(JsonNode? value) => value is null or JsonValue;
 
     #endregion
 

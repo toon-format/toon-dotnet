@@ -59,25 +59,18 @@ internal static class Primitives
         if (value == null)
             return Constants.NULL_LITERAL;
 
-        if (value is JsonValue jsonValue)
-        {
-            if (jsonValue.TryGetValue<bool>(out var boolVal))
-                return boolVal ? Constants.TRUE_LITERAL : Constants.FALSE_LITERAL;
+        var jsonValue = value.AsValue();
 
-            if (jsonValue.TryGetValue<int>(out var intVal))
-                return intVal.ToString(CultureInfo.InvariantCulture);
+        if (jsonValue.TryGetValue<bool>(out var boolVal))
+            return boolVal ? Constants.TRUE_LITERAL : Constants.FALSE_LITERAL;
 
-            if (jsonValue.TryGetValue<long>(out var longVal))
-                return longVal.ToString(CultureInfo.InvariantCulture);
+        if (jsonValue.TryGetValue<long>(out var longVal))
+            return longVal.ToString(CultureInfo.InvariantCulture);
 
-            if (jsonValue.TryGetValue<double>(out var doubleVal))
-                return FormatNumber(doubleVal);
+        if (jsonValue.TryGetValue<double>(out var doubleVal))
+            return FormatNumber(doubleVal);
 
-            if (jsonValue.TryGetValue<string>(out var strVal))
-                return EncodeStringLiteral(strVal ?? string.Empty, delimiter);
-        }
-
-        return Constants.NULL_LITERAL;
+        return EncodeStringLiteral(jsonValue.GetValue<string>(), delimiter);
     }
 
     /// <summary>
