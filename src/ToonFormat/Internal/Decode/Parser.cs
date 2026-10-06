@@ -108,6 +108,11 @@ namespace Toon.Format.Internal.Decode
             }
 
             var afterColon = StringUtils.TrimSpaces(content.Substring(colonIndex + 1));
+
+            // Decoding the values as an inline array would silently drop the fields.
+            if (fields != null && afterColon.Length > 0)
+                return Invalid("Unexpected content after fields-bearing header colon", out error);
+
             return new ArrayHeaderInfo
             {
                 Key = key,
