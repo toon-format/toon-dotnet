@@ -429,20 +429,6 @@ namespace Toon.Format.Internal.Encode
             else if (Normalize.IsJsonArray(value))
             {
                 var arr = (JsonArray)value!;
-
-                if (Normalize.IsArrayOfObjects(arr))
-                {
-                    var objects = arr.Cast<JsonObject>().ToList();
-                    var header = ExtractTabularHeader(objects);
-                    if (header != null)
-                    {
-                        var formattedHeader = Primitives.FormatHeader(arr.Count, null, header, options.Delimiter);
-                        writer.PushListItem(depth, formattedHeader);
-                        WriteTabularRows(objects, header, writer, depth + 2, options);
-                        return;
-                    }
-                }
-
                 var headerStr = Primitives.FormatHeader(arr.Count, null, null, options.Delimiter);
                 writer.PushListItem(depth, headerStr);
 
