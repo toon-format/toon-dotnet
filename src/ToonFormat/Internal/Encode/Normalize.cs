@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Globalization;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Toon.Format.Internal.Shared;
 
 namespace Toon.Format.Internal.Encode;
@@ -15,8 +15,8 @@ internal static class Normalize
     #region Normalization (object → JsonNode)
 
     /// <summary>
-    /// Normalizes a .NET value to the JSON data model: primitives, dates, <c>System.Text.Json</c> nodes and elements,
-    /// dictionaries, enumerables, and the public properties of other objects. Unsupported values become null.
+    /// Normalizes a .NET value to the JSON data model: primitives, <c>System.Text.Json</c> nodes and elements,
+    /// dictionaries, and enumerables directly, any other value through <c>System.Text.Json</c> serialization.
     /// </summary>
     public static JsonNode? NormalizeValue(object? value)
     {
@@ -39,10 +39,6 @@ internal static class Normalize
                 return JsonValue.Create((double)ul);
             case sbyte or byte or short or ushort or int or uint or long or ulong:
                 return JsonValue.Create(Convert.ToInt64(value, CultureInfo.InvariantCulture));
-            case DateTime dt:
-                return JsonValue.Create(dt.ToString("O"));
-            case DateTimeOffset dto:
-                return JsonValue.Create(dto.ToString("O"));
             case JsonObject jsonObject:
                 return NormalizeObject(jsonObject.Select(property => (property.Key, (object?)property.Value)));
             case JsonValue jsonValue when jsonValue.TryGetValue<string>(out var text):
@@ -76,12 +72,31 @@ internal static class Normalize
                 return jsonArray;
         }
 
-        // The primitives left here, char and the native integers, have no JSON form.
-        if (value.GetType().IsPrimitive)
-            return null;
+        // Decode<T> deserializes through System.Text.Json, so attributes and converters apply both ways.
+        return NormalizeValue(JsonSerializer.SerializeToElement(value, SerializerOptions));
+    }
 
-        var properties = value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.CanRead);
-        return NormalizeObject(properties.Select(prop => (prop.Name, (object?)prop.GetValue(value))));
+    // System.Text.Json throws on NaN and ±Infinity, which the data model maps to null, and replaces
+    // unpaired surrogates with U+FFFD, which encoding must reject.
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        Converters =
+        {
+            new WriteConverter<double>((writer, d) => { if (NumericUtils.IsFinite(d)) writer.WriteNumberValue(d); else writer.WriteNullValue(); }),
+            new WriteConverter<float>((writer, f) => { if (NumericUtils.IsFinite(f)) writer.WriteNumberValue(f); else writer.WriteNullValue(); }),
+            new WriteConverter<string>((writer, s) => writer.WriteStringValue(RequireScalarValues(s, "string value"))),
+            new WriteConverter<char>((writer, c) => writer.WriteStringValue(RequireScalarValues(c.ToString(), "string value"))),
+        },
+    };
+
+    private sealed class WriteConverter<T>(Action<Utf8JsonWriter, T> write) : JsonConverter<T>
+    {
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotSupportedException();
+
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options) => write(writer, value);
+
+        public override void WriteAsPropertyName(Utf8JsonWriter writer, T value, JsonSerializerOptions options) =>
+            writer.WritePropertyName(RequireScalarValues(Convert.ToString(value, CultureInfo.InvariantCulture)!, "object key"));
     }
 
     private static JsonObject NormalizeObject(IEnumerable<(string Key, object? Value)> entries)

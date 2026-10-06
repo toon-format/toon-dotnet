@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Toon.Format.Tests;
 
@@ -8,20 +9,23 @@ namespace Toon.Format.Tests;
 public class HostTypeTests
 {
     private const string ProjectToon = """
-        Name: Insights
-        CreatedAt: "2025-11-20T10:32:00.0000000Z"
+        name: Insights
+        CreatedAt: "2025-11-20T10:32:00Z"
+        Weekday: 4
         Tags[2]: research,growth
         Costs:
           usd: 12500.75
         """;
 
     [Fact]
-    public void Encode_MapsPropertiesDatesListsAndDictionaries()
+    public void Encode_SerializesObjectsThroughSystemTextJson()
     {
         var project = new Project
         {
             Name = "Insights",
             CreatedAt = new DateTime(2025, 11, 20, 10, 32, 0, DateTimeKind.Utc),
+            Weekday = DayOfWeek.Thursday,
+            Secret = "hidden",
             Tags = ["research", "growth"],
             Costs = new() { ["usd"] = 12500.75 },
         };
@@ -42,6 +46,7 @@ public class HostTypeTests
             ULong = ulong.MaxValue,
             Float = 0.1f,
             Decimal = 1.50m,
+            NaN = double.NaN,
         };
 
         Assert.Equal("""
@@ -53,6 +58,7 @@ public class HostTypeTests
             ULong: 18446744073709552000
             Float: 0.1
             Decimal: 1.5
+            NaN: null
             """, ToonEncoder.Encode(numbers));
     }
 
@@ -72,6 +78,7 @@ public class HostTypeTests
 
         Assert.Equal("Insights", project.Name);
         Assert.Equal(new DateTime(2025, 11, 20, 10, 32, 0, DateTimeKind.Utc), project.CreatedAt);
+        Assert.Equal(DayOfWeek.Thursday, project.Weekday);
         Assert.Equal(["research", "growth"], project.Tags);
         Assert.Equal(12500.75, project.Costs["usd"]);
     }
@@ -83,13 +90,18 @@ public class HostTypeTests
         {
             Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(text));
             Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(new Dictionary<string, int> { [text] = 1 }));
+            Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(new { Text = text }));
         }
     }
 
     private sealed class Project
     {
+        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
         public DateTime CreatedAt { get; set; }
+        public DayOfWeek Weekday { get; set; }
+        [JsonIgnore]
+        public string Secret { get; set; } = "";
         public List<string> Tags { get; set; } = [];
         public Dictionary<string, double> Costs { get; set; } = [];
     }
