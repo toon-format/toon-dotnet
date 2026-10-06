@@ -19,7 +19,7 @@ internal static class Primitives
         if (value == 0)
             return "0";
 
-        var roundTrip = value.ToString("R", CultureInfo.InvariantCulture);
+        var roundTrip = NumericUtils.ToRoundTripString(value);
         var exponentIndex = roundTrip.IndexOf('E');
         var mantissa = (exponentIndex < 0 ? roundTrip : roundTrip.Substring(0, exponentIndex)).TrimStart('-');
         var exponent = exponentIndex < 0 ? 0 : int.Parse(roundTrip.Substring(exponentIndex + 1), CultureInfo.InvariantCulture);

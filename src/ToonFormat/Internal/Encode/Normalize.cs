@@ -30,9 +30,8 @@ internal static class Normalize
                 return JsonValue.Create(b);
             case double d:
                 return NumericUtils.IsFinite(d) ? JsonValue.Create(d) : null;
-            // Through the shortest digits, so 0.1f encodes as 0.1 rather than 0.10000000149011612.
             case float f:
-                return NumericUtils.IsFinite(f) ? JsonValue.Create(ParseDouble(f.ToString("R", CultureInfo.InvariantCulture))) : null;
+                return NumericUtils.IsFinite(f) ? JsonValue.Create(ToDouble(f)) : null;
             case decimal dec:
                 return JsonValue.Create(ParseDouble(dec.ToString(CultureInfo.InvariantCulture)));
             case ulong ul when ul > long.MaxValue:
@@ -83,7 +82,7 @@ internal static class Normalize
         Converters =
         {
             new WriteConverter<double>((writer, d) => { if (NumericUtils.IsFinite(d)) writer.WriteNumberValue(d); else writer.WriteNullValue(); }),
-            new WriteConverter<float>((writer, f) => { if (NumericUtils.IsFinite(f)) writer.WriteNumberValue(f); else writer.WriteNullValue(); }),
+            new WriteConverter<float>((writer, f) => { if (NumericUtils.IsFinite(f)) writer.WriteNumberValue(ToDouble(f)); else writer.WriteNullValue(); }),
             new WriteConverter<string>((writer, s) => writer.WriteStringValue(RequireScalarValues(s, "string value"))),
             new WriteConverter<char>((writer, c) => writer.WriteStringValue(RequireScalarValues(c.ToString(), "string value"))),
         },
@@ -107,7 +106,11 @@ internal static class Normalize
         return jsonObject;
     }
 
+    // Floats and decimals convert through their digits, because a cast turns 0.1f into 0.10000000149011612
+    // and rounds 3.14159265358979323846m to 3.1415926535897936 instead of 3.141592653589793.
     private static double ParseDouble(string number) => double.Parse(number, CultureInfo.InvariantCulture);
+
+    private static double ToDouble(float value) => ParseDouble(NumericUtils.ToRoundTripString(value));
 
     // A lone surrogate has no UTF-8 form, so emitting it would silently substitute U+FFFD.
     private static string RequireScalarValues(string value, string context)
