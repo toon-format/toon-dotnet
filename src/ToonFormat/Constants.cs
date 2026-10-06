@@ -1,56 +1,55 @@
-namespace Toon.Format
+namespace Toon.Format;
+
+internal static class Constants
 {
-    internal static class Constants
+    public const char LIST_ITEM_MARKER = '-';
+
+    public const string LIST_ITEM_PREFIX = "- ";
+
+    public const char COMMA = ',';
+    public const char COLON = ':';
+    public const char SPACE = ' ';
+    public const char PIPE = '|';
+    public const char COMMENT_MARKER = '#';
+
+    public const char OPEN_BRACKET = '[';
+    public const char CLOSE_BRACKET = ']';
+    public const char OPEN_BRACE = '{';
+    public const char CLOSE_BRACE = '}';
+
+    public const string NULL_LITERAL = "null";
+    public const string TRUE_LITERAL = "true";
+    public const string FALSE_LITERAL = "false";
+
+    public const char BACKSLASH = '\\';
+    public const char DOUBLE_QUOTE = '"';
+    public const char NEWLINE = '\n';
+    public const char CARRIAGE_RETURN = '\r';
+    public const char TAB = '\t';
+    public const char BYTE_ORDER_MARK = '\uFEFF';
+
+    public const char DEFAULT_DELIMITER_CHAR = COMMA;
+
+    public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
     {
-        public const char LIST_ITEM_MARKER = '-';
+        ToonDelimiter.COMMA => COMMA,
+        ToonDelimiter.TAB => TAB,
+        ToonDelimiter.PIPE => PIPE,
+        _ => COMMA
+    };
+}
 
-        public const string LIST_ITEM_PREFIX = "- ";
+/// <summary>
+/// Delimiter between the values of inline arrays and tabular rows.
+/// </summary>
+public enum ToonDelimiter
+{
+    /// <summary>Comma ,</summary>
+    COMMA,
 
-        public const char COMMA = ',';
-        public const char COLON = ':';
-        public const char SPACE = ' ';
-        public const char PIPE = '|';
-        public const char COMMENT_MARKER = '#';
+    /// <summary>Tab \t</summary>
+    TAB,
 
-        public const char OPEN_BRACKET = '[';
-        public const char CLOSE_BRACKET = ']';
-        public const char OPEN_BRACE = '{';
-        public const char CLOSE_BRACE = '}';
-
-        public const string NULL_LITERAL = "null";
-        public const string TRUE_LITERAL = "true";
-        public const string FALSE_LITERAL = "false";
-
-        public const char BACKSLASH = '\\';
-        public const char DOUBLE_QUOTE = '"';
-        public const char NEWLINE = '\n';
-        public const char CARRIAGE_RETURN = '\r';
-        public const char TAB = '\t';
-        public const char BYTE_ORDER_MARK = '\uFEFF';
-
-        public const char DEFAULT_DELIMITER_CHAR = COMMA;
-
-        public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
-        {
-            ToonDelimiter.COMMA => COMMA,
-            ToonDelimiter.TAB => TAB,
-            ToonDelimiter.PIPE => PIPE,
-            _ => COMMA
-        };
-    }
-
-    /// <summary>
-    /// Delimiter between the values of inline arrays and tabular rows.
-    /// </summary>
-    public enum ToonDelimiter
-    {
-        /// <summary>Comma ,</summary>
-        COMMA,
-
-        /// <summary>Tab \t</summary>
-        TAB,
-
-        /// <summary>Pipe |</summary>
-        PIPE
-    }
+    /// <summary>Pipe |</summary>
+    PIPE
 }
