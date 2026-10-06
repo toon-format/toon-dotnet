@@ -2,7 +2,7 @@
 
 ## Development Setup
 
-Building needs the .NET 10 SDK – the library targets `netstandard2.0` and `net10.0`. On Windows, tests also run on `net481`, which needs the .NET Framework 4.8.1 developer pack.
+Building needs the .NET 10 SDK – the library targets `netstandard2.0` and `net10.0`. On Windows, tests also run on `net481`, which needs the .NET Framework 4.8.1 developer pack – CI runs `net10.0` only, so run them there when you change `#if NETSTANDARD2_0` code.
 
 ```bash
 git clone --recurse-submodules https://github.com/toon-format/toon-dotnet.git
