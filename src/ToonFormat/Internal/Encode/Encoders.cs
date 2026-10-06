@@ -104,8 +104,7 @@ namespace Toon.Format.Internal.Encode
         {
             if (value.Count == 0)
             {
-                var header = Primitives.FormatHeader(0, key, null, options.Delimiter);
-                writer.Push(depth, header);
+                writer.Push(depth, key != null ? $"{Primitives.EncodeKey(key)}{Constants.COLON} []" : "[]");
                 return;
             }
 
@@ -337,7 +336,11 @@ namespace Toon.Format.Internal.Encode
             {
                 var arr = (JsonArray)firstValue!;
 
-                if (Normalize.IsArrayOfPrimitives(arr))
+                if (arr.Count == 0)
+                {
+                    writer.PushListItem(depth, $"{encodedKey}{Constants.COLON} []");
+                }
+                else if (Normalize.IsArrayOfPrimitives(arr))
                 {
                     var formatted = EncodeInlineArrayLine(arr, options.Delimiter, firstKey);
                     writer.PushListItem(depth, formatted);
