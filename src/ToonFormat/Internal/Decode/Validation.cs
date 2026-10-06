@@ -18,7 +18,7 @@ namespace Toon.Format.Internal.Decode
 
         public static void ValidateNoExtraListItems(ParsedLine? nextLine, int itemDepth, int expectedCount)
         {
-            if (nextLine != null && nextLine.Depth == itemDepth && nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
+            if (nextLine != null && nextLine.Depth == itemDepth && nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX, StringComparison.Ordinal))
                 throw ToonFormatException.Range($"Expected {expectedCount} list-form items, but found more", nextLine.LineNumber, sourceLine: nextLine.Raw);
         }
 
@@ -26,7 +26,7 @@ namespace Toon.Format.Internal.Decode
         {
             if (nextLine != null
                 && nextLine.Depth == rowDepth
-                && !nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX)
+                && !nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX, StringComparison.Ordinal)
                 && IsDataRow(nextLine.Content, header.Delimiter))
             {
                 throw ToonFormatException.Range($"Expected {header.Length} tabular rows, but found more", nextLine.LineNumber, sourceLine: nextLine.Raw);
