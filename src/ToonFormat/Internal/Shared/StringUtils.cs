@@ -1,5 +1,7 @@
 #nullable enable
+using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace Toon.Format.Internal.Shared
@@ -35,7 +37,7 @@ namespace Toon.Format.Internal.Shared
         }
 
         /// <summary>
-        /// Unescapes the string, supporting \n, \t, \r, \\, \". Invalid sequences throw <see cref="ToonFormatException"/>.
+        /// Unescapes \n, \t, \r, \\, \", and \uXXXX. Invalid sequences throw <see cref="ToonFormatException"/>.
         /// </summary>
         internal static string UnescapeString(string value)
         {
@@ -74,6 +76,10 @@ namespace Toon.Format.Internal.Shared
                             sb.Append(Constants.DOUBLE_QUOTE);
                             i += 2;
                             continue;
+                        case 'u':
+                            sb.Append(ParseUnicodeEscape(value, i));
+                            i += 6;
+                            continue;
                         default:
                             throw ToonFormatException.Syntax($"Invalid escape sequence: \\{next}");
                     }
@@ -84,6 +90,20 @@ namespace Toon.Format.Internal.Shared
             }
 
             return sb.ToString();
+        }
+
+        // Supplementary code points must appear as literal UTF-8, so every surrogate escape is rejected, lone or paired.
+        private static char ParseUnicodeEscape(string value, int backslashIndex)
+        {
+            var hex = value.Substring(backslashIndex + 2, Math.Min(4, value.Length - backslashIndex - 2));
+            if (hex.Length != 4 || !hex.All(Uri.IsHexDigit))
+                throw ToonFormatException.Syntax($"Invalid escape sequence: \\u must be followed by 4 hex digits, got \"{hex}\"");
+
+            var codeUnit = (char)int.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            if (char.IsSurrogate(codeUnit))
+                throw ToonFormatException.Syntax($"Invalid escape sequence: \\u{hex} is a surrogate; supplementary code points must appear as literal UTF-8");
+
+            return codeUnit;
         }
 
         /// <summary>
