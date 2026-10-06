@@ -4,27 +4,17 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Toon.Format.Internal.Shared;
 
 namespace Toon.Format.Internal.Decode
 {
-    /// <summary>
-    /// Information about an array header.
-    /// </summary>
-    internal class ArrayHeaderInfo
+    internal sealed class ArrayHeaderInfo
     {
         public string? Key { get; set; }
         public int Length { get; set; }
         public char Delimiter { get; set; }
         public List<string>? Fields { get; set; }
-    }
-
-    /// <summary>
-    /// Result of parsing an array header line.
-    /// </summary>
-    internal class ArrayHeaderParseResult
-    {
-        public ArrayHeaderInfo Header { get; set; } = null!;
         public string? InlineValues { get; set; }
     }
 
@@ -33,36 +23,28 @@ namespace Toon.Format.Internal.Decode
     /// </summary>
     internal static class Parser
     {
+        private static readonly Regex BracketLengthRegex = new("^(?:0|[1-9][0-9]*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
         #region Array header parsing
 
         /// <summary>
-        /// Parses an array header line like "key[3]:" or "users[#2,]{name,age}:".
+        /// Parses a header line such as <c>key[3]:</c> or <c>users[2|]{name|age}:</c>, free of strict-mode policy:
+        /// returns null with a null <paramref name="error"/> for a line that is no header, and null with the
+        /// <paramref name="error"/> for a header-shaped line that breaks the grammar.
         /// </summary>
-        public static ArrayHeaderParseResult? ParseArrayHeaderLine(string content, char defaultDelimiter)
+        public static ArrayHeaderInfo? ParseArrayHeaderLine(string content, out string? error)
         {
+            error = null;
+            int bracketStart;
+
             var trimmed = content.TrimStart();
-
-            // Find the bracket segment, accounting for quoted keys that may contain brackets
-            int bracketStart = -1;
-
-            // For quoted keys, find bracket after closing quote (not inside the quoted string)
-#if NETSTANDARD2_0
-            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE.ToString()))
-#else
-            if (trimmed.StartsWith(Constants.DOUBLE_QUOTE))
-#endif
+            if (trimmed.StartsWith("\"", StringComparison.Ordinal))
             {
                 var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed, 0);
-                if (closingQuoteIndex == -1)
+                if (closingQuoteIndex == -1 || closingQuoteIndex + 1 >= trimmed.Length || trimmed[closingQuoteIndex + 1] != Constants.OPEN_BRACKET)
                     return null;
 
-                var afterQuote = trimmed.Substring(closingQuoteIndex + 1);
-                if (!afterQuote.StartsWith(Constants.OPEN_BRACKET.ToString()))
-                    return null;
-
-                var leadingWhitespace = content.Length - trimmed.Length;
-                var keyEndIndex = leadingWhitespace + closingQuoteIndex + 1;
-                bracketStart = content.IndexOf(Constants.OPEN_BRACKET, keyEndIndex);
+                bracketStart = content.Length - trimmed.Length + closingQuoteIndex + 1;
             }
             else
             {
@@ -72,115 +54,116 @@ namespace Toon.Format.Internal.Decode
             if (bracketStart == -1)
                 return null;
 
-            // A header needs a colon, and its key can't contain one.
+            // A header needs a colon, and its key can't contain one. Past this check, a grammar failure
+            // makes the line an invalid header instead of a key-value line.
             var firstColonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
             if (firstColonIndex == -1 || firstColonIndex < bracketStart)
                 return null;
 
             var bracketEnd = StringUtils.FindUnquotedChar(content, Constants.CLOSE_BRACKET, bracketStart);
             if (bracketEnd == -1)
-                return null;
+                return Invalid("Unterminated bracket segment", out error);
 
-            // Find the colon that comes after all brackets and braces
-            int colonIndex = bracketEnd + 1;
-            int braceEnd = colonIndex;
-
-            // Check for fields segment (braces come after bracket)
+            var fieldsEnd = bracketEnd + 1;
             var braceStart = StringUtils.FindUnquotedChar(content, Constants.OPEN_BRACE, bracketEnd);
             if (braceStart != -1 && braceStart < StringUtils.FindUnquotedChar(content, Constants.COLON, bracketEnd))
             {
-                var foundBraceEnd = content.IndexOf(Constants.CLOSE_BRACE, braceStart);
-                if (foundBraceEnd != -1)
-                {
-                    braceEnd = foundBraceEnd + 1;
-                }
+                if (braceStart != bracketEnd + 1)
+                    return Invalid(GapError(content.Substring(bracketEnd + 1, braceStart - bracketEnd - 1), "field list"), out error);
+
+                var braceEnd = content.IndexOf(Constants.CLOSE_BRACE, braceStart);
+                if (braceEnd != -1)
+                    fieldsEnd = braceEnd + 1;
             }
 
-            colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON, Math.Max(bracketEnd, braceEnd));
+            var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON, fieldsEnd);
             if (colonIndex == -1)
-                return null;
+                return Invalid("Missing colon after array header", out error);
+            if (colonIndex != fieldsEnd)
+                return Invalid(GapError(content.Substring(fieldsEnd, colonIndex - fieldsEnd), "colon"), out error);
 
             string? key = null;
             if (bracketStart > 0)
             {
-                var rawKey = content.Substring(0, bracketStart).Trim();
-                key = rawKey.StartsWith(Constants.DOUBLE_QUOTE.ToString())
-                    ? ParseStringLiteral(rawKey)
-                    : rawKey;
+                var rawKey = content.Substring(0, bracketStart);
+                // Trimming here would silently turn `foo [2]:` into a header with key `foo`.
+                if (char.IsWhiteSpace(rawKey[rawKey.Length - 1]))
+                    return Invalid("Unexpected whitespace between key and bracket segment", out error);
+
+                key = rawKey[0] == Constants.DOUBLE_QUOTE ? ParseStringLiteral(rawKey) : rawKey;
+            }
+
+            if (!TryParseBracketSegment(content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1), out var length, out var delimiter, out error))
+                return null;
+
+            List<string>? fields = null;
+            if (fieldsEnd > bracketEnd + 1)
+            {
+                var fieldsContent = content.Substring(braceStart + 1, fieldsEnd - braceStart - 2);
+                var mismatchedDelimiter = FindUnquotedMismatchedDelimiter(fieldsContent, delimiter);
+                if (mismatchedDelimiter != null)
+                    return Invalid($"Header delimiter mismatch: bracket declares \"{FormatDelimiter(delimiter)}\" but field list contains unquoted \"{FormatDelimiter(mismatchedDelimiter.Value)}\"", out error);
+
+                fields = ParseDelimitedValues(fieldsContent, delimiter).Select(ParseStringLiteral).ToList();
             }
 
             var afterColon = StringUtils.TrimSpaces(content.Substring(colonIndex + 1));
-            var bracketContent = content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1);
-
-            BracketSegmentResult parsedBracket;
-            try
+            return new ArrayHeaderInfo
             {
-                parsedBracket = ParseBracketSegment(bracketContent, defaultDelimiter);
-            }
-            catch
-            {
-                return null;
-            }
-
-            List<string>? fields = null;
-            if (braceStart != -1 && braceStart < colonIndex)
-            {
-                var foundBraceEnd = content.IndexOf(Constants.CLOSE_BRACE, braceStart);
-                if (foundBraceEnd != -1 && foundBraceEnd < colonIndex)
-                {
-                    var fieldsContent = content.Substring(braceStart + 1, foundBraceEnd - braceStart - 1);
-                    fields = ParseDelimitedValues(fieldsContent, parsedBracket.Delimiter)
-                        .Select(field => ParseStringLiteral(field))
-                        .ToList();
-                }
-            }
-
-            return new ArrayHeaderParseResult
-            {
-                Header = new ArrayHeaderInfo
-                {
-                    Key = key,
-                    Length = parsedBracket.Length,
-                    Delimiter = parsedBracket.Delimiter,
-                    Fields = fields,
-                },
-                InlineValues = string.IsNullOrEmpty(afterColon) ? null : afterColon
-            };
-        }
-
-        private class BracketSegmentResult
-        {
-            public int Length { get; set; }
-            public char Delimiter { get; set; }
-        }
-
-        private static BracketSegmentResult ParseBracketSegment(string seg, char defaultDelimiter)
-        {
-            var content = seg;
-
-            char delimiter = defaultDelimiter;
-            if (content.EndsWith(Constants.TAB.ToString()))
-            {
-                delimiter = Constants.TAB;
-                content = content.Substring(0, content.Length - 1);
-            }
-            else if (content.EndsWith(Constants.PIPE.ToString()))
-            {
-                delimiter = Constants.PIPE;
-                content = content.Substring(0, content.Length - 1);
-            }
-
-            if (!int.TryParse(content, out var length))
-            {
-                throw new FormatException($"Invalid array length: {seg}");
-            }
-
-            return new BracketSegmentResult
-            {
+                Key = key,
                 Length = length,
                 Delimiter = delimiter,
+                Fields = fields,
+                InlineValues = afterColon.Length == 0 ? null : afterColon,
             };
         }
+
+        private static ArrayHeaderInfo? Invalid(string reason, out string? error)
+        {
+            error = reason;
+            return null;
+        }
+
+        private static string GapError(string gap, string next) =>
+            gap.Trim().Length == 0
+                ? $"Unexpected whitespace between bracket segment and {next}"
+                : $"Unexpected content \"{gap.Trim()}\" between bracket segment and {next}";
+
+        private static bool TryParseBracketSegment(string segment, out int length, out char delimiter, out string? error)
+        {
+            var content = segment;
+            delimiter = Constants.DEFAULT_DELIMITER_CHAR;
+            if (content.Length > 0 && (content[content.Length - 1] == Constants.TAB || content[content.Length - 1] == Constants.PIPE))
+            {
+                delimiter = content[content.Length - 1];
+                content = content.Substring(0, content.Length - 1);
+            }
+
+            if (!BracketLengthRegex.IsMatch(content))
+            {
+                length = 0;
+                error = $"Invalid array length: \"{segment}\" (expected non-negative integer with no leading zeros)";
+                return false;
+            }
+
+            // A length beyond int range can never match a count, so it saturates instead of wrapping.
+            length = int.TryParse(content, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed) ? parsed : int.MaxValue;
+            error = null;
+            return true;
+        }
+
+        private static char? FindUnquotedMismatchedDelimiter(string content, char activeDelimiter)
+        {
+            foreach (var candidate in new[] { Constants.COMMA, Constants.TAB, Constants.PIPE })
+            {
+                if (candidate != activeDelimiter && StringUtils.FindUnquotedChar(content, candidate) != -1)
+                    return candidate;
+            }
+
+            return null;
+        }
+
+        private static string FormatDelimiter(char delimiter) => delimiter == Constants.TAB ? "\\t" : delimiter.ToString();
 
         #endregion
 

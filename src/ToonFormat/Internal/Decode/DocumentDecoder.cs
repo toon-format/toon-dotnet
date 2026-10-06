@@ -47,11 +47,11 @@ namespace Toon.Format.Internal.Decode
 
             if (Parser.IsArrayHeaderAfterHyphen(first.Content))
             {
-                var header = At(first, () => Parser.ParseArrayHeaderLine(first.Content, Constants.DEFAULT_DELIMITER_CHAR));
+                var header = ResolveArrayHeader(first);
                 if (header != null)
                 {
                     _cursor.Next();
-                    var array = DecodeArrayFromHeader(header.Header, header.InlineValues, 0, first);
+                    var array = DecodeArrayFromHeader(header, 0, first);
                     AssertFullyConsumed();
                     return array;
                 }
@@ -94,11 +94,11 @@ namespace Toon.Format.Internal.Decode
         {
             var content = line.Content;
 
-            var header = At(line, () => Parser.ParseArrayHeaderLine(content, Constants.DEFAULT_DELIMITER_CHAR));
-            if (header?.Header.Key != null)
+            var header = ResolveArrayHeader(line);
+            if (header?.Key != null)
             {
-                AssertNewKey(target, header.Header.Key, line);
-                target[header.Header.Key] = DecodeArrayFromHeader(header.Header, header.InlineValues, baseDepth, line);
+                AssertNewKey(target, header.Key, line);
+                target[header.Key] = DecodeArrayFromHeader(header, baseDepth, line);
                 return;
             }
 
@@ -156,10 +156,10 @@ namespace Toon.Format.Internal.Decode
 
         #region Arrays
 
-        private JsonNode DecodeArrayFromHeader(ArrayHeaderInfo header, string? inlineValues, int baseDepth, ParsedLine headerLine)
+        private JsonNode DecodeArrayFromHeader(ArrayHeaderInfo header, int baseDepth, ParsedLine headerLine)
         {
-            if (inlineValues != null)
-                return DecodeInlinePrimitiveArray(header, inlineValues, headerLine);
+            if (header.InlineValues != null)
+                return DecodeInlinePrimitiveArray(header, header.InlineValues, headerLine);
 
             if (header.Fields != null && header.Fields.Count > 0)
                 return DecodeTabularArray(header, baseDepth, headerLine);
@@ -304,17 +304,17 @@ namespace Toon.Format.Internal.Decode
 
             if (Parser.IsArrayHeaderAfterHyphen(afterHyphen))
             {
-                var header = At(itemLine, () => Parser.ParseArrayHeaderLine(afterHyphen, Constants.DEFAULT_DELIMITER_CHAR));
+                var header = ResolveArrayHeader(itemLine);
                 if (header != null)
-                    return DecodeArrayFromHeader(header.Header, header.InlineValues, itemDepth, itemLine);
+                    return DecodeArrayFromHeader(header, itemDepth, itemLine);
             }
 
             if (IsKeyValueContent(afterHyphen))
             {
                 var obj = new JsonObject();
-                var header = At(itemLine, () => Parser.ParseArrayHeaderLine(afterHyphen, Constants.DEFAULT_DELIMITER_CHAR));
-                if (header?.Header.Key != null && header.Header.Fields != null)
-                    obj[header.Header.Key] = DecodeArrayFromHeader(header.Header, header.InlineValues, itemDepth + 1, itemLine);
+                var header = ResolveArrayHeader(itemLine);
+                if (header?.Key != null && header.Fields != null)
+                    obj[header.Key] = DecodeArrayFromHeader(header, itemDepth + 1, itemLine);
                 else
                     DecodeKeyValue(itemLine, obj, itemDepth + 1);
 
@@ -383,6 +383,19 @@ namespace Toon.Format.Internal.Decode
         {
             if (StringUtils.FindUnquotedChar(line.Content, Constants.COLON) == -1)
                 throw ToonFormatException.Syntax("Unexpected bare token line outside root primitive position", line.LineNumber, sourceLine: line.Raw);
+        }
+
+        /// <summary>
+        /// Parses a header line; a grammar failure errors in strict mode and leaves the line to key-value parsing otherwise.
+        /// </summary>
+        private ArrayHeaderInfo? ResolveArrayHeader(ParsedLine line)
+        {
+            string? error = null;
+            var header = At(line, () => Parser.ParseArrayHeaderLine(line.Content, out error));
+            if (_strict && error != null)
+                throw ToonFormatException.Syntax(error, line.LineNumber, sourceLine: line.Raw);
+
+            return header;
         }
 
         private void AssertNewKey(JsonObject target, string key, ParsedLine line)
