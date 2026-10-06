@@ -37,49 +37,27 @@ namespace Toon.Format.Internal.Decode
     }
 
     /// <summary>
-    /// Cursor for navigating through parsed lines during decoding.
+    /// Reads scanned lines with one line of lookahead.
     /// </summary>
-    internal class LineCursor
+    internal sealed class LineCursor
     {
         private readonly List<ParsedLine> _lines;
-        private readonly List<BlankLineInfo> _blankLines;
         private int _index;
 
-        public LineCursor(List<ParsedLine> lines, List<BlankLineInfo> blankLines)
+        public LineCursor(ScanResult scan)
         {
-            _lines = lines;
-            _blankLines = blankLines;
-            _index = 0;
+            _lines = scan.Lines;
+            BlankLines = scan.BlankLines;
         }
 
-        public List<BlankLineInfo> GetBlankLines() => _blankLines;
+        public List<BlankLineInfo> BlankLines { get; }
 
-        public ParsedLine? Peek()
-        {
-            return _index < _lines.Count ? _lines[_index] : null;
-        }
+        /// <summary>The line <see cref="Next"/> returned last.</summary>
+        public ParsedLine? LastLine => _index > 0 ? _lines[_index - 1] : null;
 
-        public ParsedLine? Next()
-        {
-            return _index < _lines.Count ? _lines[_index++] : null;
-        }
+        public ParsedLine? Peek() => _index < _lines.Count ? _lines[_index] : null;
 
-        public ParsedLine? Current()
-        {
-            return _index > 0 ? _lines[_index - 1] : null;
-        }
-
-        public void Advance()
-        {
-            _index++;
-        }
-
-        public bool AtEnd()
-        {
-            return _index >= _lines.Count;
-        }
-
-        public int Length => _lines.Count;
+        public ParsedLine? Next() => _index < _lines.Count ? _lines[_index++] : null;
     }
 
     /// <summary>

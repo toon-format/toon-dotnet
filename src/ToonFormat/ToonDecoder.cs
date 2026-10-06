@@ -26,21 +26,8 @@ public static class ToonDecoder
 
         options ??= new ToonDecodeOptions();
 
-        var resolvedOptions = new ResolvedDecodeOptions
-        {
-            IndentSize = options.IndentSize,
-            Strict = options.Strict,
-        };
-
-        var scanResult = Scanner.ToParsedLines(toonString, resolvedOptions.IndentSize, resolvedOptions.Strict);
-
-        if (scanResult.Lines.Count == 0)
-        {
-            return new JsonObject();
-        }
-
-        var cursor = new LineCursor(scanResult.Lines, scanResult.BlankLines);
-        return Decoders.DecodeValueFromLines(cursor, resolvedOptions);
+        var scan = Scanner.ToParsedLines(toonString, options.IndentSize, options.Strict);
+        return new DocumentDecoder(new LineCursor(scan), options.Strict).DecodeDocument();
     }
 
     /// <summary>

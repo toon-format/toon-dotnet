@@ -9,6 +9,8 @@ namespace Toon.Format
     /// </summary>
     public sealed class ToonFormatException : Exception
     {
+        private readonly string _detail;
+
         /// <summary>Error type (syntax, range, validation, indentation, delimiter, unknown).</summary>
         public ToonErrorKind Kind { get; }
 
@@ -35,6 +37,7 @@ namespace Toon.Format
             Exception? inner = null)
             : base(BuildMessage(kind, message, lineNumber, columnNumber, sourceLine), inner)
         {
+            _detail = message;
             Kind = kind;
             LineNumber = lineNumber;
             ColumnNumber = columnNumber;
@@ -91,6 +94,10 @@ namespace Toon.Format
             int? depth = null,
             Exception? inner = null)
             => new(ToonErrorKind.Delimiter, message, lineNumber, columnNumber, sourceLine, depth, inner);
+
+        /// <summary>Attaches the line a parse helper failed on, unless the error already names one.</summary>
+        internal ToonFormatException AtLine(int lineNumber, string sourceLine)
+            => LineNumber is not null ? this : new(Kind, _detail, lineNumber, ColumnNumber, sourceLine, Depth, InnerException);
 
         private static string BuildMessage(
             ToonErrorKind kind,
