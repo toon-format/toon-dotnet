@@ -69,7 +69,7 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static JsonNode? Decode(Stream stream, ToonDecodeOptions? options = null)
     {
-        return Decode(ReadToEnd(stream, options), options);
+        return Decode(GetString(ReadAllBytes(stream), options), options);
     }
 
     /// <summary>
@@ -78,22 +78,22 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static T? Decode<T>(Stream stream, ToonDecodeOptions? options = null)
     {
-        return Decode<T>(ReadToEnd(stream, options), options);
+        return Decode<T>(GetString(ReadAllBytes(stream), options), options);
     }
 
     /// <inheritdoc cref="Decode(Stream, ToonDecodeOptions?)"/>
     public static async Task<JsonNode?> DecodeAsync(Stream stream, ToonDecodeOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return Decode(await ReadToEndAsync(stream, options, cancellationToken).ConfigureAwait(false), options);
+        return Decode(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false), options), options);
     }
 
     /// <inheritdoc cref="Decode{T}(Stream, ToonDecodeOptions?)"/>
     public static async Task<T?> DecodeAsync<T>(Stream stream, ToonDecodeOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return Decode<T>(await ReadToEndAsync(stream, options, cancellationToken).ConfigureAwait(false), options);
+        return Decode<T>(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false), options), options);
     }
 
-    // Neither encoding has a preamble, so a byte-order mark reaches the scanner, which removes exactly one.
+    // GetString keeps a leading byte-order mark, so the scanner removes exactly one.
     private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
     private static readonly UTF8Encoding LenientUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
 
@@ -102,54 +102,38 @@ public static class ToonDecoder
         if (utf8Bytes == null)
             throw new ArgumentNullException(nameof(utf8Bytes));
 
-        return ReadUtf8(() => EncodingFor(options).GetString(utf8Bytes));
+        return GetString(new ArraySegment<byte>(utf8Bytes), options);
     }
 
-    private static string ReadToEnd(Stream stream, ToonDecodeOptions? options)
+    private static string GetString(ArraySegment<byte> utf8Bytes, ToonDecodeOptions? options)
     {
-        using var reader = CreateReader(stream, options);
-        return ReadUtf8(reader.ReadToEnd);
-    }
-
-    private static async Task<string> ReadToEndAsync(Stream stream, ToonDecodeOptions? options, CancellationToken cancellationToken)
-    {
-        using var reader = CreateReader(stream, options);
         try
         {
-#if NETSTANDARD2_0
-            return await reader.ReadToEndAsync().ConfigureAwait(false);
-#else
-            return await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-#endif
+            return (options?.Strict ?? true ? StrictUtf8 : LenientUtf8).GetString(utf8Bytes.Array!, utf8Bytes.Offset, utf8Bytes.Count);
         }
         catch (DecoderFallbackException ex)
         {
-            throw IllFormedUtf8(ex);
+            throw ToonFormatException.Syntax("Input is not well-formed UTF-8", inner: ex);
         }
     }
 
-    private static StreamReader CreateReader(Stream stream, ToonDecodeOptions? options)
+    private static ArraySegment<byte> ReadAllBytes(Stream stream)
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
-        return new StreamReader(stream, EncodingFor(options), detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        return new ArraySegment<byte>(buffer.GetBuffer(), 0, (int)buffer.Length);
     }
 
-    private static UTF8Encoding EncodingFor(ToonDecodeOptions? options) => options?.Strict ?? true ? StrictUtf8 : LenientUtf8;
-
-    private static string ReadUtf8(Func<string> read)
+    private static async Task<ArraySegment<byte>> ReadAllBytesAsync(Stream stream, CancellationToken cancellationToken)
     {
-        try
-        {
-            return read();
-        }
-        catch (DecoderFallbackException ex)
-        {
-            throw IllFormedUtf8(ex);
-        }
-    }
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
 
-    private static ToonFormatException IllFormedUtf8(DecoderFallbackException ex) =>
-        ToonFormatException.Syntax("Input is not well-formed UTF-8", inner: ex);
+        using var buffer = new MemoryStream();
+        await stream.CopyToAsync(buffer, 81920, cancellationToken).ConfigureAwait(false);
+        return new ArraySegment<byte>(buffer.GetBuffer(), 0, (int)buffer.Length);
+    }
 }
