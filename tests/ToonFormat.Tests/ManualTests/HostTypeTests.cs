@@ -41,7 +41,6 @@ public class HostTypeTests
     [Fact]
     public void Encode_RejectsUnpairedSurrogates()
     {
-        // Attribute arguments can't carry lone surrogates, so the cases live here.
         foreach (var text in new[] { "a\uD800b", "\uDC00" })
         {
             Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(text));
