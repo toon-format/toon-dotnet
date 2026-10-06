@@ -103,14 +103,10 @@ namespace Toon.Format.Internal.Encode
         {
             var delimiterEnum = Constants.FromDelimiterChar(delimiter);
 
-            if (ValidationShared.IsSafeUnquoted(value, delimiterEnum))
-            {
-                return value;
-            }
-
-            var escaped = StringUtils.EscapeString(value);
-            return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
+            return ValidationShared.IsSafeUnquoted(value, delimiterEnum) ? value : Quote(value);
         }
+
+        public static string Quote(string value) => $"{Constants.DOUBLE_QUOTE}{StringUtils.EscapeString(value)}{Constants.DOUBLE_QUOTE}";
 
         #endregion
 
@@ -121,13 +117,7 @@ namespace Toon.Format.Internal.Encode
         /// </summary>
         public static string EncodeKey(string key)
         {
-            if (ValidationShared.IsValidUnquotedKey(key))
-            {
-                return key;
-            }
-
-            var escaped = StringUtils.EscapeString(key);
-            return $"{Constants.DOUBLE_QUOTE}{escaped}{Constants.DOUBLE_QUOTE}";
+            return ValidationShared.IsValidUnquotedKey(key) ? key : Quote(key);
         }
 
         #endregion

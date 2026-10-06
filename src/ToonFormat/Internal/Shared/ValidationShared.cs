@@ -12,12 +12,8 @@ namespace Toon.Format.Internal.Shared
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         private static readonly Regex NumericLikeRegex = new(
-            pattern: "^-?\\d+(?:\\.\\d+)?(?:e[+-]?\\d+)?$",
+            pattern: "^[+-]?[0-9]+(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?$",
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
-        private static readonly Regex LeadingZeroIntegerRegex = new(
-            pattern: "^0\\d+$",
-            options: RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         private static readonly char[] StructuralBracketsAndBraces =
         {
@@ -77,12 +73,6 @@ namespace Toon.Format.Internal.Shared
             return true;
         }
 
-        private static bool IsNumericLike(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-                return false;
-
-            return NumericLikeRegex.IsMatch(value) || LeadingZeroIntegerRegex.IsMatch(value);
-        }
+        private static bool IsNumericLike(string value) => NumericLikeRegex.IsMatch(value);
     }
 }
