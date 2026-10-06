@@ -50,6 +50,7 @@ Targets [TOON spec v4.3](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md
 
 - **Integers in `long` range decode to `long`, every other number to `double`** – integers beyond `long` range lose precision and a token beyond `double` range (e.g. `1e999`) decodes as a string ([§4](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md#4-decoding-interpretation-reference-decoder))
 - **`int`, `long`, and `double` encode as numbers** – `NaN` and `±Infinity` become `null`, `DateTime` and `DateTimeOffset` become ISO 8601 strings, dictionaries become objects with string keys, other enumerables become arrays, and public properties of other objects become fields ([§3](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md#3-encoding-normalization-reference-encoder))
+- **Tabs in indentation are a strict-mode error** – in non-strict mode each leading tab counts as one indentation level ([§12](https://github.com/toon-format/spec/blob/v4.3.0/SPEC.md#12-indentation-and-whitespace))
 
 ### Migrating from spec v3.0
 
