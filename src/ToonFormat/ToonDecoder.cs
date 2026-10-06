@@ -30,7 +30,6 @@ public static class ToonDecoder
         {
             Indent = options.Indent,
             Strict = options.Strict,
-            ExpandPaths = options.ExpandPaths
         };
 
         var scanResult = Scanner.ToParsedLines(toonString, resolvedOptions.Indent, resolvedOptions.Strict);
@@ -41,23 +40,7 @@ public static class ToonDecoder
         }
 
         var cursor = new LineCursor(scanResult.Lines, scanResult.BlankLines);
-
-        // Track quoted keys if path expansion is enabled
-        HashSet<string>? quotedKeys = null;
-        if (resolvedOptions.ExpandPaths == ToonPathExpansion.Safe)
-        {
-            quotedKeys = new HashSet<string>();
-        }
-
-        var result = Decoders.DecodeValueFromLines(cursor, resolvedOptions, quotedKeys);
-
-        // Apply path expansion if enabled
-        if (resolvedOptions.ExpandPaths == ToonPathExpansion.Safe && result is JsonObject obj)
-        {
-            result = PathExpansion.ExpandPaths(obj, resolvedOptions.Strict, quotedKeys);
-        }
-
-        return result;
+        return Decoders.DecodeValueFromLines(cursor, resolvedOptions);
     }
 
     /// <summary>

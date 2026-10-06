@@ -19,8 +19,7 @@ namespace Toon.Format.Internal.Decode
         /// </summary>
         /// <param name="cursor">The line cursor for reading input</param>
         /// <param name="options">Decoding options</param>
-        /// <param name="quotedKeys">Optional set to populate with keys that were quoted in the source</param>
-        public static JsonNode? DecodeValueFromLines(LineCursor cursor, ResolvedDecodeOptions options, HashSet<string>? quotedKeys = null)
+        public static JsonNode? DecodeValueFromLines(LineCursor cursor, ResolvedDecodeOptions options)
         {
             var first = cursor.Peek();
             if (first == null)
@@ -43,7 +42,7 @@ namespace Toon.Format.Internal.Decode
                 return Parser.ParsePrimitiveToken(first.Content.Trim());
             }
 
-            return DecodeObject(cursor, 0, options, quotedKeys);
+            return DecodeObject(cursor, 0, options);
         }
 
         private static bool IsKeyValueLine(ParsedLine line)
@@ -68,7 +67,7 @@ namespace Toon.Format.Internal.Decode
 
         #region Object decoding
 
-        private static JsonObject DecodeObject(LineCursor cursor, int baseDepth, ResolvedDecodeOptions options, HashSet<string>? quotedKeys = null)
+        private static JsonObject DecodeObject(LineCursor cursor, int baseDepth, ResolvedDecodeOptions options)
         {
             var obj = new JsonObject();
 
@@ -88,14 +87,8 @@ namespace Toon.Format.Internal.Decode
 
                 if (line.Depth == computedDepth)
                 {
-                    var (key, value, wasQuoted) = DecodeKeyValuePair(line, cursor, computedDepth.Value, options);
+                    var (key, value) = DecodeKeyValuePair(line, cursor, computedDepth.Value, options);
                     obj[key] = value;
-
-                    // Track quoted keys at the root level
-                    if (wasQuoted && quotedKeys != null && baseDepth == 0)
-                    {
-                        quotedKeys.Add(key);
-                    }
                 }
                 else
                 {
@@ -111,7 +104,6 @@ namespace Toon.Format.Internal.Decode
             public string Key { get; set; } = string.Empty;
             public JsonNode? Value { get; set; }
             public int FollowDepth { get; set; }
-            public bool WasQuoted { get; set; }
         }
 
         /// <summary>
@@ -144,7 +136,6 @@ namespace Toon.Format.Internal.Decode
                     Key = arrayHeader.Header.Key,
                     Value = value,
                     FollowDepth = baseDepth + 1,
-                    WasQuoted = false // Array headers are never quoted in the key part
                 };
             }
 
@@ -157,16 +148,16 @@ namespace Toon.Format.Internal.Decode
                 if (nextLine != null && nextLine.Depth > baseDepth)
                 {
                     var nested = DecodeObject(cursor, baseDepth + 1, options);
-                    return new KeyValueDecodeResult { Key = keyResult.Key, Value = nested, FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
+                    return new KeyValueDecodeResult { Key = keyResult.Key, Value = nested, FollowDepth = baseDepth + 1 };
                 }
-                return new KeyValueDecodeResult { Key = keyResult.Key, Value = new JsonObject(), FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
+                return new KeyValueDecodeResult { Key = keyResult.Key, Value = new JsonObject(), FollowDepth = baseDepth + 1 };
             }
 
             var primitiveValue = Parser.ParsePrimitiveToken(rest);
-            return new KeyValueDecodeResult { Key = keyResult.Key, Value = primitiveValue, FollowDepth = baseDepth + 1, WasQuoted = keyResult.WasQuoted };
+            return new KeyValueDecodeResult { Key = keyResult.Key, Value = primitiveValue, FollowDepth = baseDepth + 1 };
         }
 
-        private static (string key, JsonNode? value, bool wasQuoted) DecodeKeyValuePair(
+        private static (string key, JsonNode? value) DecodeKeyValuePair(
             ParsedLine line,
             LineCursor cursor,
             int baseDepth,
@@ -174,7 +165,7 @@ namespace Toon.Format.Internal.Decode
         {
             cursor.Advance();
             var result = DecodeKeyValue(line.Content, cursor, baseDepth, options);
-            return (result.Key, result.Value, result.WasQuoted);
+            return (result.Key, result.Value);
         }
 
         #endregion
@@ -433,7 +424,7 @@ namespace Toon.Format.Internal.Decode
 
                 if (line.Depth == firstField.FollowDepth && !line.Content.StartsWith(Constants.LIST_ITEM_PREFIX))
                 {
-                    var (k, v, _) = DecodeKeyValuePair(line, cursor, firstField.FollowDepth, options);
+                    var (k, v) = DecodeKeyValuePair(line, cursor, firstField.FollowDepth, options);
                     obj[k] = v;
                 }
                 else

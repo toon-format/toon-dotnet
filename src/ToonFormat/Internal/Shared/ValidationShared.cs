@@ -11,10 +11,6 @@ namespace Toon.Format.Internal.Shared
             pattern: "^[A-Z_][\\w.]*$",
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-        private static readonly Regex IdentifierSegmentRegex = new(
-            pattern: "^[A-Z_]\\w*$",
-            options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
         private static readonly Regex NumericLikeRegex = new(
             pattern: "^-?\\d+(?:\\.\\d+)?(?:e[+-]?\\d+)?$",
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -45,14 +41,6 @@ namespace Toon.Format.Internal.Shared
                 return false;
 
             return ValidUnquotedKeyRegex.IsMatch(key);
-        }
-
-        internal static bool IsIdentifierSegment(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-                return false;
-
-            return IdentifierSegmentRegex.IsMatch(key);
         }
 
         /// <summary>Whether the string value can be safely without quotes.</summary>
