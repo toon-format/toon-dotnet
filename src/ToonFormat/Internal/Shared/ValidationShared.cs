@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Toon.Format;
 
@@ -21,13 +22,6 @@ namespace Toon.Format.Internal.Shared
             Constants.CLOSE_BRACKET,
             Constants.OPEN_BRACE,
             Constants.CLOSE_BRACE
-        };
-
-        private static readonly char[] ControlCharacters =
-        {
-            Constants.NEWLINE,
-            Constants.CARRIAGE_RETURN,
-            Constants.TAB
         };
 
         /// <summary>Whether the key name can be without quotes.</summary>
@@ -61,7 +55,7 @@ namespace Toon.Format.Internal.Shared
             if (value.IndexOfAny(StructuralBracketsAndBraces) >= 0)
                 return false;
 
-            if (value.IndexOfAny(ControlCharacters) >= 0)
+            if (value.Any(ch => ch < ' '))
                 return false;
 
             var delimiterChar = Constants.ToDelimiterChar(delimiter);

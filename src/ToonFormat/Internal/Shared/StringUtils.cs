@@ -1,4 +1,5 @@
 #nullable enable
+using System.Globalization;
 using System.Text;
 
 namespace Toon.Format.Internal.Shared
@@ -6,19 +7,25 @@ namespace Toon.Format.Internal.Shared
     internal static class StringUtils
     {
         /// <summary>
-        /// Escapes special characters: backslash, quotes, newlines, carriage returns, tabs.
+        /// Escapes backslash, quote, newline, carriage return, and tab, and every other control character as <c>\uXXXX</c>.
         /// </summary>
         internal static string EscapeString(string value)
         {
-            if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
-
-            return value
-                .Replace("\r\n", "\n")
-                .Replace("\\", $"{Constants.BACKSLASH}{Constants.BACKSLASH}")
-                .Replace("\"", $"{Constants.BACKSLASH}{Constants.DOUBLE_QUOTE}")
-                .Replace("\n", $"{Constants.BACKSLASH}n")
-                .Replace("\r", $"{Constants.BACKSLASH}r")
-                .Replace("\t", $"{Constants.BACKSLASH}t");
+            var sb = new StringBuilder(value.Length + 2);
+            foreach (var ch in value)
+            {
+                switch (ch)
+                {
+                    case Constants.BACKSLASH: sb.Append(@"\\"); break;
+                    case Constants.DOUBLE_QUOTE: sb.Append(@"\"""); break;
+                    case Constants.NEWLINE: sb.Append(@"\n"); break;
+                    case Constants.CARRIAGE_RETURN: sb.Append(@"\r"); break;
+                    case Constants.TAB: sb.Append(@"\t"); break;
+                    case < ' ': sb.Append(@"\u").Append(((int)ch).ToString("x4", CultureInfo.InvariantCulture)); break;
+                    default: sb.Append(ch); break;
+                }
+            }
+            return sb.ToString();
         }
 
         /// <summary>
