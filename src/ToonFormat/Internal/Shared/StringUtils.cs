@@ -103,34 +103,20 @@ namespace Toon.Format.Internal.Shared
         }
 
         /// <summary>
-        /// Finds the position of the target character not inside quotes; returns -1 if not found.
-        /// Escape sequences inside quotes are skipped.
+        /// Returns the index of the first <paramref name="target"/> outside quotes from <paramref name="start"/>, or -1.
         /// </summary>
         internal static int FindUnquotedChar(string content, char target, int start = 0)
         {
-            bool inQuotes = false;
-            int i = start;
-
-            while (i < content.Length)
+            var inQuotes = false;
+            for (var i = start; i < content.Length; i++)
             {
-                if (inQuotes && content[i] == Constants.BACKSLASH && i + 1 < content.Length)
-                {
-                    // Skip the next character for escape sequences inside quotes
-                    i += 2;
-                    continue;
-                }
-
-                if (content[i] == Constants.DOUBLE_QUOTE)
-                {
-                    inQuotes = !inQuotes;
+                var ch = content[i];
+                if (inQuotes && ch == Constants.BACKSLASH)
                     i++;
-                    continue;
-                }
-
-                if (!inQuotes && content[i] == target)
+                else if (ch == Constants.DOUBLE_QUOTE)
+                    inQuotes = !inQuotes;
+                else if (!inQuotes && ch == target)
                     return i;
-
-                i++;
             }
 
             return -1;
