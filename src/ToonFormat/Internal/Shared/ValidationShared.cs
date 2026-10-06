@@ -25,13 +25,7 @@ namespace Toon.Format.Internal.Shared
         };
 
         /// <summary>Whether the key name can be without quotes.</summary>
-        internal static bool IsValidUnquotedKey(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-                return false;
-
-            return ValidUnquotedKeyRegex.IsMatch(key);
-        }
+        internal static bool IsValidUnquotedKey(string key) => ValidUnquotedKeyRegex.IsMatch(key);
 
         /// <summary>Whether the string value can be safely without quotes.</summary>
         internal static bool IsSafeUnquoted(string value, char delimiter)

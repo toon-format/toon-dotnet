@@ -11,15 +11,8 @@ namespace Toon.Format.Internal.Shared
             pattern: "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?$",
             options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-        /// <summary>
-        /// Checks if the token is a boolean or null literal: true, false, null.
-        /// </summary>
-        internal static bool IsBooleanOrNullLiteral(string token)
-        {
-            return string.Equals(token, Constants.TRUE_LITERAL, StringComparison.Ordinal)
-                || string.Equals(token, Constants.FALSE_LITERAL, StringComparison.Ordinal)
-                || string.Equals(token, Constants.NULL_LITERAL, StringComparison.Ordinal);
-        }
+        internal static bool IsBooleanOrNullLiteral(string token) =>
+            token is Constants.TRUE_LITERAL or Constants.FALSE_LITERAL or Constants.NULL_LITERAL;
 
         /// <summary>
         /// Parses a token of the number grammar: an integer in <see cref="long"/> range becomes a <c>long</c>,
