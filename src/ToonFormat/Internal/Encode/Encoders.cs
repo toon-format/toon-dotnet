@@ -359,7 +359,7 @@ namespace Toon.Format.Internal.Encode
                     }
                     else
                     {
-                        writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
+                        writer.PushListItem(depth, Primitives.FormatHeader(arr.Count, firstKey, null, options.Delimiter));
                         foreach (var itemObj in arr.OfType<JsonObject>())
                         {
                             EncodeObjectAsListItem(itemObj, writer, depth + 2, options);
@@ -368,7 +368,7 @@ namespace Toon.Format.Internal.Encode
                 }
                 else
                 {
-                    writer.PushListItem(depth, $"{encodedKey}{Constants.OPEN_BRACKET}{arr.Count}{Constants.CLOSE_BRACKET}{Constants.COLON}");
+                    writer.PushListItem(depth, Primitives.FormatHeader(arr.Count, firstKey, null, options.Delimiter));
 
                     // Encode array contents at depth + 2 (SPEC v3.0 §10)
                     foreach (var item in arr)
