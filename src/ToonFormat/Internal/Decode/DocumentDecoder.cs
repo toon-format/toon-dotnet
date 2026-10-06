@@ -170,7 +170,8 @@ namespace Toon.Format.Internal.Decode
             var lastRowLine = headerLine;
             int? startLine = null;
 
-            while (rows.Count < header.Length)
+            // Only strict stops at N and leaves the surplus to the extra-row check; non-strict reads on, so [N] never truncates.
+            while (!_strict || rows.Count < header.Length)
             {
                 var line = _cursor.Peek();
                 if (line == null || line.Depth <= baseDepth)
@@ -218,7 +219,8 @@ namespace Toon.Format.Internal.Decode
             var lastItemLine = headerLine;
             int? startLine = null;
 
-            while (items.Count < header.Length)
+            // Only strict stops at N and leaves the surplus to the extra-item check; non-strict reads on, so [N] never truncates.
+            while (!_strict || items.Count < header.Length)
             {
                 var line = _cursor.Peek();
                 if (line == null || line.Depth <= baseDepth)
