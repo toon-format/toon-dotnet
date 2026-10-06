@@ -15,7 +15,7 @@ internal static class Validation
 
     public static void ValidateNoExtraListItems(ParsedLine? nextLine, int itemDepth, int expectedCount)
     {
-        if (nextLine != null && nextLine.Depth == itemDepth && nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX, StringComparison.Ordinal))
+        if (nextLine != null && nextLine.Depth == itemDepth && nextLine.Content.StartsWith(Constants.ListItemPrefix, StringComparison.Ordinal))
             throw ToonFormatException.Range($"Expected {expectedCount} list-form items, but found more", nextLine.LineNumber, sourceLine: nextLine.Raw);
     }
 
@@ -23,7 +23,7 @@ internal static class Validation
     {
         if (nextLine != null
             && nextLine.Depth == rowDepth
-            && !nextLine.Content.StartsWith(Constants.LIST_ITEM_PREFIX, StringComparison.Ordinal)
+            && !nextLine.Content.StartsWith(Constants.ListItemPrefix, StringComparison.Ordinal)
             && IsDataRow(nextLine.Content, header.Delimiter))
         {
             throw ToonFormatException.Range($"Expected {header.Length} tabular rows, but found more", nextLine.LineNumber, sourceLine: nextLine.Raw);
@@ -45,7 +45,7 @@ internal static class Validation
     /// </summary>
     public static bool IsDataRow(string content, char delimiter)
     {
-        var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
+        var colonIndex = StringUtils.FindUnquotedChar(content, Constants.Colon);
         var delimiterIndex = StringUtils.FindUnquotedChar(content, delimiter);
         return colonIndex == -1 || (delimiterIndex != -1 && delimiterIndex < colonIndex);
     }

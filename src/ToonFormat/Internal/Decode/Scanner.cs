@@ -45,35 +45,35 @@ internal static class Scanner
     {
         var lines = new List<ParsedLine>();
         var blankLines = new List<int>();
-        var rawLines = source.Split(Constants.NEWLINE);
+        var rawLines = source.Split(Constants.Newline);
 
         for (var i = 0; i < rawLines.Length; i++)
         {
             var raw = rawLines[i];
             var lineNumber = i + 1;
 
-            if (lineNumber == 1 && raw.Length > 0 && raw[0] == Constants.BYTE_ORDER_MARK)
+            if (lineNumber == 1 && raw.Length > 0 && raw[0] == Constants.ByteOrderMark)
                 raw = raw.Substring(1);
 
             // A trailing carriage return belongs to the CRLF terminator, not to the content.
-            if (raw.Length > 0 && raw[raw.Length - 1] == Constants.CARRIAGE_RETURN)
+            if (raw.Length > 0 && raw[raw.Length - 1] == Constants.CarriageReturn)
                 raw = raw.Substring(0, raw.Length - 1);
 
             var whitespaceEnd = 0;
-            while (whitespaceEnd < raw.Length && (raw[whitespaceEnd] == Constants.SPACE || raw[whitespaceEnd] == Constants.TAB))
+            while (whitespaceEnd < raw.Length && (raw[whitespaceEnd] == Constants.Space || raw[whitespaceEnd] == Constants.Tab))
                 whitespaceEnd++;
-            var firstTab = raw.IndexOf(Constants.TAB, 0, whitespaceEnd);
+            var firstTab = raw.IndexOf(Constants.Tab, 0, whitespaceEnd);
 
             // Strict rejects tab indentation below, so only the spaces before the first tab are indentation there.
             var indent = strict && firstTab != -1 ? firstTab : whitespaceEnd;
             // Non-strict input may indent with tabs, and each tab counts as one depth level.
-            var tabIndent = strict || firstTab == -1 ? 0 : raw.Take(whitespaceEnd).Count(ch => ch == Constants.TAB);
+            var tabIndent = strict || firstTab == -1 ? 0 : raw.Take(whitespaceEnd).Count(ch => ch == Constants.Tab);
 
-            var content = raw.Substring(indent).TrimEnd(Constants.SPACE);
+            var content = raw.Substring(indent).TrimEnd(Constants.Space);
 
             // Only spaces may precede the comment marker. Comment lines vanish before blank-line
             // tracking and strict validation, so they never count as rows, items, entries, or blank lines.
-            if (firstTab == -1 && content.Length > 0 && content[0] == Constants.COMMENT_MARKER)
+            if (firstTab == -1 && content.Length > 0 && content[0] == Constants.CommentMarker)
                 continue;
 
             if (content.Length == 0)

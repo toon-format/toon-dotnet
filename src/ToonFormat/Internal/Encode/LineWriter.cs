@@ -13,9 +13,9 @@ internal class LineWriter
         _indentSize = indentSize;
     }
 
-    public void Push(int depth, string content) => _lines.Add(new string(Constants.SPACE, depth * _indentSize) + content);
+    public void Push(int depth, string content) => _lines.Add(new string(Constants.Space, depth * _indentSize) + content);
 
-    public void PushListItem(int depth, string content) => Push(depth, Constants.LIST_ITEM_PREFIX + content);
+    public void PushListItem(int depth, string content) => Push(depth, Constants.ListItemPrefix + content);
 
     public override string ToString() => string.Join("\n", _lines);
 }

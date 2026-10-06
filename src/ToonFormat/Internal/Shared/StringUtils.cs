@@ -9,7 +9,7 @@ internal static class StringUtils
     /// Trims U+0020 spaces only: other whitespace, such as NBSP or a tab outside its delimiter role,
     /// is part of the token.
     /// </summary>
-    internal static string TrimSpaces(string value) => value.Trim(Constants.SPACE);
+    internal static string TrimSpaces(string value) => value.Trim(Constants.Space);
 
     /// <summary>
     /// Escapes backslash, quote, newline, carriage return, and tab, and every other control character as <c>\uXXXX</c>.
@@ -21,11 +21,11 @@ internal static class StringUtils
         {
             switch (ch)
             {
-                case Constants.BACKSLASH: sb.Append(@"\\"); break;
-                case Constants.DOUBLE_QUOTE: sb.Append(@"\"""); break;
-                case Constants.NEWLINE: sb.Append(@"\n"); break;
-                case Constants.CARRIAGE_RETURN: sb.Append(@"\r"); break;
-                case Constants.TAB: sb.Append(@"\t"); break;
+                case Constants.Backslash: sb.Append(@"\\"); break;
+                case Constants.DoubleQuote: sb.Append(@"\"""); break;
+                case Constants.Newline: sb.Append(@"\n"); break;
+                case Constants.CarriageReturn: sb.Append(@"\r"); break;
+                case Constants.Tab: sb.Append(@"\t"); break;
                 case < ' ': sb.Append(@"\u").Append(((int)ch).ToString("x4", CultureInfo.InvariantCulture)); break;
                 default: sb.Append(ch); break;
             }
@@ -41,7 +41,7 @@ internal static class StringUtils
         var sb = new StringBuilder(value.Length);
         for (var i = 0; i < value.Length; i++)
         {
-            if (value[i] != Constants.BACKSLASH)
+            if (value[i] != Constants.Backslash)
             {
                 sb.Append(value[i]);
                 continue;
@@ -53,11 +53,11 @@ internal static class StringUtils
             var next = value[++i];
             sb.Append(next switch
             {
-                'n' => Constants.NEWLINE,
-                't' => Constants.TAB,
-                'r' => Constants.CARRIAGE_RETURN,
-                '\\' => Constants.BACKSLASH,
-                '"' => Constants.DOUBLE_QUOTE,
+                'n' => Constants.Newline,
+                't' => Constants.Tab,
+                'r' => Constants.CarriageReturn,
+                '\\' => Constants.Backslash,
+                '"' => Constants.DoubleQuote,
                 'u' => ParseUnicodeEscape(value, i - 1),
                 _ => throw ToonFormatException.Syntax($"Invalid escape sequence: \\{next}"),
             });
@@ -90,9 +90,9 @@ internal static class StringUtils
     {
         for (var i = 1; i < content.Length; i++)
         {
-            if (content[i] == Constants.BACKSLASH)
+            if (content[i] == Constants.Backslash)
                 i++;
-            else if (content[i] == Constants.DOUBLE_QUOTE)
+            else if (content[i] == Constants.DoubleQuote)
                 return i;
         }
 
@@ -108,9 +108,9 @@ internal static class StringUtils
         for (var i = start; i < content.Length; i++)
         {
             var ch = content[i];
-            if (inQuotes && ch == Constants.BACKSLASH)
+            if (inQuotes && ch == Constants.Backslash)
                 i++;
-            else if (ch == Constants.DOUBLE_QUOTE)
+            else if (ch == Constants.DoubleQuote)
                 inQuotes = !inQuotes;
             else if (!inQuotes && ch == target)
                 return i;

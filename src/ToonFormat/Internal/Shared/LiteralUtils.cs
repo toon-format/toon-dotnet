@@ -11,7 +11,7 @@ internal static class LiteralUtils
         options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static bool IsBooleanOrNullLiteral(string token) =>
-        token is Constants.TRUE_LITERAL or Constants.FALSE_LITERAL or Constants.NULL_LITERAL;
+        token is Constants.TrueLiteral or Constants.FalseLiteral or Constants.NullLiteral;
 
     /// <summary>
     /// Parses a token of the number grammar: an integer in <see cref="long"/> range becomes a <c>long</c>,

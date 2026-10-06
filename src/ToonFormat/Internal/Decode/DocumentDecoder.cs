@@ -78,7 +78,7 @@ internal sealed class DocumentDecoder
         return root;
     }
 
-    private static bool IsKeyValueContent(string content) => StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
+    private static bool IsKeyValueContent(string content) => StringUtils.FindUnquotedChar(content, Constants.Colon) != -1;
 
     #endregion
 
@@ -349,16 +349,16 @@ internal sealed class DocumentDecoder
     #region List items
 
     private static bool IsListItem(string content) =>
-        content.StartsWith(Constants.LIST_ITEM_PREFIX, StringComparison.Ordinal) || content == Constants.LIST_ITEM_MARKER.ToString();
+        content.StartsWith(Constants.ListItemPrefix, StringComparison.Ordinal) || content == Constants.ListItemMarker.ToString();
 
     private JsonNode? DecodeListItem(int itemDepth)
     {
         var line = _cursor.Next()!;
-        if (line.Content == Constants.LIST_ITEM_MARKER.ToString())
+        if (line.Content == Constants.ListItemMarker.ToString())
             return new JsonObject();
 
         // The scanner trims trailing spaces, so a bare `- ` arrives as the marker alone.
-        var afterHyphen = line.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
+        var afterHyphen = line.Content.Substring(Constants.ListItemPrefix.Length);
         if (StringUtils.TrimSpaces(afterHyphen) == EmptyArray)
             return new JsonArray();
 

@@ -19,7 +19,7 @@ internal static class Encoders
         if (Normalize.IsJsonPrimitive(value))
         {
             // Unquoted, a leading U+FEFF would read as the document's byte-order mark and vanish on decode.
-            if (value is JsonValue jsonValue && jsonValue.TryGetValue<string>(out var text) && text.Length > 0 && text[0] == Constants.BYTE_ORDER_MARK)
+            if (value is JsonValue jsonValue && jsonValue.TryGetValue<string>(out var text) && text.Length > 0 && text[0] == Constants.ByteOrderMark)
                 return Primitives.Quote(text);
 
             return Primitives.EncodePrimitive(value, options.Delimiter);
@@ -169,7 +169,7 @@ internal static class Encoders
     {
         if (obj.Count == 0)
         {
-            writer.Push(depth, Constants.LIST_ITEM_MARKER.ToString());
+            writer.Push(depth, Constants.ListItemMarker.ToString());
             return;
         }
 

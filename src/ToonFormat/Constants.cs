@@ -2,40 +2,40 @@ namespace Toon.Format;
 
 internal static class Constants
 {
-    public const char LIST_ITEM_MARKER = '-';
+    public const char ListItemMarker = '-';
 
-    public const string LIST_ITEM_PREFIX = "- ";
+    public const string ListItemPrefix = "- ";
 
-    public const char COMMA = ',';
-    public const char COLON = ':';
-    public const char SPACE = ' ';
-    public const char PIPE = '|';
-    public const char COMMENT_MARKER = '#';
+    public const char Comma = ',';
+    public const char Colon = ':';
+    public const char Space = ' ';
+    public const char Pipe = '|';
+    public const char CommentMarker = '#';
 
-    public const char OPEN_BRACKET = '[';
-    public const char CLOSE_BRACKET = ']';
-    public const char OPEN_BRACE = '{';
-    public const char CLOSE_BRACE = '}';
+    public const char OpenBracket = '[';
+    public const char CloseBracket = ']';
+    public const char OpenBrace = '{';
+    public const char CloseBrace = '}';
 
-    public const string NULL_LITERAL = "null";
-    public const string TRUE_LITERAL = "true";
-    public const string FALSE_LITERAL = "false";
+    public const string NullLiteral = "null";
+    public const string TrueLiteral = "true";
+    public const string FalseLiteral = "false";
 
-    public const char BACKSLASH = '\\';
-    public const char DOUBLE_QUOTE = '"';
-    public const char NEWLINE = '\n';
-    public const char CARRIAGE_RETURN = '\r';
-    public const char TAB = '\t';
-    public const char BYTE_ORDER_MARK = '\uFEFF';
+    public const char Backslash = '\\';
+    public const char DoubleQuote = '"';
+    public const char Newline = '\n';
+    public const char CarriageReturn = '\r';
+    public const char Tab = '\t';
+    public const char ByteOrderMark = '\uFEFF';
 
-    public const char DEFAULT_DELIMITER_CHAR = COMMA;
+    public const char DefaultDelimiter = Comma;
 
     public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
     {
-        ToonDelimiter.Comma => COMMA,
-        ToonDelimiter.Tab => TAB,
-        ToonDelimiter.Pipe => PIPE,
-        _ => COMMA
+        ToonDelimiter.Comma => Comma,
+        ToonDelimiter.Tab => Tab,
+        ToonDelimiter.Pipe => Pipe,
+        _ => Comma
     };
 }
 

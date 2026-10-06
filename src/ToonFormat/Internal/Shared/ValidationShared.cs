@@ -14,10 +14,10 @@ internal static class ValidationShared
 
     private static readonly char[] StructuralBracketsAndBraces =
     {
-        Constants.OPEN_BRACKET,
-        Constants.CLOSE_BRACKET,
-        Constants.OPEN_BRACE,
-        Constants.CLOSE_BRACE
+        Constants.OpenBracket,
+        Constants.CloseBracket,
+        Constants.OpenBrace,
+        Constants.CloseBrace
     };
 
     /// <summary>Whether the key may stay unquoted.</summary>
@@ -36,10 +36,10 @@ internal static class ValidationShared
         if (LiteralUtils.IsBooleanOrNullLiteral(value) || IsNumericLike(value))
             return false;
 
-        if (value.IndexOf(Constants.COLON) >= 0)
+        if (value.IndexOf(Constants.Colon) >= 0)
             return false;
 
-        if (value.IndexOf(Constants.DOUBLE_QUOTE) >= 0 || value.IndexOf(Constants.BACKSLASH) >= 0)
+        if (value.IndexOf(Constants.DoubleQuote) >= 0 || value.IndexOf(Constants.Backslash) >= 0)
             return false;
 
         if (value.IndexOfAny(StructuralBracketsAndBraces) >= 0)
@@ -51,7 +51,7 @@ internal static class ValidationShared
         if (value.IndexOf(delimiter) >= 0)
             return false;
 
-        if (value[0] == Constants.LIST_ITEM_MARKER || value[0] == Constants.COMMENT_MARKER)
+        if (value[0] == Constants.ListItemMarker || value[0] == Constants.CommentMarker)
             return false;
 
         return true;
@@ -59,5 +59,5 @@ internal static class ValidationShared
 
     private static bool IsNumericLike(string value) => NumericLikeRegex.IsMatch(value);
 
-    private static bool IsSpaceOrTab(char c) => c == Constants.SPACE || c == Constants.TAB;
+    private static bool IsSpaceOrTab(char c) => c == Constants.Space || c == Constants.Tab;
 }

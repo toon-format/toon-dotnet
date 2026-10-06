@@ -43,14 +43,14 @@ internal static class Parser
         if (trimmed.StartsWith("\"", StringComparison.Ordinal))
         {
             var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed);
-            if (closingQuoteIndex == -1 || closingQuoteIndex + 1 >= trimmed.Length || trimmed[closingQuoteIndex + 1] != Constants.OPEN_BRACKET)
+            if (closingQuoteIndex == -1 || closingQuoteIndex + 1 >= trimmed.Length || trimmed[closingQuoteIndex + 1] != Constants.OpenBracket)
                 return null;
 
             bracketStart = content.Length - trimmed.Length + closingQuoteIndex + 1;
         }
         else
         {
-            bracketStart = StringUtils.FindUnquotedChar(content, Constants.OPEN_BRACKET);
+            bracketStart = StringUtils.FindUnquotedChar(content, Constants.OpenBracket);
         }
 
         if (bracketStart == -1)
@@ -58,17 +58,17 @@ internal static class Parser
 
         // A header needs a colon, and its key can't contain one. Past this check, a grammar failure
         // makes the line an invalid header instead of a key-value line.
-        var firstColonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
+        var firstColonIndex = StringUtils.FindUnquotedChar(content, Constants.Colon);
         if (firstColonIndex == -1 || firstColonIndex < bracketStart)
             return null;
 
-        var bracketEnd = StringUtils.FindUnquotedChar(content, Constants.CLOSE_BRACKET, bracketStart);
+        var bracketEnd = StringUtils.FindUnquotedChar(content, Constants.CloseBracket, bracketStart);
         if (bracketEnd == -1)
             return Invalid("Unterminated bracket segment", out error);
 
         var fieldsEnd = bracketEnd + 1;
-        var braceStart = StringUtils.FindUnquotedChar(content, Constants.OPEN_BRACE, bracketEnd);
-        if (braceStart != -1 && braceStart < StringUtils.FindUnquotedChar(content, Constants.COLON, bracketEnd))
+        var braceStart = StringUtils.FindUnquotedChar(content, Constants.OpenBrace, bracketEnd);
+        if (braceStart != -1 && braceStart < StringUtils.FindUnquotedChar(content, Constants.Colon, bracketEnd))
         {
             if (braceStart != bracketEnd + 1)
                 return Invalid(GapError(content.Substring(bracketEnd + 1, braceStart - bracketEnd - 1), "field list"), out error);
@@ -78,7 +78,7 @@ internal static class Parser
                 fieldsEnd = braceEnd + 1;
         }
 
-        var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON, fieldsEnd);
+        var colonIndex = StringUtils.FindUnquotedChar(content, Constants.Colon, fieldsEnd);
         if (colonIndex == -1)
             return Invalid("Missing colon after array header", out error);
         if (colonIndex != fieldsEnd)
@@ -92,7 +92,7 @@ internal static class Parser
             if (char.IsWhiteSpace(rawKey[rawKey.Length - 1]))
                 return Invalid("Unexpected whitespace between key and bracket segment", out error);
 
-            key = rawKey[0] == Constants.DOUBLE_QUOTE ? ParseStringLiteral(rawKey) : rawKey;
+            key = rawKey[0] == Constants.DoubleQuote ? ParseStringLiteral(rawKey) : rawKey;
         }
 
         if (!TryParseBracketSegment(content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1), out var length, out var delimiter, out var keyed, out error))
@@ -155,8 +155,8 @@ internal static class Parser
     private static bool TryParseBracketSegment(string segment, out int length, out char delimiter, out bool keyed, out string? error)
     {
         var content = segment;
-        delimiter = Constants.DEFAULT_DELIMITER_CHAR;
-        if (content.Length > 0 && (content[content.Length - 1] == Constants.TAB || content[content.Length - 1] == Constants.PIPE))
+        delimiter = Constants.DefaultDelimiter;
+        if (content.Length > 0 && (content[content.Length - 1] == Constants.Tab || content[content.Length - 1] == Constants.Pipe))
         {
             delimiter = content[content.Length - 1];
             content = content.Substring(0, content.Length - 1);
@@ -164,7 +164,7 @@ internal static class Parser
 
         // Only a colon between the length and the optional delimiter symbol marks a keyed header;
         // any other placement leaves a token that fails the length check below.
-        keyed = content.Length > 0 && content[content.Length - 1] == Constants.COLON;
+        keyed = content.Length > 0 && content[content.Length - 1] == Constants.Colon;
         if (keyed)
             content = content.Substring(0, content.Length - 1);
 
@@ -193,7 +193,7 @@ internal static class Parser
             if (trimmed.Length == 0)
                 throw ToonFormatException.Syntax("Empty field name in field list");
 
-            var groupStart = StringUtils.FindUnquotedChar(trimmed, Constants.OPEN_BRACE);
+            var groupStart = StringUtils.FindUnquotedChar(trimmed, Constants.OpenBrace);
             if (groupStart == -1)
             {
                 fields.Add(new FieldNode(ParseStringLiteral(trimmed)));
@@ -231,13 +231,13 @@ internal static class Parser
         for (var i = 0; i < content.Length; i++)
         {
             var ch = content[i];
-            if (inQuotes && ch == Constants.BACKSLASH)
+            if (inQuotes && ch == Constants.Backslash)
                 i++;
-            else if (ch == Constants.DOUBLE_QUOTE)
+            else if (ch == Constants.DoubleQuote)
                 inQuotes = !inQuotes;
-            else if (!inQuotes && ch == Constants.OPEN_BRACE)
+            else if (!inQuotes && ch == Constants.OpenBrace)
                 braceDepth++;
-            else if (!inQuotes && ch == Constants.CLOSE_BRACE)
+            else if (!inQuotes && ch == Constants.CloseBrace)
                 braceDepth--;
             else if (!inQuotes && ch == delimiter && braceDepth == 0)
             {
@@ -261,13 +261,13 @@ internal static class Parser
         for (var i = braceStart; i < content.Length; i++)
         {
             var ch = content[i];
-            if (inQuotes && ch == Constants.BACKSLASH)
+            if (inQuotes && ch == Constants.Backslash)
                 i++;
-            else if (ch == Constants.DOUBLE_QUOTE)
+            else if (ch == Constants.DoubleQuote)
                 inQuotes = !inQuotes;
-            else if (!inQuotes && ch == Constants.OPEN_BRACE)
+            else if (!inQuotes && ch == Constants.OpenBrace)
                 braceDepth++;
-            else if (!inQuotes && ch == Constants.CLOSE_BRACE && --braceDepth == 0)
+            else if (!inQuotes && ch == Constants.CloseBrace && --braceDepth == 0)
                 return i;
         }
 
@@ -298,7 +298,7 @@ internal static class Parser
 
     private static char? FindUnquotedMismatchedDelimiter(string content, char activeDelimiter)
     {
-        foreach (var candidate in new[] { Constants.COMMA, Constants.TAB, Constants.PIPE })
+        foreach (var candidate in new[] { Constants.Comma, Constants.Tab, Constants.Pipe })
         {
             if (candidate != activeDelimiter && StringUtils.FindUnquotedChar(content, candidate) != -1)
                 return candidate;
@@ -307,7 +307,7 @@ internal static class Parser
         return null;
     }
 
-    private static string FormatDelimiter(char delimiter) => delimiter == Constants.TAB ? "\\t" : delimiter.ToString();
+    private static string FormatDelimiter(char delimiter) => delimiter == Constants.Tab ? "\\t" : delimiter.ToString();
 
     #endregion
 
@@ -325,9 +325,9 @@ internal static class Parser
         for (var i = 0; i < input.Length; i++)
         {
             var ch = input[i];
-            if (inQuotes && ch == Constants.BACKSLASH)
+            if (inQuotes && ch == Constants.Backslash)
                 i++;
-            else if (ch == Constants.DOUBLE_QUOTE)
+            else if (ch == Constants.DoubleQuote)
                 inQuotes = !inQuotes;
             else if (!inQuotes && ch == delimiter)
             {
@@ -353,14 +353,14 @@ internal static class Parser
     {
         var trimmed = StringUtils.TrimSpaces(token);
 
-        if (trimmed.Length > 0 && trimmed[0] == Constants.DOUBLE_QUOTE)
+        if (trimmed.Length > 0 && trimmed[0] == Constants.DoubleQuote)
             return JsonValue.Create(ParseStringLiteral(trimmed));
 
         return trimmed switch
         {
-            Constants.TRUE_LITERAL => JsonValue.Create(true),
-            Constants.FALSE_LITERAL => JsonValue.Create(false),
-            Constants.NULL_LITERAL => null,
+            Constants.TrueLiteral => JsonValue.Create(true),
+            Constants.FalseLiteral => JsonValue.Create(false),
+            Constants.NullLiteral => null,
             _ => LiteralUtils.ParseNumber(trimmed) ?? JsonValue.Create(trimmed),
         };
     }
@@ -371,7 +371,7 @@ internal static class Parser
     public static string ParseStringLiteral(string token)
     {
         var trimmed = StringUtils.TrimSpaces(token);
-        if (trimmed.Length == 0 || trimmed[0] != Constants.DOUBLE_QUOTE)
+        if (trimmed.Length == 0 || trimmed[0] != Constants.DoubleQuote)
             return trimmed;
 
         var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed);
@@ -387,12 +387,12 @@ internal static class Parser
     /// Parses the key that starts <paramref name="content"/> and returns it with the index after its colon.
     /// </summary>
     public static (string Key, int End) ParseKeyToken(string content) =>
-        content[0] == Constants.DOUBLE_QUOTE ? ParseQuotedKey(content) : ParseUnquotedKey(content);
+        content[0] == Constants.DoubleQuote ? ParseQuotedKey(content) : ParseUnquotedKey(content);
 
     private static (string Key, int End) ParseUnquotedKey(string content)
     {
         // A raw scan would cut `a "b:c" d: 1` at the quoted colon and split the key in two.
-        var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
+        var colonIndex = StringUtils.FindUnquotedChar(content, Constants.Colon);
         if (colonIndex == -1)
             throw ToonFormatException.Syntax("Missing colon after key");
 
@@ -407,10 +407,10 @@ internal static class Parser
 
         var key = StringUtils.UnescapeString(content.Substring(1, closingQuoteIndex - 1));
         var end = closingQuoteIndex + 1;
-        while (end < content.Length && content[end] == Constants.SPACE)
+        while (end < content.Length && content[end] == Constants.Space)
             end++;
 
-        if (end >= content.Length || content[end] != Constants.COLON)
+        if (end >= content.Length || content[end] != Constants.Colon)
             throw ToonFormatException.Syntax("Missing colon after key");
 
         return (key, end + 1);

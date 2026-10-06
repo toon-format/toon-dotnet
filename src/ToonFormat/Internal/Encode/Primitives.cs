@@ -57,12 +57,12 @@ internal static class Primitives
     public static string EncodePrimitive(JsonNode? value, char delimiter)
     {
         if (value == null)
-            return Constants.NULL_LITERAL;
+            return Constants.NullLiteral;
 
         var jsonValue = value.AsValue();
 
         if (jsonValue.TryGetValue<bool>(out var boolVal))
-            return boolVal ? Constants.TRUE_LITERAL : Constants.FALSE_LITERAL;
+            return boolVal ? Constants.TrueLiteral : Constants.FalseLiteral;
 
         if (jsonValue.TryGetValue<long>(out var longVal))
             return longVal.ToString(CultureInfo.InvariantCulture);
@@ -79,7 +79,7 @@ internal static class Primitives
     public static string EncodeStringLiteral(string value, char delimiter) =>
         ValidationShared.IsSafeUnquoted(value, delimiter) ? value : Quote(value);
 
-    public static string Quote(string value) => $"{Constants.DOUBLE_QUOTE}{StringUtils.EscapeString(value)}{Constants.DOUBLE_QUOTE}";
+    public static string Quote(string value) => $"{Constants.DoubleQuote}{StringUtils.EscapeString(value)}{Constants.DoubleQuote}";
 
     #endregion
 
@@ -112,22 +112,22 @@ internal static class Primitives
         if (key != null)
             header.Append(EncodeKey(key));
 
-        header.Append(Constants.OPEN_BRACKET).Append(length);
+        header.Append(Constants.OpenBracket).Append(length);
         if (keyed)
-            header.Append(Constants.COLON);
-        if (delimiter != Constants.DEFAULT_DELIMITER_CHAR)
+            header.Append(Constants.Colon);
+        if (delimiter != Constants.DefaultDelimiter)
             header.Append(delimiter);
-        header.Append(Constants.CLOSE_BRACKET);
+        header.Append(Constants.CloseBracket);
 
         if (fields != null)
             AppendFieldList(header, fields, delimiter);
 
-        return header.Append(Constants.COLON).ToString();
+        return header.Append(Constants.Colon).ToString();
     }
 
     private static void AppendFieldList(StringBuilder header, IReadOnlyList<FieldNode> fields, char delimiter)
     {
-        header.Append(Constants.OPEN_BRACE);
+        header.Append(Constants.OpenBrace);
         for (var i = 0; i < fields.Count; i++)
         {
             if (i > 0)
@@ -136,7 +136,7 @@ internal static class Primitives
             if (fields[i].Children != null)
                 AppendFieldList(header, fields[i].Children!, delimiter);
         }
-        header.Append(Constants.CLOSE_BRACE);
+        header.Append(Constants.CloseBrace);
     }
 
     #endregion
