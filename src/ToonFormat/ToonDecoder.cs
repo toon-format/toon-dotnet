@@ -20,6 +20,8 @@ public static class ToonDecoder
             throw new ArgumentNullException(nameof(toonString));
 
         options ??= new ToonDecodeOptions();
+        if (options.IndentSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(options), "IndentSize must be at least 1");
 
         var cursor = Scanner.Scan(toonString, options.IndentSize, options.Strict);
         return new DocumentDecoder(cursor, options.Strict).DecodeDocument();

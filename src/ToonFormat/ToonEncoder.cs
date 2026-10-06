@@ -14,6 +14,8 @@ public static class ToonEncoder
     public static string Encode<T>(T data, ToonEncodeOptions? options = null)
     {
         options ??= new ToonEncodeOptions();
+        if (options.IndentSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(options), "IndentSize must be at least 1");
 
         var resolvedOptions = new ResolvedEncodeOptions(options.IndentSize, Constants.ToDelimiterChar(options.Delimiter));
         return Encoders.EncodeValue(Normalize.NormalizeValue(data), resolvedOptions);

@@ -6,7 +6,7 @@
 public class ToonDecodeOptions
 {
     /// <summary>
-    /// Spaces per indentation level. Default is 2.
+    /// Spaces per indentation level, at least 1. Default is 2.
     /// </summary>
     public int IndentSize { get; set; } = 2;
 
