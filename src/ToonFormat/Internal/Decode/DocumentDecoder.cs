@@ -101,7 +101,7 @@ namespace Toon.Format.Internal.Decode
             }
 
             if (header != null && _strict)
-                throw ToonFormatException.Syntax("Keyless array header is only valid at the document root or as a list item", line.LineNumber, sourceLine: line.Raw);
+                throw header.Keyed ? KeylessKeyedHeaderError(line) : ToonFormatException.Syntax("Keyless array header is only valid at the document root or as a list item", line.LineNumber, sourceLine: line.Raw);
 
             var keyToken = At(line, () => Parser.ParseKeyToken(content, 0));
             var rest = StringUtils.TrimSpaces(content.Substring(keyToken.End));
@@ -159,6 +159,9 @@ namespace Toon.Format.Internal.Decode
 
         private JsonNode DecodeArrayFromHeader(ArrayHeaderInfo header, int baseDepth, ParsedLine headerLine)
         {
+            if (header.Keyed)
+                return DecodeKeyedObject(header, baseDepth, headerLine);
+
             if (header.InlineValues != null)
                 return DecodeInlinePrimitiveArray(header, header.InlineValues, headerLine);
 
@@ -269,6 +272,58 @@ namespace Toon.Format.Internal.Decode
             return items;
         }
 
+        /// <summary>
+        /// Decodes keyed tabular entry rows (<c>key: cell,cell</c>) into an object of objects. The scope ends only
+        /// by dedent or end of input, so every line at entry depth with an unquoted colon is an entry row.
+        /// </summary>
+        private JsonObject DecodeKeyedObject(ArrayHeaderInfo header, int baseDepth, ParsedLine headerLine)
+        {
+            var entries = new JsonObject();
+            var entryDepth = ScopeContentDepth(baseDepth);
+            var leafCount = Parser.CountLeafFields(header.Fields!);
+            var lastEntryLine = headerLine;
+            int? startLine = null;
+            var entryCount = 0;
+
+            for (var line = _cursor.Peek(); line != null && line.Depth > baseDepth; line = _cursor.Peek())
+            {
+                if (line.Depth != entryDepth)
+                {
+                    SkipOverIndentedLine(line, entryDepth);
+                    continue;
+                }
+
+                _cursor.Next();
+                if (!IsKeyValueContent(line.Content))
+                {
+                    if (_strict)
+                        throw ToonFormatException.Syntax("Expected entry row inside keyed tabular object", line.LineNumber, sourceLine: line.Raw);
+                    continue;
+                }
+
+                startLine ??= line.LineNumber;
+                lastEntryLine = line;
+
+                var keyToken = At(line, () => Parser.ParseKeyToken(line.Content, 0));
+                AssertNewKey(entries, keyToken.Key, line);
+
+                var cellsContent = StringUtils.TrimSpaces(line.Content.Substring(keyToken.End));
+                var cells = cellsContent.Length == 0 ? new List<JsonNode?>() : ParseCells(line, cellsContent, header.Delimiter);
+                Validation.AssertExpectedCount(cells.Count, leafCount, "keyed entry cells", _strict, line);
+
+                var cellIndex = 0;
+                entries[keyToken.Key] = ObjectFromFields(header.Fields!, cells, ref cellIndex);
+                entryCount++;
+            }
+
+            Validation.AssertExpectedCount(entryCount, header.Length, "keyed entries", _strict, lastEntryLine);
+
+            if (_strict && startLine != null)
+                Validation.ValidateNoBlankLinesInRange(startLine.Value, lastEntryLine.LineNumber, _cursor.BlankLines, "keyed tabular object");
+
+            return entries;
+        }
+
         private static List<JsonNode?> ParseCells(ParsedLine line, string content, char delimiter) =>
             At(line, () => Parser.ParseDelimitedValues(content, delimiter).Select(Parser.ParsePrimitiveToken).ToList());
 
@@ -329,7 +384,7 @@ namespace Toon.Format.Internal.Decode
                     return DecodeArrayFromHeader(header, itemDepth, itemLine);
 
                 if (_strict)
-                    throw ToonFormatException.Syntax("Keyless header with a field list is only valid at the document root", line.LineNumber, sourceLine: line.Raw);
+                    throw header.Keyed ? KeylessKeyedHeaderError(line) : ToonFormatException.Syntax("Keyless header with a field list is only valid at the document root", line.LineNumber, sourceLine: line.Raw);
             }
 
             // A first field carrying a field list sits on the hyphen line, and its rows at depth + 2.
@@ -424,6 +479,9 @@ namespace Toon.Format.Internal.Decode
 
             return header;
         }
+
+        private static ToonFormatException KeylessKeyedHeaderError(ParsedLine line) =>
+            ToonFormatException.Syntax("Keyless keyed header is only valid at the document root", line.LineNumber, sourceLine: line.Raw);
 
         private void AssertNewKey(JsonObject target, string key, ParsedLine line)
         {

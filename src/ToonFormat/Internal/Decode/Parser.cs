@@ -15,6 +15,9 @@ namespace Toon.Format.Internal.Decode
         public int Length { get; set; }
         public char Delimiter { get; set; }
         public List<FieldNode>? Fields { get; set; }
+
+        /// <summary>A keyed tabular header <c>[N:]</c> declares N entries of an object, not N array items.</summary>
+        public bool Keyed { get; set; }
         public string? InlineValues { get; set; }
 
         /// <summary>A violation that strict mode rejects and non-strict mode resolves, such as a repeated field name.</summary>
@@ -96,7 +99,7 @@ namespace Toon.Format.Internal.Decode
                 key = rawKey[0] == Constants.DOUBLE_QUOTE ? ParseStringLiteral(rawKey) : rawKey;
             }
 
-            if (!TryParseBracketSegment(content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1), out var length, out var delimiter, out error))
+            if (!TryParseBracketSegment(content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1), out var length, out var delimiter, out var keyed, out error))
                 return null;
 
             List<FieldNode>? fields = null;
@@ -121,6 +124,9 @@ namespace Toon.Format.Internal.Decode
             var duplicateField = fields == null ? null : FindDuplicateFieldName(fields);
             var duplicateError = duplicateField == null ? null : $"Duplicate field name \"{duplicateField}\" in field list";
 
+            if (keyed && fields == null)
+                return Invalid("Keyed header requires a field list", out error);
+
             var afterColon = StringUtils.TrimSpaces(content.Substring(colonIndex + 1));
 
             // Decoding the values as an inline array would silently drop the fields.
@@ -133,6 +139,7 @@ namespace Toon.Format.Internal.Decode
                 Length = length,
                 Delimiter = delimiter,
                 Fields = fields,
+                Keyed = keyed,
                 StrictError = duplicateError,
                 InlineValues = afterColon.Length == 0 ? null : afterColon,
             };
@@ -149,7 +156,7 @@ namespace Toon.Format.Internal.Decode
                 ? $"Unexpected whitespace between bracket segment and {next}"
                 : $"Unexpected content \"{gap.Trim()}\" between bracket segment and {next}";
 
-        private static bool TryParseBracketSegment(string segment, out int length, out char delimiter, out string? error)
+        private static bool TryParseBracketSegment(string segment, out int length, out char delimiter, out bool keyed, out string? error)
         {
             var content = segment;
             delimiter = Constants.DEFAULT_DELIMITER_CHAR;
@@ -158,6 +165,12 @@ namespace Toon.Format.Internal.Decode
                 delimiter = content[content.Length - 1];
                 content = content.Substring(0, content.Length - 1);
             }
+
+            // Only a colon between the length and the optional delimiter symbol marks a keyed header;
+            // any other placement leaves a token that fails the length check below.
+            keyed = content.Length > 0 && content[content.Length - 1] == Constants.COLON;
+            if (keyed)
+                content = content.Substring(0, content.Length - 1);
 
             if (!BracketLengthRegex.IsMatch(content))
             {
