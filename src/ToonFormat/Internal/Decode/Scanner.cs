@@ -115,6 +115,12 @@ namespace Toon.Format.Internal.Decode
                 var tabIndent = strict || firstTab == -1 ? 0 : raw.Take(whitespaceEnd).Count(ch => ch == Constants.TAB);
 
                 var content = raw.Substring(indent).TrimEnd(Constants.SPACE);
+
+                // Only spaces may precede the comment marker. Comment lines vanish before blank-line
+                // tracking and strict validation, so they never count as rows, items, entries, or blank lines.
+                if (firstTab == -1 && content.Length > 0 && content[0] == Constants.COMMENT_MARKER)
+                    continue;
+
                 var depth = (indent - tabIndent) / indentSize + tabIndent;
 
                 if (content.Length == 0)
