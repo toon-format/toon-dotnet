@@ -243,32 +243,6 @@ namespace Toon.Format.Internal.Encode
             return false;
         }
 
-        /// <summary>
-        /// Checks if a JsonNode is a JsonArray.
-        /// </summary>
-        public static bool IsJsonArray(JsonNode? value)
-        {
-            return value is JsonArray;
-        }
-
-        /// <summary>
-        /// Checks if a JsonNode is a JsonObject.
-        /// </summary>
-        public static bool IsJsonObject(JsonNode? value)
-        {
-            return value is JsonObject;
-        }
-
-        /// <summary>
-        /// Checks if a <see cref="JsonNode"/> is an object which is empty with no keys.
-        /// </summary>
-        /// <param name="value">The <see cref="JsonObject"/></param>
-        /// <returns><see langword="true"/> if empty, <see langword="false"/> if not.</returns>
-        public static bool IsEmptyObject(JsonNode? value)
-        {
-            return IsJsonObject(value) && (value as IDictionary<string, JsonNode>)?.Keys?.Count == 0;
-        }
-
         #endregion
 
         #region Array type detection
@@ -282,19 +256,11 @@ namespace Toon.Format.Internal.Encode
         }
 
         /// <summary>
-        /// Checks if a JsonArray contains only arrays.
-        /// </summary>
-        public static bool IsArrayOfArrays(JsonArray array)
-        {
-            return array.All(item => IsJsonArray(item));
-        }
-
-        /// <summary>
         /// Checks if a JsonArray contains only objects.
         /// </summary>
         public static bool IsArrayOfObjects(JsonArray array)
         {
-            return array.All(item => IsJsonObject(item));
+            return array.All(item => item is JsonObject);
         }
 
         #endregion

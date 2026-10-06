@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.Json.Nodes;
 using Toon.Format.Internal.Shared;
 
@@ -125,42 +126,38 @@ namespace Toon.Format.Internal.Encode
         #region Header formatters
 
         /// <summary>
-        /// Formats an array header with optional key, length marker, delimiter, and field names.
-        /// Examples:
-        /// - "[3]:" for unnamed array of 3 items
-        /// - "items[5]:" for named array
-        /// - "users[#2]{name,age}:" for tabular format with length marker
+        /// Formats an array header such as <c>[3]:</c>, <c>items[5|]:</c>, or <c>users[2]{id,name{first,last}}:</c>.
         /// </summary>
-        public static string FormatHeader(
-            int length,
-            string? key = null,
-            IReadOnlyList<string>? fields = null,
-            char? delimiter = null)
+        public static string FormatHeader(int length, string? key, IReadOnlyList<FieldNode>? fields, char delimiter)
         {
-            var delimiterChar = delimiter ?? Constants.DEFAULT_DELIMITER_CHAR;
-            var header = string.Empty;
+            var header = new StringBuilder();
 
             if (key != null)
+                header.Append(EncodeKey(key));
+
+            header.Append(Constants.OPEN_BRACKET).Append(length);
+            if (delimiter != Constants.DEFAULT_DELIMITER_CHAR)
+                header.Append(delimiter);
+            header.Append(Constants.CLOSE_BRACKET);
+
+            if (fields != null)
+                AppendFieldList(header, fields, delimiter);
+
+            return header.Append(Constants.COLON).ToString();
+        }
+
+        private static void AppendFieldList(StringBuilder header, IReadOnlyList<FieldNode> fields, char delimiter)
+        {
+            header.Append(Constants.OPEN_BRACE);
+            for (var i = 0; i < fields.Count; i++)
             {
-                header += EncodeKey(key);
+                if (i > 0)
+                    header.Append(delimiter);
+                header.Append(EncodeKey(fields[i].Name));
+                if (fields[i].Children != null)
+                    AppendFieldList(header, fields[i].Children!, delimiter);
             }
-
-            var delimiterSuffix = delimiterChar != Constants.DEFAULT_DELIMITER_CHAR
-                ? delimiterChar.ToString()
-                : string.Empty;
-
-            header += $"{Constants.OPEN_BRACKET}{length}{delimiterSuffix}{Constants.CLOSE_BRACKET}";
-
-            if (fields != null && fields.Count > 0)
-            {
-                var quotedFields = fields.Select(EncodeKey);
-                var fieldsStr = string.Join(delimiterChar.ToString(), quotedFields);
-                header += $"{Constants.OPEN_BRACE}{fieldsStr}{Constants.CLOSE_BRACE}";
-            }
-
-            header += Constants.COLON;
-
-            return header;
+            header.Append(Constants.CLOSE_BRACE);
         }
 
         #endregion
