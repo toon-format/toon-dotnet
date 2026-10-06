@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Toon.Format.Tests;
 
 /// <summary>
@@ -52,6 +54,15 @@ public class HostTypeTests
             Float: 0.1
             Decimal: 1.5
             """, ToonEncoder.Encode(numbers));
+    }
+
+    [Fact]
+    public void Encode_ReadsJsonNodesAndElements()
+    {
+        const string toon = "a: 1.5\nb[2]: x,2";
+
+        Assert.Equal(toon, ToonEncoder.Encode(ToonDecoder.Decode(toon)));
+        Assert.Equal(toon, ToonEncoder.Encode(JsonDocument.Parse("""{"a":1.5,"b":["x",2]}""").RootElement));
     }
 
     [Fact]

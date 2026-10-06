@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Globalization;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Toon.Format.Internal.Shared;
 
@@ -14,8 +15,8 @@ internal static class Normalize
     #region Normalization (object → JsonNode)
 
     /// <summary>
-    /// Normalizes a .NET value to the JSON data model: primitives, dates, dictionaries, enumerables,
-    /// and the public properties of other objects. Unsupported values become null.
+    /// Normalizes a .NET value to the JSON data model: primitives, dates, <c>System.Text.Json</c> nodes and elements,
+    /// dictionaries, enumerables, and the public properties of other objects. Unsupported values become null.
     /// </summary>
     public static JsonNode? NormalizeValue(object? value)
     {
@@ -42,11 +43,32 @@ internal static class Normalize
                 return JsonValue.Create(dt.ToString("O"));
             case DateTimeOffset dto:
                 return JsonValue.Create(dto.ToString("O"));
+            case JsonObject jsonObject:
+                return NormalizeObject(jsonObject.Select(property => (property.Key, (object?)property.Value)));
+            case JsonValue jsonValue when jsonValue.TryGetValue<string>(out var text):
+                return NormalizeValue(text);
+            // System.Text.Json refuses to write NaN and ±Infinity, which the data model maps to null.
+            case JsonValue jsonValue when jsonValue.TryGetValue<double>(out var d) && !NumericUtils.IsFinite(d):
+                return null;
+            case JsonValue jsonValue when jsonValue.TryGetValue<float>(out var f) && !NumericUtils.IsFinite(f):
+                return null;
+            // Other values may wrap any .NET type, so read them back as the JSON they serialize to.
+            case JsonValue jsonValue:
+                using (var document = JsonDocument.Parse(jsonValue.ToJsonString()))
+                    return NormalizeValue(document.RootElement);
+            case JsonElement element:
+                return element.ValueKind switch
+                {
+                    JsonValueKind.Object => NormalizeObject(element.EnumerateObject().Select(property => (property.Name, (object?)property.Value))),
+                    JsonValueKind.Array => NormalizeValue(element.EnumerateArray()),
+                    JsonValueKind.String => NormalizeValue(element.GetString()),
+                    JsonValueKind.Number when element.TryGetInt64(out var integer) => JsonValue.Create(integer),
+                    JsonValueKind.Number when element.TryGetDouble(out var number) => NormalizeValue(number),
+                    JsonValueKind.True or JsonValueKind.False => JsonValue.Create(element.GetBoolean()),
+                    _ => null,
+                };
             case IDictionary dict:
-                var jsonObject = new JsonObject();
-                foreach (DictionaryEntry entry in dict)
-                    jsonObject[RequireScalarValues(entry.Key?.ToString() ?? string.Empty, "object key")] = NormalizeValue(entry.Value);
-                return jsonObject;
+                return NormalizeObject(dict.Keys.Cast<object>().Select(key => (key.ToString() ?? string.Empty, (object?)dict[key])));
             case IEnumerable enumerable:
                 var jsonArray = new JsonArray();
                 foreach (var item in enumerable)
@@ -58,10 +80,16 @@ internal static class Normalize
         if (value.GetType().IsPrimitive)
             return null;
 
-        var properties = new JsonObject();
-        foreach (var prop in value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.CanRead))
-            properties[prop.Name] = NormalizeValue(prop.GetValue(value));
-        return properties;
+        var properties = value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.CanRead);
+        return NormalizeObject(properties.Select(prop => (prop.Name, (object?)prop.GetValue(value))));
+    }
+
+    private static JsonObject NormalizeObject(IEnumerable<(string Key, object? Value)> entries)
+    {
+        var jsonObject = new JsonObject();
+        foreach (var (key, value) in entries)
+            jsonObject[RequireScalarValues(key, "object key")] = NormalizeValue(value);
+        return jsonObject;
     }
 
     private static double ParseDouble(string number) => double.Parse(number, CultureInfo.InvariantCulture);
