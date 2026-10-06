@@ -126,9 +126,10 @@ namespace Toon.Format.Internal.Encode
         #region Header formatters
 
         /// <summary>
-        /// Formats an array header such as <c>[3]:</c>, <c>items[5|]:</c>, or <c>users[2]{id,name{first,last}}:</c>.
+        /// Formats a header such as <c>[3]:</c>, <c>items[5|]:</c>, <c>users[2]{id,name{first,last}}:</c>,
+        /// or the keyed <c>servers[2:]{host,port}:</c>.
         /// </summary>
-        public static string FormatHeader(int length, string? key, IReadOnlyList<FieldNode>? fields, char delimiter)
+        public static string FormatHeader(int length, string? key, IReadOnlyList<FieldNode>? fields, char delimiter, bool keyed = false)
         {
             var header = new StringBuilder();
 
@@ -136,6 +137,8 @@ namespace Toon.Format.Internal.Encode
                 header.Append(EncodeKey(key));
 
             header.Append(Constants.OPEN_BRACKET).Append(length);
+            if (keyed)
+                header.Append(Constants.COLON);
             if (delimiter != Constants.DEFAULT_DELIMITER_CHAR)
                 header.Append(delimiter);
             header.Append(Constants.CLOSE_BRACKET);

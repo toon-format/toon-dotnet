@@ -33,8 +33,10 @@ namespace Toon.Format.Internal.Encode
 
             if (value is JsonArray array)
                 EncodeArray(null, array, writer, 0, options);
-            else if (value is JsonObject obj)
-                EncodeObject(obj, writer, 0, options);
+            else if (value is JsonObject obj && Tabular.ExtractKeyedTabularFields(obj) is { } keyedFields)
+                EncodeKeyedObject(null, obj, keyedFields, writer, 0, options);
+            else if (value is JsonObject plain)
+                EncodeObject(plain, writer, 0, options);
 
             return writer.ToString();
         }
@@ -59,11 +61,27 @@ namespace Toon.Format.Internal.Encode
             {
                 EncodeArray(key, array, writer, depth, options);
             }
-            else if (value is JsonObject obj)
+            else if (value is JsonObject obj && Tabular.ExtractKeyedTabularFields(obj) is { } keyedFields)
+            {
+                EncodeKeyedObject(key, obj, keyedFields, writer, depth, options);
+            }
+            else if (value is JsonObject nested)
             {
                 writer.Push(depth, $"{encodedKey}:");
-                EncodeObject(obj, writer, depth + 1, options);
+                EncodeObject(nested, writer, depth + 1, options);
             }
+        }
+
+        private static void EncodeKeyedObject(string? key, JsonObject value, IReadOnlyList<FieldNode> fields, LineWriter writer, int depth, ResolvedEncodeOptions options)
+        {
+            writer.Push(depth, Primitives.FormatHeader(value.Count, key, fields, options.Delimiter, keyed: true));
+            WriteEntryRows(value, fields, writer, depth + 1, options);
+        }
+
+        private static void WriteEntryRows(JsonObject value, IReadOnlyList<FieldNode> fields, LineWriter writer, int depth, ResolvedEncodeOptions options)
+        {
+            foreach (var entry in value)
+                writer.Push(depth, $"{Primitives.EncodeKey(entry.Key)}: {JoinRowCells(entry.Value, fields, options)}");
         }
 
         #endregion
@@ -109,11 +127,14 @@ namespace Toon.Format.Internal.Encode
         private static void WriteTabularRows(IEnumerable<JsonNode?> rows, IReadOnlyList<FieldNode> fields, LineWriter writer, int depth, ResolvedEncodeOptions options)
         {
             foreach (var row in rows)
-            {
-                var leaves = new List<JsonNode?>();
-                Tabular.CollectRowLeaves((JsonObject)row!, fields, leaves);
-                writer.Push(depth, Primitives.EncodeAndJoinPrimitives(leaves, options.Delimiter));
-            }
+                writer.Push(depth, JoinRowCells(row, fields, options));
+        }
+
+        private static string JoinRowCells(JsonNode? row, IReadOnlyList<FieldNode> fields, ResolvedEncodeOptions options)
+        {
+            var leaves = new List<JsonNode?>();
+            Tabular.CollectRowLeaves((JsonObject)row!, fields, leaves);
+            return Primitives.EncodeAndJoinPrimitives(leaves, options.Delimiter);
         }
 
         #endregion
@@ -187,6 +208,11 @@ namespace Toon.Format.Internal.Encode
                     foreach (var item in array)
                         EncodeListItemValue(item, writer, depth + 2, options);
                 }
+            }
+            else if (first.Value is JsonObject keyed && Tabular.ExtractKeyedTabularFields(keyed) is { } keyedFields)
+            {
+                writer.PushListItem(depth, Primitives.FormatHeader(keyed.Count, first.Key, keyedFields, options.Delimiter, keyed: true));
+                WriteEntryRows(keyed, keyedFields, writer, depth + 2, options);
             }
             else if (first.Value is JsonObject nested)
             {

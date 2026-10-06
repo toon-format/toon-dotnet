@@ -37,6 +37,18 @@ namespace Toon.Format.Internal.Encode
         }
 
         /// <summary>
+        /// Returns the field list for an object of at least two non-empty objects that share one key set,
+        /// or null when the object is not keyed-tabular.
+        /// </summary>
+        public static List<FieldNode>? ExtractKeyedTabularFields(JsonObject value)
+        {
+            if (value.Count < 2 || !value.All(entry => entry.Value is JsonObject obj && obj.Count > 0))
+                return null;
+
+            return ExtractTabularFields(value.Select(entry => (JsonObject)entry.Value!).ToList());
+        }
+
+        /// <summary>
         /// Appends one row's leaf cells in the order <see cref="ExtractTabularFields"/> produced.
         /// </summary>
         public static void CollectRowLeaves(JsonObject row, IReadOnlyList<FieldNode> fields, List<JsonNode?> leaves)
