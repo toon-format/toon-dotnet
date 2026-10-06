@@ -103,7 +103,7 @@ namespace Toon.Format.Internal.Decode
             if (header != null && _strict)
                 throw header.Keyed ? KeylessKeyedHeaderError(line) : ToonFormatException.Syntax("Keyless array header is only valid at the document root or as a list item", line.LineNumber, sourceLine: line.Raw);
 
-            var keyToken = At(line, () => Parser.ParseKeyToken(content, 0));
+            var keyToken = At(line, () => Parser.ParseKeyToken(content));
             var rest = StringUtils.TrimSpaces(content.Substring(keyToken.End));
             AssertNewKey(target, keyToken.Key, line);
 
@@ -298,7 +298,7 @@ namespace Toon.Format.Internal.Decode
                 startLine ??= line.LineNumber;
                 lastEntryLine = line;
 
-                var keyToken = At(line, () => Parser.ParseKeyToken(line.Content, 0));
+                var keyToken = At(line, () => Parser.ParseKeyToken(line.Content));
                 AssertNewKey(entries, keyToken.Key, line);
 
                 var cells = ParseCells(line, StringUtils.TrimSpaces(line.Content.Substring(keyToken.End)), header.Delimiter);

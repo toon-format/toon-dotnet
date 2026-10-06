@@ -107,26 +107,18 @@ namespace Toon.Format.Internal.Shared
         }
 
         /// <summary>
-        /// Finds the position of the next double quote in the string starting from 'start', considering escapes.
-        /// Returns -1 if not found.
+        /// Returns the index of the quote that closes the one at index 0, skipping escaped characters, or -1.
         /// </summary>
-        internal static int FindClosingQuote(string content, int start)
+        internal static int FindClosingQuote(string content)
         {
-            int i = start + 1;
-            while (i < content.Length)
+            for (var i = 1; i < content.Length; i++)
             {
-                // Skip the next character when encountering an escape inside quotes
-                if (content[i] == Constants.BACKSLASH && i + 1 < content.Length)
-                {
-                    i += 2;
-                    continue;
-                }
-
-                if (content[i] == Constants.DOUBLE_QUOTE)
+                if (content[i] == Constants.BACKSLASH)
+                    i++;
+                else if (content[i] == Constants.DOUBLE_QUOTE)
                     return i;
-
-                i++;
             }
+
             return -1;
         }
 

@@ -46,7 +46,7 @@ namespace Toon.Format.Internal.Decode
             var trimmed = content.TrimStart();
             if (trimmed.StartsWith("\"", StringComparison.Ordinal))
             {
-                var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed, 0);
+                var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed);
                 if (closingQuoteIndex == -1 || closingQuoteIndex + 1 >= trimmed.Length || trimmed[closingQuoteIndex + 1] != Constants.OPEN_BRACKET)
                     return null;
 
@@ -378,7 +378,7 @@ namespace Toon.Format.Internal.Decode
             if (trimmed.Length == 0 || trimmed[0] != Constants.DOUBLE_QUOTE)
                 return trimmed;
 
-            var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed, 0);
+            var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed);
             if (closingQuoteIndex == -1)
                 throw ToonFormatException.Syntax("Unterminated string: missing closing quote");
             if (closingQuoteIndex != trimmed.Length - 1)
@@ -388,28 +388,28 @@ namespace Toon.Format.Internal.Decode
         }
 
         /// <summary>
-        /// Parses the key at <paramref name="start"/> and returns it with the index after its colon.
+        /// Parses the key that starts <paramref name="content"/> and returns it with the index after its colon.
         /// </summary>
-        public static (string Key, int End) ParseKeyToken(string content, int start) =>
-            content[start] == Constants.DOUBLE_QUOTE ? ParseQuotedKey(content, start) : ParseUnquotedKey(content, start);
+        public static (string Key, int End) ParseKeyToken(string content) =>
+            content[0] == Constants.DOUBLE_QUOTE ? ParseQuotedKey(content) : ParseUnquotedKey(content);
 
-        private static (string Key, int End) ParseUnquotedKey(string content, int start)
+        private static (string Key, int End) ParseUnquotedKey(string content)
         {
             // A raw scan would cut `a "b:c" d: 1` at the quoted colon and split the key in two.
-            var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON, start);
+            var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
             if (colonIndex == -1)
                 throw ToonFormatException.Syntax("Missing colon after key");
 
-            return (StringUtils.TrimSpaces(content.Substring(start, colonIndex - start)), colonIndex + 1);
+            return (StringUtils.TrimSpaces(content.Substring(0, colonIndex)), colonIndex + 1);
         }
 
-        private static (string Key, int End) ParseQuotedKey(string content, int start)
+        private static (string Key, int End) ParseQuotedKey(string content)
         {
-            var closingQuoteIndex = StringUtils.FindClosingQuote(content, start);
+            var closingQuoteIndex = StringUtils.FindClosingQuote(content);
             if (closingQuoteIndex == -1)
                 throw ToonFormatException.Syntax("Unterminated quoted key");
 
-            var key = StringUtils.UnescapeString(content.Substring(start + 1, closingQuoteIndex - start - 1));
+            var key = StringUtils.UnescapeString(content.Substring(1, closingQuoteIndex - 1));
             var end = closingQuoteIndex + 1;
             while (end < content.Length && content[end] == Constants.SPACE)
                 end++;
