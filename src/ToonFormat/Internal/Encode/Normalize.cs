@@ -27,9 +27,9 @@ internal static class Normalize
             case bool b:
                 return JsonValue.Create(b);
             case double d:
-                return NumericUtils.IsFinite(d) ? JsonValue.Create(d == 0 ? 0.0 : d) : null;
+                return NumericUtils.IsFinite(d) ? JsonValue.Create(d) : null;
             case float f:
-                return NumericUtils.IsFinite(f) ? JsonValue.Create(f == 0 ? 0.0f : f) : null;
+                return NumericUtils.IsFinite(f) ? JsonValue.Create(f) : null;
             case int i:
                 return JsonValue.Create(i);
             case long l:
