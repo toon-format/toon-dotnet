@@ -36,11 +36,11 @@ namespace Toon.Format.Internal.Decode
         /// <summary>
         /// Rejects a blank line strictly between <paramref name="startLine"/> and <paramref name="endLine"/>, at any indentation.
         /// </summary>
-        public static void ValidateNoBlankLinesInRange(int startLine, int endLine, List<BlankLineInfo> blankLines, string context)
+        public static void ValidateNoBlankLinesInRange(int startLine, int endLine, List<int> blankLines, string context)
         {
-            var firstBlank = blankLines.FirstOrDefault(blank => blank.LineNumber > startLine && blank.LineNumber < endLine);
-            if (firstBlank != null)
-                throw ToonFormatException.Syntax($"Blank lines inside {context} are not allowed in strict mode", firstBlank.LineNumber);
+            var firstBlank = blankLines.FirstOrDefault(blank => blank > startLine && blank < endLine);
+            if (firstBlank != 0)
+                throw ToonFormatException.Syntax($"Blank lines inside {context} are not allowed in strict mode", firstBlank);
         }
 
         /// <summary>

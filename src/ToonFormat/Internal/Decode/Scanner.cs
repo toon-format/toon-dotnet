@@ -6,34 +6,22 @@ using System.Linq;
 namespace Toon.Format.Internal.Decode
 {
     /// <summary>
-    /// Represents a parsed line with its raw content, indentation, depth, and line number.
+    /// A non-blank, non-comment line: its content without indentation and trailing spaces, and its depth.
     /// </summary>
-    internal class ParsedLine
+    internal sealed class ParsedLine
     {
         public string Raw { get; set; } = string.Empty;
-        public int Indent { get; set; }
         public string Content { get; set; } = string.Empty;
         public int Depth { get; set; }
         public int LineNumber { get; set; }
     }
 
-    /// <summary>
-    /// Information about a blank line in the source.
-    /// </summary>
-    internal class BlankLineInfo
+    internal sealed class ScanResult
     {
-        public int LineNumber { get; set; }
-        public int Indent { get; set; }
-        public int Depth { get; set; }
-    }
+        public List<ParsedLine> Lines { get; } = new();
 
-    /// <summary>
-    /// Result of scanning source text into parsed lines.
-    /// </summary>
-    internal class ScanResult
-    {
-        public List<ParsedLine> Lines { get; set; } = new();
-        public List<BlankLineInfo> BlankLines { get; set; } = new();
+        /// <summary>Line numbers of blank lines, which strict mode rejects inside arrays and keyed objects.</summary>
+        public List<int> BlankLines { get; } = new();
     }
 
     /// <summary>
@@ -50,7 +38,7 @@ namespace Toon.Format.Internal.Decode
             BlankLines = scan.BlankLines;
         }
 
-        public List<BlankLineInfo> BlankLines { get; }
+        public List<int> BlankLines { get; }
 
         /// <summary>The line <see cref="Next"/> returned last.</summary>
         public ParsedLine? LastLine => _index > 0 ? _lines[_index - 1] : null;
@@ -99,11 +87,9 @@ namespace Toon.Format.Internal.Decode
                 if (firstTab == -1 && content.Length > 0 && content[0] == Constants.COMMENT_MARKER)
                     continue;
 
-                var depth = (indent - tabIndent) / indentSize + tabIndent;
-
                 if (content.Length == 0)
                 {
-                    result.BlankLines.Add(new BlankLineInfo { LineNumber = lineNumber, Indent = indent, Depth = depth });
+                    result.BlankLines.Add(lineNumber);
                     continue;
                 }
 
@@ -116,7 +102,8 @@ namespace Toon.Format.Internal.Decode
                         throw ToonFormatException.Indentation($"Indentation must be exact multiple of {indentSize}, but found {indent} spaces", lineNumber, sourceLine: raw);
                 }
 
-                result.Lines.Add(new ParsedLine { Raw = raw, Indent = indent, Content = content, Depth = depth, LineNumber = lineNumber });
+                var depth = (indent - tabIndent) / indentSize + tabIndent;
+                result.Lines.Add(new ParsedLine { Raw = raw, Content = content, Depth = depth, LineNumber = lineNumber });
             }
 
             return result;

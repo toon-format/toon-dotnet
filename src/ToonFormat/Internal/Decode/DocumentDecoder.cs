@@ -39,7 +39,7 @@ namespace Toon.Format.Internal.Decode
             if (first == null)
                 return new JsonObject();
 
-            if (StringUtils.TrimSpaces(first.Content) == EmptyArray)
+            if (first.Content == EmptyArray)
             {
                 _cursor.Next();
                 AssertFullyConsumed();
@@ -163,25 +163,19 @@ namespace Toon.Format.Internal.Decode
                 return DecodeKeyedObject(header, baseDepth, headerLine);
 
             if (header.InlineValues != null)
-                return DecodeInlinePrimitiveArray(header, header.InlineValues, headerLine);
+                return DecodeInlinePrimitiveArray(header, headerLine);
 
-            if (header.Fields != null && header.Fields.Count > 0)
+            if (header.Fields != null)
                 return DecodeTabularArray(header, baseDepth, headerLine);
 
             return DecodeListArray(header, baseDepth, headerLine);
         }
 
-        private JsonArray DecodeInlinePrimitiveArray(ArrayHeaderInfo header, string inlineValues, ParsedLine headerLine)
+        private JsonArray DecodeInlinePrimitiveArray(ArrayHeaderInfo header, ParsedLine headerLine)
         {
-            var array = new JsonArray();
-            if (StringUtils.TrimSpaces(inlineValues).Length > 0)
-            {
-                foreach (var value in At(headerLine, () => Parser.ParseDelimitedValues(inlineValues, header.Delimiter)))
-                    array.Add(At(headerLine, () => Parser.ParsePrimitiveToken(value)));
-            }
-
-            Validation.AssertExpectedCount(array.Count, header.Length, "inline-form values", _strict, headerLine);
-            return array;
+            var values = ParseCells(headerLine, header.InlineValues!, header.Delimiter);
+            Validation.AssertExpectedCount(values.Count, header.Length, "inline-form values", _strict, headerLine);
+            return new JsonArray(values.ToArray());
         }
 
         private JsonArray DecodeTabularArray(ArrayHeaderInfo header, int baseDepth, ParsedLine headerLine)
@@ -307,8 +301,7 @@ namespace Toon.Format.Internal.Decode
                 var keyToken = At(line, () => Parser.ParseKeyToken(line.Content, 0));
                 AssertNewKey(entries, keyToken.Key, line);
 
-                var cellsContent = StringUtils.TrimSpaces(line.Content.Substring(keyToken.End));
-                var cells = cellsContent.Length == 0 ? new List<JsonNode?>() : ParseCells(line, cellsContent, header.Delimiter);
+                var cells = ParseCells(line, StringUtils.TrimSpaces(line.Content.Substring(keyToken.End)), header.Delimiter);
                 Validation.AssertExpectedCount(cells.Count, leafCount, "keyed entry cells", _strict, line);
 
                 var cellIndex = 0;
@@ -368,14 +361,12 @@ namespace Toon.Format.Internal.Decode
             if (line.Content == Constants.LIST_ITEM_MARKER.ToString())
                 return new JsonObject();
 
+            // The scanner trims trailing spaces, so a bare `- ` arrives as the marker alone.
             var afterHyphen = line.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
-            if (StringUtils.TrimSpaces(afterHyphen).Length == 0)
-                return new JsonObject();
-
             if (StringUtils.TrimSpaces(afterHyphen) == EmptyArray)
                 return new JsonArray();
 
-            var itemLine = new ParsedLine { Raw = line.Raw, Indent = line.Indent, Content = afterHyphen, Depth = line.Depth, LineNumber = line.LineNumber };
+            var itemLine = new ParsedLine { Raw = line.Raw, Content = afterHyphen, Depth = line.Depth, LineNumber = line.LineNumber };
 
             var header = ResolveArrayHeader(itemLine);
             if (header != null && header.Key == null)
@@ -462,7 +453,7 @@ namespace Toon.Format.Internal.Decode
         // off item depth, so it is no list item either.
         private static void AssertNotScalarLine(ParsedLine line)
         {
-            if (StringUtils.FindUnquotedChar(line.Content, Constants.COLON) == -1)
+            if (!IsKeyValueContent(line.Content))
                 throw ToonFormatException.Syntax("Unexpected bare token line outside root primitive position", line.LineNumber, sourceLine: line.Raw);
         }
 
