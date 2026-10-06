@@ -10,8 +10,6 @@ namespace Toon.Format.Internal.Encode
     {
         public int Indent { get; set; } = 2;
         public char Delimiter { get; set; } = Constants.COMMA;
-        public ToonKeyFolding KeyFolding { get; set; } = ToonKeyFolding.Off;
-        public int FlattenDepth { get; set; } = int.MaxValue;
     }
 
     /// <summary>
@@ -52,102 +50,19 @@ namespace Toon.Format.Internal.Encode
         /// <summary>
         /// Encodes a JsonObject as key-value pairs.
         /// </summary>
-        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options, IReadOnlyCollection<string>? rootLiteralKeys = null,
-            string? pathPrefix = null, int? remainingDepth = null)
+        public static void EncodeObject(JsonObject value, LineWriter writer, int depth, ResolvedEncodeOptions options)
         {
-            var keys = (value as IDictionary<string, JsonNode>).Keys!;
-
-            // At root level (depth 0), collect all literal dotted keys for collision checking
-            if (depth == 0 && rootLiteralKeys == null)
-            {
-                rootLiteralKeys = new HashSet<string>(keys.Where(k => k.Contains('.')));
-            }
-
-            var effectiveFlattenDepth = remainingDepth ?? options.FlattenDepth;
-
             foreach (var kvp in value)
             {
-                EncodeKeyValuePair(
-                    kvp.Key,
-                    kvp.Value,
-                    writer,
-                    depth,
-                    options,
-                    keys.ToArray(),
-                    rootLiteralKeys,
-                    pathPrefix,
-                    effectiveFlattenDepth
-                );
+                EncodeKeyValuePair(kvp.Key, kvp.Value, writer, depth, options);
             }
         }
 
         /// <summary>
         /// Encodes a single key-value pair.
         /// </summary>
-        public static void EncodeKeyValuePair(
-            string key,
-            JsonNode? value,
-            LineWriter writer,
-            int depth,
-            ResolvedEncodeOptions options,
-            IReadOnlyCollection<string>? siblings = null,
-            IReadOnlyCollection<string>? rootLiteralKeys = null,
-            string? pathPrefix = null,
-            int? flattenDepth = null)
+        public static void EncodeKeyValuePair(string key, JsonNode? value, LineWriter writer, int depth, ResolvedEncodeOptions options)
         {
-            var currentPath = pathPrefix != null ? $"{pathPrefix}{Constants.DOT}{key}" : key;
-            var effectiveFlattenDepth = flattenDepth ?? options.FlattenDepth;
-
-            if (options.KeyFolding == ToonKeyFolding.Safe && siblings != null)
-            {
-                var foldResult = Folding.TryFoldKeyChain(key, value, siblings, options, rootLiteralKeys, pathPrefix, effectiveFlattenDepth);
-
-                if (foldResult is not null)
-                {
-                    var foldedKey = foldResult.FoldedKey;
-                    var remainder = foldResult.Remainder;
-                    var leafValue = foldResult.LeafValue;
-                    var segmentCount = foldResult.SegmentCount;
-
-                    var encodedFoldedKey = Primitives.EncodeKey(foldedKey);
-
-                    // Case 1: Fully folded to a leaf value
-                    if (remainder is null)
-                    {
-                        // The folded chain ended at a leaf (primitive, array, or empty object)
-                        if (Normalize.IsJsonPrimitive(leafValue))
-                        {
-                            writer.Push(depth, $"{encodedFoldedKey}: {Primitives.EncodePrimitive(leafValue, options.Delimiter)}");
-                            return;
-                        }
-                        else if (Normalize.IsJsonArray(leafValue))
-                        {
-                            EncodeArray(foldedKey, leafValue.AsArray(), writer, depth, options);
-                            return;
-                        }
-                        else if (Normalize.IsEmptyObject(leafValue))
-                        {
-                            writer.Push(depth, $"{encodedFoldedKey}:");
-                            return;
-                        }
-                    }
-
-                    // Case 2: Partially folded with a tail object
-                    if (Normalize.IsJsonObject(remainder))
-                    {
-                        writer.Push(depth, $"{encodedFoldedKey}:");
-                        // Calculate remaining depth budget (subtract segments already folded)
-                        var remainingDepth = effectiveFlattenDepth - segmentCount;
-                        var foldedPath = pathPrefix != null ? $"{pathPrefix}{Constants.DOT}{foldedKey}" : foldedKey;
-
-                        EncodeObject(remainder!.AsObject(), writer, depth + 1, options, rootLiteralKeys, foldedPath, remainingDepth);
-
-                        return;
-                    }
-                }
-            }
-
-            // No folding applied  use standard encoding
             var encodedKey = Primitives.EncodeKey(key);
 
             if (Normalize.IsJsonPrimitive(value))
@@ -164,7 +79,7 @@ namespace Toon.Format.Internal.Encode
                 var obj = value!.AsObject();
                 if (!Normalize.IsEmptyObject(obj))
                 {
-                    EncodeObject(obj, writer, depth + 1, options, rootLiteralKeys, currentPath, effectiveFlattenDepth);
+                    EncodeObject(obj, writer, depth + 1, options);
                 }
             }
         }

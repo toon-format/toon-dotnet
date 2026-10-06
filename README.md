@@ -42,8 +42,6 @@ var node = ToonDecoder.Decode(toon);
 | ------ | ------- | ----------- |
 | `Indent` | `2` | Spaces per indentation level (encode and decode) |
 | `Delimiter` | `ToonDelimiter.COMMA` | Array delimiter: `COMMA`, `TAB`, or `PIPE` (encode) |
-| `KeyFolding` | `ToonKeyFolding.Off` | `Safe` folds single-key object chains into dotted keys (encode) |
-| `FlattenDepth` | `int.MaxValue` | Maximum segments per folded key (encode) |
 | `Strict` | `true` | Throw `ToonFormatException` on count mismatches and invalid input (decode) |
 | `ExpandPaths` | `ToonPathExpansion.Off` | `Safe` expands dotted keys into nested objects (decode) |
 

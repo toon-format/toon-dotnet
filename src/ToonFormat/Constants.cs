@@ -67,18 +67,6 @@ namespace Toon.Format
     }
 
     /// <summary>
-    /// Key folding options
-    /// </summary>
-    public enum ToonKeyFolding
-    {
-        /// <summary>Key folding disabled</summary>
-        Off,
-
-        /// <summary>Nested objects with single keys are collapsed into dotted paths</summary>
-        Safe
-    }
-
-    /// <summary>
     /// Path expansion options
     /// </summary>
     public enum ToonPathExpansion
