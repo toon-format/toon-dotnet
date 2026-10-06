@@ -5,7 +5,7 @@ namespace Toon.Format.Internal.Shared;
 internal static class ValidationShared
 {
     private static readonly Regex ValidUnquotedKeyRegex = new(
-        pattern: "^[A-Za-z_][A-Za-z0-9_.]*$",
+        pattern: "^[A-Za-z_][A-Za-z0-9_.]*\\z",
         options: RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex NumericLikeRegex = new(
