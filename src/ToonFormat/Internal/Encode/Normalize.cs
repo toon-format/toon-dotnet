@@ -117,15 +117,9 @@ internal static class Normalize
 
     #region Array type detection
 
-    public static bool IsArrayOfPrimitives(JsonArray array)
-    {
-        return array.All(item => IsJsonPrimitive(item));
-    }
+    public static bool IsArrayOfPrimitives(JsonArray array) => array.All(IsJsonPrimitive);
 
-    public static bool IsArrayOfObjects(JsonArray array)
-    {
-        return array.All(item => item is JsonObject);
-    }
+    public static bool IsArrayOfObjects(JsonArray array) => array.All(item => item is JsonObject);
 
     #endregion
 }

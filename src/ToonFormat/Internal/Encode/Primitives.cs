@@ -83,10 +83,8 @@ internal static class Primitives
     /// <summary>
     /// Encodes a string literal, adding quotes if necessary.
     /// </summary>
-    public static string EncodeStringLiteral(string value, char delimiter)
-    {
-        return ValidationShared.IsSafeUnquoted(value, delimiter) ? value : Quote(value);
-    }
+    public static string EncodeStringLiteral(string value, char delimiter) =>
+        ValidationShared.IsSafeUnquoted(value, delimiter) ? value : Quote(value);
 
     public static string Quote(string value) => $"{Constants.DOUBLE_QUOTE}{StringUtils.EscapeString(value)}{Constants.DOUBLE_QUOTE}";
 
@@ -97,20 +95,14 @@ internal static class Primitives
     /// <summary>
     /// Encodes a key, adding quotes if necessary.
     /// </summary>
-    public static string EncodeKey(string key)
-    {
-        return ValidationShared.IsValidUnquotedKey(key) ? key : Quote(key);
-    }
+    public static string EncodeKey(string key) => ValidationShared.IsValidUnquotedKey(key) ? key : Quote(key);
 
     #endregion
 
     #region Value joining
 
-    public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter)
-    {
-        var encoded = values.Select(v => EncodePrimitive(v, delimiter));
-        return string.Join(delimiter.ToString(), encoded);
-    }
+    public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter) =>
+        string.Join(delimiter.ToString(), values.Select(value => EncodePrimitive(value, delimiter)));
 
     #endregion
 
