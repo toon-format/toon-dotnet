@@ -122,6 +122,10 @@ namespace Toon.Format.Internal.Decode
                     lineSpan = span;
                     span = ReadOnlySpan<char>.Empty;
                 }
+                if (lineNumber == 1 && !lineSpan.IsEmpty && lineSpan[0] == '\uFEFF')
+                {
+                    lineSpan = lineSpan.Slice(1);
+                }
                 if (!lineSpan.IsEmpty && lineSpan[lineSpan.Length - 1] == '\r')
                 {
                     lineSpan = lineSpan.Slice(0, lineSpan.Length - 1);
