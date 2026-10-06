@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Toon.Format.Internal.Shared;
@@ -18,123 +19,27 @@ namespace Toon.Format.Internal.Encode
         #region Normalization (object → JsonNode)
 
         /// <summary>
-        /// Normalizes an arbitrary .NET value to a JsonNode representation.
-        /// Handles primitives, collections, dates, and custom objects.
+        /// Normalizes a .NET value to the JSON data model: primitives, dates, dictionaries, enumerables,
+        /// and the public properties of other objects. Unsupported values become null.
         /// </summary>
-        /// <param name="value">The value to be normalized.</param>
         public static JsonNode? NormalizeValue(object? value)
         {
-            if (value == null)
-                return null;
-
-            if (value is string str)
-                return JsonValue.Create(RequireScalarValues(str, "string value"));
-
-            if (value is bool b)
-                return JsonValue.Create(b);
-
-            // Numbers: canonicalize -0 to +0, handle NaN and Infinity
-            if (value is double d)
-            {
-                var dn = d == 0 ? 0.0 : d;
-                if (!NumericUtils.IsFinite(dn))
-                    return null;
-                return JsonValue.Create(dn);
-            }
-
-            if (value is float f)
-            {
-                var fn = f == 0 ? 0.0f : f;
-                if (!NumericUtils.IsFinite(fn))
-                    return null;
-                return JsonValue.Create(fn);
-            }
-
-            if (value is int i) return JsonValue.Create(i);
-            if (value is long l) return JsonValue.Create(l);
-            if (value is decimal dec) return JsonValue.Create(dec);
-            if (value is byte by) return JsonValue.Create(by);
-            if (value is sbyte sb) return JsonValue.Create(sb);
-            if (value is short sh) return JsonValue.Create(sh);
-            if (value is ushort us) return JsonValue.Create(us);
-            if (value is uint ui) return JsonValue.Create(ui);
-            if (value is ulong ul) return JsonValue.Create(ul);
-
-            if (value is DateTime dt)
-                return JsonValue.Create(dt.ToString("O"));
-
-            if (value is DateTimeOffset dto)
-                return JsonValue.Create(dto.ToString("O"));
-
-            // Dictionary/Object → JsonObject (check BEFORE IEnumerable since IDictionary implements IEnumerable)
-            if (value is IDictionary dict)
-            {
-                var jsonObject = new JsonObject();
-                foreach (DictionaryEntry entry in dict)
-                {
-                    var key = RequireScalarValues(entry.Key?.ToString() ?? string.Empty, "object key");
-                    jsonObject[key] = NormalizeValue(entry.Value);
-                }
-                return jsonObject;
-            }
-
-            if (value is IEnumerable enumerable && value is not string)
-            {
-                var jsonArray = new JsonArray();
-                foreach (var item in enumerable)
-                {
-                    jsonArray.Add(NormalizeValue(item));
-                }
-                return jsonArray;
-            }
-
-            if (IsPlainObject(value))
-            {
-                var jsonObject = new JsonObject();
-                var type = value.GetType();
-                var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-                foreach (var prop in properties.Where(prop => prop.CanRead))
-                {
-                    var propValue = prop.GetValue(value);
-                    jsonObject[prop.Name] = NormalizeValue(propValue);
-                }
-
-                return jsonObject;
-            }
-
-            // Fallback: unsupported types → null
-            return null;
-        }
-
-        /// <summary>
-        /// Normalizes a value of generic type to a JsonNode representation.
-        /// This overload aims to avoid an initial boxing for common value types.
-        /// </summary>
-        public static JsonNode? NormalizeValue<T>(T value)
-        {
-            if (value is null)
-                return null;
-
-            // Fast-path primitives without boxing
             switch (value)
             {
+                case null:
+                    return null;
                 case string s:
                     return JsonValue.Create(RequireScalarValues(s, "string value"));
                 case bool b:
                     return JsonValue.Create(b);
+                case double d:
+                    return NumericUtils.IsFinite(d) ? JsonValue.Create(d == 0 ? 0.0 : d) : null;
+                case float f:
+                    return NumericUtils.IsFinite(f) ? JsonValue.Create(f == 0 ? 0.0f : f) : null;
                 case int i:
                     return JsonValue.Create(i);
                 case long l:
                     return JsonValue.Create(l);
-                case double d:
-                    if (BitConverter.DoubleToInt64Bits(d) == BitConverter.DoubleToInt64Bits(-0.0)) return JsonValue.Create(0.0);
-                    if (!NumericUtils.IsFinite(d)) return null;
-                    return JsonValue.Create(d);
-                case float f:
-                    if (f == 0) return JsonValue.Create(0.0f);
-                    if (!NumericUtils.IsFinite(f)) return null;
-                    return JsonValue.Create(f);
                 case decimal dec:
                     return JsonValue.Create(dec);
                 case byte by:
@@ -153,50 +58,25 @@ namespace Toon.Format.Internal.Encode
                     return JsonValue.Create(dt.ToString("O"));
                 case DateTimeOffset dto:
                     return JsonValue.Create(dto.ToString("O"));
+                case IDictionary dict:
+                    var jsonObject = new JsonObject();
+                    foreach (DictionaryEntry entry in dict)
+                        jsonObject[RequireScalarValues(entry.Key?.ToString() ?? string.Empty, "object key")] = NormalizeValue(entry.Value);
+                    return jsonObject;
+                case IEnumerable enumerable:
+                    var jsonArray = new JsonArray();
+                    foreach (var item in enumerable)
+                        jsonArray.Add(NormalizeValue(item));
+                    return jsonArray;
             }
 
-            // Collections / dictionaries (check IDictionary BEFORE IEnumerable since IDictionary implements IEnumerable)
-            if (value is IDictionary dict)
-            {
-                var jsonObject = new JsonObject();
-                foreach (DictionaryEntry entry in dict)
-                {
-                    var key = RequireScalarValues(entry.Key?.ToString() ?? string.Empty, "object key");
-                    jsonObject[key] = NormalizeValue(entry.Value);
-                }
-                return jsonObject;
-            }
+            if (!IsPlainObject(value))
+                return null;
 
-            if (value is IEnumerable enumerable && value is not string)
-            {
-                var jsonArray = new JsonArray();
-                foreach (var item in enumerable)
-                {
-                    jsonArray.Add(NormalizeValue(item));
-                }
-                return jsonArray;
-            }
-
-            // Plain object via reflection (boxing for value types here is acceptable and rare)
-            if (IsPlainObject(value!))
-            {
-                var jsonObject = new JsonObject();
-                var type = value!.GetType();
-                var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-                foreach (var prop in properties)
-                {
-                    if (prop.CanRead)
-                    {
-                        var propValue = prop.GetValue(value);
-                        jsonObject[prop.Name] = NormalizeValue(propValue);
-                    }
-                }
-
-                return jsonObject;
-            }
-
-            return null;
+            var properties = new JsonObject();
+            foreach (var prop in value.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(prop => prop.CanRead))
+                properties[prop.Name] = NormalizeValue(prop.GetValue(value));
+            return properties;
         }
 
         /// <summary>
