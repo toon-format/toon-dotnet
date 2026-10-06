@@ -95,6 +95,9 @@ namespace Toon.Format
             Exception? inner = null)
             => new(ToonErrorKind.Delimiter, message, lineNumber, columnNumber, sourceLine, depth, inner);
 
+        /// <summary>The message without kind and position.</summary>
+        internal string Detail => _detail;
+
         /// <summary>Attaches the line a parse helper failed on, unless the error already names one.</summary>
         internal ToonFormatException AtLine(int lineNumber, string sourceLine)
             => LineNumber is not null ? this : new(Kind, _detail, lineNumber, ColumnNumber, sourceLine, Depth, InnerException);

@@ -14,8 +14,11 @@ namespace Toon.Format.Internal.Decode
         public string? Key { get; set; }
         public int Length { get; set; }
         public char Delimiter { get; set; }
-        public List<string>? Fields { get; set; }
+        public List<FieldNode>? Fields { get; set; }
         public string? InlineValues { get; set; }
+
+        /// <summary>A violation that strict mode rejects and non-strict mode resolves, such as a repeated field name.</summary>
+        public string? StrictError { get; set; }
     }
 
     /// <summary>
@@ -71,7 +74,7 @@ namespace Toon.Format.Internal.Decode
                 if (braceStart != bracketEnd + 1)
                     return Invalid(GapError(content.Substring(bracketEnd + 1, braceStart - bracketEnd - 1), "field list"), out error);
 
-                var braceEnd = content.IndexOf(Constants.CLOSE_BRACE, braceStart);
+                var braceEnd = FindMatchingBrace(content, braceStart);
                 if (braceEnd != -1)
                     fieldsEnd = braceEnd + 1;
             }
@@ -96,7 +99,7 @@ namespace Toon.Format.Internal.Decode
             if (!TryParseBracketSegment(content.Substring(bracketStart + 1, bracketEnd - bracketStart - 1), out var length, out var delimiter, out error))
                 return null;
 
-            List<string>? fields = null;
+            List<FieldNode>? fields = null;
             if (fieldsEnd > bracketEnd + 1)
             {
                 var fieldsContent = content.Substring(braceStart + 1, fieldsEnd - braceStart - 2);
@@ -104,14 +107,25 @@ namespace Toon.Format.Internal.Decode
                 if (mismatchedDelimiter != null)
                     return Invalid($"Header delimiter mismatch: bracket declares \"{FormatDelimiter(delimiter)}\" but field list contains unquoted \"{FormatDelimiter(mismatchedDelimiter.Value)}\"", out error);
 
-                fields = ParseDelimitedValues(fieldsContent, delimiter).Select(ParseStringLiteral).ToList();
+                try
+                {
+                    fields = ParseFieldEntries(fieldsContent, delimiter);
+                }
+                catch (ToonFormatException ex)
+                {
+                    return Invalid(ex.Detail, out error);
+                }
             }
+
+            // Non-strict mode resolves a repeated field name by last write wins.
+            var duplicateField = fields == null ? null : FindDuplicateFieldName(fields);
+            var duplicateError = duplicateField == null ? null : $"Duplicate field name \"{duplicateField}\" in field list";
 
             var afterColon = StringUtils.TrimSpaces(content.Substring(colonIndex + 1));
 
             // Decoding the values as an inline array would silently drop the fields.
             if (fields != null && afterColon.Length > 0)
-                return Invalid("Unexpected content after fields-bearing header colon", out error);
+                return Invalid(duplicateError ?? "Unexpected content after fields-bearing header colon", out error);
 
             return new ArrayHeaderInfo
             {
@@ -119,6 +133,7 @@ namespace Toon.Format.Internal.Decode
                 Length = length,
                 Delimiter = delimiter,
                 Fields = fields,
+                StrictError = duplicateError,
                 InlineValues = afterColon.Length == 0 ? null : afterColon,
             };
         }
@@ -156,6 +171,121 @@ namespace Toon.Format.Internal.Decode
             error = null;
             return true;
         }
+
+        /// <summary>
+        /// Parses a field list, descending into nested field groups such as <c>customer{name,country}</c>.
+        /// </summary>
+        private static List<FieldNode> ParseFieldEntries(string fieldsContent, char delimiter)
+        {
+            var fields = new List<FieldNode>();
+            foreach (var entry in SplitFieldEntries(fieldsContent, delimiter))
+            {
+                var trimmed = StringUtils.TrimSpaces(entry);
+                if (trimmed.Length == 0)
+                    throw ToonFormatException.Syntax("Empty field name in field list");
+
+                var groupStart = StringUtils.FindUnquotedChar(trimmed, Constants.OPEN_BRACE);
+                if (groupStart == -1)
+                {
+                    fields.Add(new FieldNode(ParseStringLiteral(trimmed)));
+                    continue;
+                }
+
+                var name = trimmed.Substring(0, groupStart);
+                if (name.Length == 0)
+                    throw ToonFormatException.Syntax("Missing field name before nested field group");
+                if (char.IsWhiteSpace(name[name.Length - 1]))
+                    throw ToonFormatException.Syntax("Unexpected whitespace before nested field group");
+
+                var groupEnd = FindMatchingBrace(trimmed, groupStart);
+                if (groupEnd == -1)
+                    throw ToonFormatException.Syntax("Unmatched brace in field list");
+                if (groupEnd != trimmed.Length - 1)
+                    throw ToonFormatException.Syntax("Unexpected content after nested field group");
+
+                fields.Add(new FieldNode(ParseStringLiteral(name), ParseFieldEntries(trimmed.Substring(groupStart + 1, groupEnd - groupStart - 1), delimiter)));
+            }
+
+            return fields;
+        }
+
+        /// <summary>
+        /// Splits a field list at the active delimiter outside quotes and nested field groups.
+        /// </summary>
+        private static List<string> SplitFieldEntries(string content, char delimiter)
+        {
+            var entries = new List<string>();
+            var entryStart = 0;
+            var inQuotes = false;
+            var braceDepth = 0;
+
+            for (var i = 0; i < content.Length; i++)
+            {
+                var ch = content[i];
+                if (inQuotes && ch == Constants.BACKSLASH)
+                    i++;
+                else if (ch == Constants.DOUBLE_QUOTE)
+                    inQuotes = !inQuotes;
+                else if (!inQuotes && ch == Constants.OPEN_BRACE)
+                    braceDepth++;
+                else if (!inQuotes && ch == Constants.CLOSE_BRACE)
+                    braceDepth--;
+                else if (!inQuotes && ch == delimiter && braceDepth == 0)
+                {
+                    entries.Add(content.Substring(entryStart, i - entryStart));
+                    entryStart = i + 1;
+                }
+            }
+
+            entries.Add(content.Substring(entryStart));
+            return entries;
+        }
+
+        /// <summary>
+        /// Finds the brace that closes the one at <paramref name="braceStart"/>, ignoring braces inside quoted names.
+        /// </summary>
+        private static int FindMatchingBrace(string content, int braceStart)
+        {
+            var inQuotes = false;
+            var braceDepth = 0;
+
+            for (var i = braceStart; i < content.Length; i++)
+            {
+                var ch = content[i];
+                if (inQuotes && ch == Constants.BACKSLASH)
+                    i++;
+                else if (ch == Constants.DOUBLE_QUOTE)
+                    inQuotes = !inQuotes;
+                else if (!inQuotes && ch == Constants.OPEN_BRACE)
+                    braceDepth++;
+                else if (!inQuotes && ch == Constants.CLOSE_BRACE && --braceDepth == 0)
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private static string? FindDuplicateFieldName(List<FieldNode> fields)
+        {
+            var seen = new HashSet<string>();
+            foreach (var field in fields)
+            {
+                if (!seen.Add(field.Name))
+                    return field.Name;
+
+                var nested = field.Children == null ? null : FindDuplicateFieldName(field.Children);
+                if (nested != null)
+                    return nested;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Counts the leaf fields of a field list: the number of cells each row carries.
+        /// </summary>
+        public static int CountLeafFields(List<FieldNode> fields) =>
+            fields.Sum(field => field.Children == null ? 1 : CountLeafFields(field.Children));
 
         private static char? FindUnquotedMismatchedDelimiter(string content, char activeDelimiter)
         {

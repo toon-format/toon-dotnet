@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
 using Toon.Format.Internal.Shared;
 
@@ -207,13 +208,11 @@ namespace Toon.Format.Internal.Decode
                 startLine ??= line.LineNumber;
                 lastRowLine = line;
 
-                var values = At(line, () => Parser.ParseDelimitedValues(line.Content, header.Delimiter));
-                Validation.AssertExpectedCount(values.Count, header.Fields!.Count, "tabular row values", _strict, line);
+                var cells = ParseCells(line, line.Content, header.Delimiter);
+                Validation.AssertExpectedCount(cells.Count, Parser.CountLeafFields(header.Fields!), "tabular row values", _strict, line);
 
-                var row = new JsonObject();
-                for (var i = 0; i < header.Fields.Count && i < values.Count; i++)
-                    row[header.Fields[i]] = At(line, () => Parser.ParsePrimitiveToken(values[i]));
-                rows.Add(row);
+                var cellIndex = 0;
+                rows.Add(ObjectFromFields(header.Fields!, cells, ref cellIndex));
             }
 
             Validation.AssertExpectedCount(rows.Count, header.Length, "tabular rows", _strict, lastRowLine);
@@ -268,6 +267,27 @@ namespace Toon.Format.Internal.Decode
             }
 
             return items;
+        }
+
+        private static List<JsonNode?> ParseCells(ParsedLine line, string content, char delimiter) =>
+            At(line, () => Parser.ParseDelimitedValues(content, delimiter).Select(Parser.ParsePrimitiveToken).ToList());
+
+        /// <summary>
+        /// Assigns a row's cells to the field list depth-first, so each nested field group becomes a nested object.
+        /// </summary>
+        private static JsonObject ObjectFromFields(List<FieldNode> fields, List<JsonNode?> cells, ref int cellIndex)
+        {
+            var obj = new JsonObject();
+            foreach (var field in fields)
+            {
+                // A non-strict width mismatch leaves trailing leaf fields without a cell; they stay absent.
+                if (field.Children == null && cellIndex >= cells.Count)
+                    continue;
+
+                obj[field.Name] = field.Children != null ? ObjectFromFields(field.Children, cells, ref cellIndex) : cells[cellIndex++];
+            }
+
+            return obj;
         }
 
         private int ScopeContentDepth(int baseDepth)
@@ -398,8 +418,9 @@ namespace Toon.Format.Internal.Decode
         {
             string? error = null;
             var header = At(line, () => Parser.ParseArrayHeaderLine(line.Content, out error));
-            if (_strict && error != null)
-                throw ToonFormatException.Syntax(error, line.LineNumber, sourceLine: line.Raw);
+            var violation = error ?? header?.StrictError;
+            if (_strict && violation != null)
+                throw ToonFormatException.Syntax(violation, line.LineNumber, sourceLine: line.Raw);
 
             return header;
         }
