@@ -11,6 +11,8 @@ namespace Toon.Format.Internal.Decode
     /// </summary>
     internal sealed class DocumentDecoder
     {
+        private const string EmptyArray = "[]";
+
         private readonly LineCursor _cursor;
         private readonly bool _strict;
 
@@ -35,6 +37,13 @@ namespace Toon.Format.Internal.Decode
 
             if (first == null)
                 return new JsonObject();
+
+            if (StringUtils.TrimSpaces(first.Content) == EmptyArray)
+            {
+                _cursor.Next();
+                AssertFullyConsumed();
+                return new JsonArray();
+            }
 
             if (Parser.IsArrayHeaderAfterHyphen(first.Content))
             {
@@ -106,6 +115,12 @@ namespace Toon.Format.Internal.Decode
                 }
 
                 target[keyToken.Key] = new JsonObject();
+                return;
+            }
+
+            if (rest == EmptyArray)
+            {
+                target[keyToken.Key] = new JsonArray();
                 return;
             }
 
@@ -279,6 +294,9 @@ namespace Toon.Format.Internal.Decode
             var afterHyphen = line.Content.Substring(Constants.LIST_ITEM_PREFIX.Length);
             if (StringUtils.TrimSpaces(afterHyphen).Length == 0)
                 return new JsonObject();
+
+            if (StringUtils.TrimSpaces(afterHyphen) == EmptyArray)
+                return new JsonArray();
 
             var itemLine = new ParsedLine { Raw = line.Raw, Indent = line.Indent, Content = afterHyphen, Depth = line.Depth, LineNumber = line.LineNumber };
 
