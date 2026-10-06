@@ -102,8 +102,7 @@ namespace Toon.Format.Internal.Encode
                 return;
             }
 
-            var fields = TabularFields(value);
-            if (fields != null)
+            if (TabularFields(value) is { } fields)
             {
                 writer.Push(depth, Primitives.FormatHeader(value.Count, key, fields, options.Delimiter));
                 WriteTabularRows(value, fields, writer, depth + 1, options);
@@ -187,8 +186,6 @@ namespace Toon.Format.Internal.Encode
             }
             else if (first.Value is JsonArray array)
             {
-                var fields = TabularFields(array);
-
                 if (array.Count == 0)
                 {
                     writer.PushListItem(depth, $"{encodedKey}: []");
@@ -197,7 +194,7 @@ namespace Toon.Format.Internal.Encode
                 {
                     writer.PushListItem(depth, EncodeInlineArrayLine(array, options.Delimiter, first.Key));
                 }
-                else if (fields != null)
+                else if (TabularFields(array) is { } fields)
                 {
                     writer.PushListItem(depth, Primitives.FormatHeader(array.Count, first.Key, fields, options.Delimiter));
                     WriteTabularRows(array, fields, writer, depth + 2, options);
