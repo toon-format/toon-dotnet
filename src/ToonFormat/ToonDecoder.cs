@@ -42,7 +42,7 @@ public static class ToonDecoder
             return (T?)(object?)node;
         }
 
-        return JsonSerializer.Deserialize<T>(node.ToJsonString());
+        return node.Deserialize<T>();
     }
 
     /// <summary>
