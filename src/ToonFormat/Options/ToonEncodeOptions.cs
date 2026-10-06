@@ -11,7 +11,7 @@ public class ToonEncodeOptions
     public int IndentSize { get; set; } = 2;
 
     /// <summary>
-    /// Delimiter between inline array values and tabular row cells. Default is <see cref="ToonDelimiter.COMMA"/>.
+    /// Delimiter between inline array values and tabular row cells. Default is <see cref="ToonDelimiter.Comma"/>.
     /// </summary>
-    public ToonDelimiter Delimiter { get; set; } = ToonDelimiter.COMMA;
+    public ToonDelimiter Delimiter { get; set; } = ToonDelimiter.Comma;
 }

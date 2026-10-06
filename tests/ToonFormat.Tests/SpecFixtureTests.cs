@@ -44,9 +44,9 @@ public class SpecFixtureTests
             {
                 encodeOptions.Delimiter = delimiter.GetString() switch
                 {
-                    "\t" => ToonDelimiter.TAB,
-                    "|" => ToonDelimiter.PIPE,
-                    _ => ToonDelimiter.COMMA,
+                    "\t" => ToonDelimiter.Tab,
+                    "|" => ToonDelimiter.Pipe,
+                    _ => ToonDelimiter.Comma,
                 };
             }
 

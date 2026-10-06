@@ -32,9 +32,9 @@ internal static class Constants
 
     public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
     {
-        ToonDelimiter.COMMA => COMMA,
-        ToonDelimiter.TAB => TAB,
-        ToonDelimiter.PIPE => PIPE,
+        ToonDelimiter.Comma => COMMA,
+        ToonDelimiter.Tab => TAB,
+        ToonDelimiter.Pipe => PIPE,
         _ => COMMA
     };
 }
@@ -45,11 +45,11 @@ internal static class Constants
 public enum ToonDelimiter
 {
     /// <summary>Comma ,</summary>
-    COMMA,
+    Comma,
 
     /// <summary>Tab \t</summary>
-    TAB,
+    Tab,
 
     /// <summary>Pipe |</summary>
-    PIPE
+    Pipe
 }
