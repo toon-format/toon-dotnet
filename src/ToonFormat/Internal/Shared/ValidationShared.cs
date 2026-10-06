@@ -45,7 +45,8 @@ namespace Toon.Format.Internal.Shared
             if (string.IsNullOrEmpty(value))
                 return false;
 
-            if (!string.Equals(value, value.Trim(), StringComparison.Ordinal))
+            // Only space and tab force quoting; other Unicode whitespace survives decoding as content.
+            if (IsSpaceOrTab(value[0]) || IsSpaceOrTab(value[value.Length - 1]))
                 return false;
 
             if (LiteralUtils.IsBooleanOrNullLiteral(value) || IsNumericLike(value))
@@ -74,5 +75,7 @@ namespace Toon.Format.Internal.Shared
         }
 
         private static bool IsNumericLike(string value) => NumericLikeRegex.IsMatch(value);
+
+        private static bool IsSpaceOrTab(char c) => c == Constants.SPACE || c == Constants.TAB;
     }
 }
