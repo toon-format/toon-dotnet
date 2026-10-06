@@ -38,6 +38,23 @@ public class HostTypeTests
         Assert.Equal(12500.75, project.Costs["usd"]);
     }
 
+    [Fact]
+    public void Encode_RejectsUnpairedSurrogates()
+    {
+        // Attribute arguments can't carry lone surrogates, so the cases live here.
+        foreach (var text in new[] { "a\uD800b", "\uDC00" })
+        {
+            Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(text));
+            Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(new Dictionary<string, int> { [text] = 1 }));
+        }
+    }
+
+    [Fact]
+    public void Encode_KeepsSurrogatePairs()
+    {
+        Assert.Equal("\U0001F600", ToonEncoder.Encode("\U0001F600"));
+    }
+
     private sealed class Project
     {
         public string Name { get; set; } = "";

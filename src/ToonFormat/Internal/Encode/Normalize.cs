@@ -28,7 +28,7 @@ namespace Toon.Format.Internal.Encode
                 return null;
 
             if (value is string str)
-                return JsonValue.Create(str);
+                return JsonValue.Create(RequireScalarValues(str, "string value"));
 
             if (value is bool b)
                 return JsonValue.Create(b);
@@ -72,7 +72,7 @@ namespace Toon.Format.Internal.Encode
                 var jsonObject = new JsonObject();
                 foreach (DictionaryEntry entry in dict)
                 {
-                    var key = entry.Key?.ToString() ?? string.Empty;
+                    var key = RequireScalarValues(entry.Key?.ToString() ?? string.Empty, "object key");
                     jsonObject[key] = NormalizeValue(entry.Value);
                 }
                 return jsonObject;
@@ -120,7 +120,7 @@ namespace Toon.Format.Internal.Encode
             switch (value)
             {
                 case string s:
-                    return JsonValue.Create(s);
+                    return JsonValue.Create(RequireScalarValues(s, "string value"));
                 case bool b:
                     return JsonValue.Create(b);
                 case int i:
@@ -161,7 +161,7 @@ namespace Toon.Format.Internal.Encode
                 var jsonObject = new JsonObject();
                 foreach (DictionaryEntry entry in dict)
                 {
-                    var key = entry.Key?.ToString() ?? string.Empty;
+                    var key = RequireScalarValues(entry.Key?.ToString() ?? string.Empty, "object key");
                     jsonObject[key] = NormalizeValue(entry.Value);
                 }
                 return jsonObject;
@@ -216,6 +216,20 @@ namespace Toon.Format.Internal.Encode
                 return false;
 
             return type.IsClass || type.IsValueType;
+        }
+
+        // A lone surrogate has no UTF-8 form, so emitting it would silently substitute U+FFFD.
+        private static string RequireScalarValues(string value, string context)
+        {
+            for (var i = 0; i < value.Length; i++)
+            {
+                if (char.IsHighSurrogate(value[i]) && i + 1 < value.Length && char.IsLowSurrogate(value[i + 1]))
+                    i++;
+                else if (char.IsSurrogate(value[i]))
+                    throw ToonFormatException.Validation($"Cannot encode {context} containing an unpaired surrogate U+{(int)value[i]:X4} at index {i}");
+            }
+
+            return value;
         }
 
         #endregion
