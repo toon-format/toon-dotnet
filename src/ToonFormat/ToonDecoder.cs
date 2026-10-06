@@ -21,8 +21,8 @@ public static class ToonDecoder
 
         options ??= new ToonDecodeOptions();
 
-        var scan = Scanner.ToParsedLines(toonString, options.IndentSize, options.Strict);
-        return new DocumentDecoder(new LineCursor(scan), options.Strict).DecodeDocument();
+        var cursor = Scanner.Scan(toonString, options.IndentSize, options.Strict);
+        return new DocumentDecoder(cursor, options.Strict).DecodeDocument();
     }
 
     /// <summary>

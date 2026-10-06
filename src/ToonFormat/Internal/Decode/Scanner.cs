@@ -11,14 +11,6 @@ internal sealed class ParsedLine
     public int LineNumber { get; set; }
 }
 
-internal sealed class ScanResult
-{
-    public List<ParsedLine> Lines { get; } = new();
-
-    /// <summary>Line numbers of blank lines, which strict mode rejects inside arrays and keyed objects.</summary>
-    public List<int> BlankLines { get; } = new();
-}
-
 /// <summary>
 /// Reads scanned lines with one line of lookahead.
 /// </summary>
@@ -27,12 +19,13 @@ internal sealed class LineCursor
     private readonly List<ParsedLine> _lines;
     private int _index;
 
-    public LineCursor(ScanResult scan)
+    public LineCursor(List<ParsedLine> lines, List<int> blankLines)
     {
-        _lines = scan.Lines;
-        BlankLines = scan.BlankLines;
+        _lines = lines;
+        BlankLines = blankLines;
     }
 
+    /// <summary>Line numbers of blank lines, which strict mode rejects inside arrays and keyed objects.</summary>
     public List<int> BlankLines { get; }
 
     /// <summary>The line <see cref="Next"/> returned last.</summary>
@@ -48,9 +41,10 @@ internal sealed class LineCursor
 /// </summary>
 internal static class Scanner
 {
-    public static ScanResult ToParsedLines(string source, int indentSize, bool strict)
+    public static LineCursor Scan(string source, int indentSize, bool strict)
     {
-        var result = new ScanResult();
+        var lines = new List<ParsedLine>();
+        var blankLines = new List<int>();
         var rawLines = source.Split(Constants.NEWLINE);
 
         for (var i = 0; i < rawLines.Length; i++)
@@ -84,7 +78,7 @@ internal static class Scanner
 
             if (content.Length == 0)
             {
-                result.BlankLines.Add(lineNumber);
+                blankLines.Add(lineNumber);
                 continue;
             }
 
@@ -98,9 +92,9 @@ internal static class Scanner
             }
 
             var depth = (indent - tabIndent) / indentSize + tabIndent;
-            result.Lines.Add(new ParsedLine { Raw = raw, Content = content, Depth = depth, LineNumber = lineNumber });
+            lines.Add(new ParsedLine { Raw = raw, Content = content, Depth = depth, LineNumber = lineNumber });
         }
 
-        return result;
+        return new LineCursor(lines, blankLines);
     }
 }
