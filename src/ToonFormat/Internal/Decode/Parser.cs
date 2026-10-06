@@ -347,18 +347,5 @@ namespace Toon.Format.Internal.Decode
         }
 
         #endregion
-
-        #region Array content detection helpers
-
-        /// <summary>
-        /// Checks if content after hyphen starts with an array header.
-        /// </summary>
-        public static bool IsArrayHeaderAfterHyphen(string content)
-        {
-            return content.Trim().StartsWith(Constants.OPEN_BRACKET.ToString())
-                   && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
-        }
-
-        #endregion
     }
 }

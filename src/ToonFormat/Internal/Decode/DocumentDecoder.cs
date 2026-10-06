@@ -45,16 +45,13 @@ namespace Toon.Format.Internal.Decode
                 return new JsonArray();
             }
 
-            if (Parser.IsArrayHeaderAfterHyphen(first.Content))
+            var rootHeader = ResolveArrayHeader(first);
+            if (rootHeader != null && rootHeader.Key == null)
             {
-                var header = ResolveArrayHeader(first);
-                if (header != null)
-                {
-                    _cursor.Next();
-                    var array = DecodeArrayFromHeader(header, 0, first);
-                    AssertFullyConsumed();
-                    return array;
-                }
+                _cursor.Next();
+                var array = DecodeArrayFromHeader(rootHeader, 0, first);
+                AssertFullyConsumed();
+                return array;
             }
 
             _cursor.Next();
@@ -101,6 +98,9 @@ namespace Toon.Format.Internal.Decode
                 target[header.Key] = DecodeArrayFromHeader(header, baseDepth, line);
                 return;
             }
+
+            if (header != null && _strict)
+                throw ToonFormatException.Syntax("Keyless array header is only valid at the document root or as a list item", line.LineNumber, sourceLine: line.Raw);
 
             var keyToken = At(line, () => Parser.ParseKeyToken(content, 0));
             var rest = StringUtils.TrimSpaces(content.Substring(keyToken.End));
@@ -302,22 +302,28 @@ namespace Toon.Format.Internal.Decode
 
             var itemLine = new ParsedLine { Raw = line.Raw, Indent = line.Indent, Content = afterHyphen, Depth = line.Depth, LineNumber = line.LineNumber };
 
-            if (Parser.IsArrayHeaderAfterHyphen(afterHyphen))
+            var header = ResolveArrayHeader(itemLine);
+            if (header != null && header.Key == null)
             {
-                var header = ResolveArrayHeader(itemLine);
-                if (header != null)
+                if (header.Fields == null)
                     return DecodeArrayFromHeader(header, itemDepth, itemLine);
+
+                if (_strict)
+                    throw ToonFormatException.Syntax("Keyless header with a field list is only valid at the document root", line.LineNumber, sourceLine: line.Raw);
+            }
+
+            // A first field carrying a field list sits on the hyphen line, and its rows at depth + 2.
+            if (header?.Key != null && header.Fields != null)
+            {
+                var obj = new JsonObject { [header.Key] = DecodeArrayFromHeader(header, itemDepth + 1, itemLine) };
+                FollowSiblingFields(obj, itemDepth + 1);
+                return obj;
             }
 
             if (IsKeyValueContent(afterHyphen))
             {
                 var obj = new JsonObject();
-                var header = ResolveArrayHeader(itemLine);
-                if (header?.Key != null && header.Fields != null)
-                    obj[header.Key] = DecodeArrayFromHeader(header, itemDepth + 1, itemLine);
-                else
-                    DecodeKeyValue(itemLine, obj, itemDepth + 1);
-
+                DecodeKeyValue(itemLine, obj, itemDepth + 1);
                 FollowSiblingFields(obj, itemDepth + 1);
                 return obj;
             }
