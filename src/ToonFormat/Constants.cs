@@ -29,8 +29,6 @@ namespace Toon.Format
         public const char CARRIAGE_RETURN = '\r';
         public const char TAB = '\t';
 
-        public const ToonDelimiter DEFAULT_DELIMITER_ENUM = ToonDelimiter.COMMA;
-
         public const char DEFAULT_DELIMITER_CHAR = COMMA;
 
         public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
@@ -39,15 +37,6 @@ namespace Toon.Format
             ToonDelimiter.TAB => TAB,
             ToonDelimiter.PIPE => PIPE,
             _ => COMMA
-        };
-
-        /// <summary>Maps delimiter characters to enum; unknown characters fall back to comma.</summary>
-        public static ToonDelimiter FromDelimiterChar(char delimiter) => delimiter switch
-        {
-            COMMA => ToonDelimiter.COMMA,
-            TAB => ToonDelimiter.TAB,
-            PIPE => ToonDelimiter.PIPE,
-            _ => ToonDelimiter.COMMA
         };
     }
 

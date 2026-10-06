@@ -19,5 +19,5 @@ public class ToonEncodeOptions
     /// Default is comma (,).
     /// </summary>
     /// <remarks>Default is <see cref="ToonDelimiter.COMMA"/></remarks>
-    public ToonDelimiter Delimiter { get; set; } = Constants.DEFAULT_DELIMITER_ENUM;
+    public ToonDelimiter Delimiter { get; set; } = ToonDelimiter.COMMA;
 }

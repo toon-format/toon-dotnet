@@ -34,7 +34,7 @@ namespace Toon.Format.Internal.Shared
         }
 
         /// <summary>Whether the string value can be safely without quotes.</summary>
-        internal static bool IsSafeUnquoted(string value, ToonDelimiter delimiter = Constants.DEFAULT_DELIMITER_ENUM)
+        internal static bool IsSafeUnquoted(string value, char delimiter)
         {
             if (string.IsNullOrEmpty(value))
                 return false;
@@ -58,8 +58,7 @@ namespace Toon.Format.Internal.Shared
             if (value.Any(ch => ch < ' '))
                 return false;
 
-            var delimiterChar = Constants.ToDelimiterChar(delimiter);
-            if (value.IndexOf(delimiterChar) >= 0)
+            if (value.IndexOf(delimiter) >= 0)
                 return false;
 
             if (value[0] == Constants.LIST_ITEM_MARKER || value[0] == Constants.COMMENT_MARKER)

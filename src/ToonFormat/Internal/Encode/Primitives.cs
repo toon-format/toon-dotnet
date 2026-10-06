@@ -58,7 +58,7 @@ namespace Toon.Format.Internal.Encode
         /// <summary>
         /// Encodes a primitive JSON value (null, boolean, number, or string) to its TOON representation.
         /// </summary>
-        public static string EncodePrimitive(JsonNode? value, char delimiter = Constants.COMMA)
+        public static string EncodePrimitive(JsonNode? value, char delimiter)
         {
             if (value == null)
                 return Constants.NULL_LITERAL;
@@ -87,11 +87,9 @@ namespace Toon.Format.Internal.Encode
         /// <summary>
         /// Encodes a string literal, adding quotes if necessary.
         /// </summary>
-        public static string EncodeStringLiteral(string value, char delimiter = Constants.COMMA)
+        public static string EncodeStringLiteral(string value, char delimiter)
         {
-            var delimiterEnum = Constants.FromDelimiterChar(delimiter);
-
-            return ValidationShared.IsSafeUnquoted(value, delimiterEnum) ? value : Quote(value);
+            return ValidationShared.IsSafeUnquoted(value, delimiter) ? value : Quote(value);
         }
 
         public static string Quote(string value) => $"{Constants.DOUBLE_QUOTE}{StringUtils.EscapeString(value)}{Constants.DOUBLE_QUOTE}";
@@ -115,7 +113,7 @@ namespace Toon.Format.Internal.Encode
         /// <summary>
         /// Encodes and joins an array of primitive values with the specified delimiter.
         /// </summary>
-        public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter = Constants.COMMA)
+        public static string EncodeAndJoinPrimitives(IEnumerable<JsonNode?> values, char delimiter)
         {
             var encoded = values.Select(v => EncodePrimitive(v, delimiter));
             return string.Join(delimiter.ToString(), encoded);
