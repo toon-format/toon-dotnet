@@ -66,13 +66,18 @@ namespace Toon.Format.Internal.Decode
             }
             else
             {
-                bracketStart = content.IndexOf(Constants.OPEN_BRACKET);
+                bracketStart = StringUtils.FindUnquotedChar(content, Constants.OPEN_BRACKET);
             }
 
             if (bracketStart == -1)
                 return null;
 
-            var bracketEnd = content.IndexOf(Constants.CLOSE_BRACKET, bracketStart);
+            // A header needs a colon, and its key can't contain one.
+            var firstColonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
+            if (firstColonIndex == -1 || firstColonIndex < bracketStart)
+                return null;
+
+            var bracketEnd = StringUtils.FindUnquotedChar(content, Constants.CLOSE_BRACKET, bracketStart);
             if (bracketEnd == -1)
                 return null;
 
@@ -81,8 +86,8 @@ namespace Toon.Format.Internal.Decode
             int braceEnd = colonIndex;
 
             // Check for fields segment (braces come after bracket)
-            var braceStart = content.IndexOf(Constants.OPEN_BRACE, bracketEnd);
-            if (braceStart != -1 && braceStart < content.IndexOf(Constants.COLON, bracketEnd))
+            var braceStart = StringUtils.FindUnquotedChar(content, Constants.OPEN_BRACE, bracketEnd);
+            if (braceStart != -1 && braceStart < StringUtils.FindUnquotedChar(content, Constants.COLON, bracketEnd))
             {
                 var foundBraceEnd = content.IndexOf(Constants.CLOSE_BRACE, braceStart);
                 if (foundBraceEnd != -1)
@@ -91,7 +96,7 @@ namespace Toon.Format.Internal.Decode
                 }
             }
 
-            colonIndex = content.IndexOf(Constants.COLON, Math.Max(bracketEnd, braceEnd));
+            colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON, Math.Max(bracketEnd, braceEnd));
             if (colonIndex == -1)
                 return null;
 
@@ -305,22 +310,12 @@ namespace Toon.Format.Internal.Decode
 
         public static KeyParseResult ParseUnquotedKey(string content, int start)
         {
-            int end = start;
-            while (end < content.Length && content[end] != Constants.COLON)
-            {
-                end++;
-            }
-
-            if (end >= content.Length || content[end] != Constants.COLON)
-            {
+            // A raw scan would cut `a "b:c" d: 1` at the quoted colon and split the key in two.
+            var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON, start);
+            if (colonIndex == -1)
                 throw ToonFormatException.Syntax("Missing colon after key");
-            }
 
-            var key = StringUtils.TrimSpaces(content.Substring(start, end - start));
-
-            end++;
-
-            return new KeyParseResult { Key = key, End = end };
+            return new KeyParseResult { Key = StringUtils.TrimSpaces(content.Substring(start, colonIndex - start)), End = colonIndex + 1 };
         }
 
         public static KeyParseResult ParseQuotedKey(string content, int start)
@@ -335,6 +330,8 @@ namespace Toon.Format.Internal.Decode
             var keyContent = content.Substring(start + 1, closingQuoteIndex - start - 1);
             var key = StringUtils.UnescapeString(keyContent);
             int end = closingQuoteIndex + 1;
+            while (end < content.Length && content[end] == Constants.SPACE)
+                end++;
 
             if (end >= content.Length || content[end] != Constants.COLON)
             {
@@ -372,14 +369,6 @@ namespace Toon.Format.Internal.Decode
         {
             return content.Trim().StartsWith(Constants.OPEN_BRACKET.ToString())
                    && StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
-        }
-
-        /// <summary>
-        /// Checks if content after hyphen contains a key-value pair (has a colon).
-        /// </summary>
-        public static bool IsObjectFirstFieldAfterHyphen(string content)
-        {
-            return StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
         }
 
         #endregion

@@ -51,10 +51,10 @@ namespace Toon.Format.Internal.Decode
             _cursor.Next();
             var following = _cursor.Peek();
             // A skipped leading line makes the document multi-line, so no root primitive.
-            if (following == null && !skippedLeading && !IsKeyValueLine(first))
+            if (following == null && !skippedLeading && !IsKeyValueContent(first.Content))
                 return At(first, () => Parser.ParsePrimitiveToken(first.Content));
 
-            if (!IsKeyValueLine(first) && following?.Depth == 0)
+            if (!IsKeyValueContent(first.Content) && following?.Depth == 0)
                 throw ToonFormatException.Syntax("Top-level document must start with a key-value or array-header line", first.LineNumber, sourceLine: first.Raw);
 
             var root = new JsonObject();
@@ -75,17 +75,7 @@ namespace Toon.Format.Internal.Decode
             return root;
         }
 
-        private static bool IsKeyValueLine(ParsedLine line)
-        {
-            var content = line.Content;
-            if (content.StartsWith("\"", StringComparison.Ordinal))
-            {
-                var closingQuoteIndex = StringUtils.FindClosingQuote(content, 0);
-                return closingQuoteIndex != -1 && content.IndexOf(Constants.COLON, closingQuoteIndex + 1) != -1;
-            }
-
-            return content.IndexOf(Constants.COLON) != -1;
-        }
+        private static bool IsKeyValueContent(string content) => StringUtils.FindUnquotedChar(content, Constants.COLON) != -1;
 
         #endregion
 
@@ -192,6 +182,9 @@ namespace Toon.Format.Internal.Decode
                     continue;
                 }
 
+                if (!Validation.IsDataRow(line.Content, header.Delimiter))
+                    break;
+
                 _cursor.Next();
                 startLine ??= line.LineNumber;
                 lastRowLine = line;
@@ -294,7 +287,7 @@ namespace Toon.Format.Internal.Decode
                     return DecodeArrayFromHeader(header.Header, header.InlineValues, itemDepth, itemLine);
             }
 
-            if (Parser.IsObjectFirstFieldAfterHyphen(afterHyphen))
+            if (IsKeyValueContent(afterHyphen))
             {
                 var obj = new JsonObject();
                 var header = At(itemLine, () => Parser.ParseArrayHeaderLine(afterHyphen, Constants.DEFAULT_DELIMITER_CHAR));
@@ -314,14 +307,12 @@ namespace Toon.Format.Internal.Decode
         {
             for (var line = _cursor.Peek(); line != null && line.Depth >= fieldDepth; line = _cursor.Peek())
             {
+                // A hyphen marks a list item only at item depth, so a `- ` line here is a further field.
                 if (line.Depth != fieldDepth)
                 {
                     SkipOverIndentedLine(line, fieldDepth);
                     continue;
                 }
-
-                if (IsListItem(line.Content))
-                    break;
 
                 _cursor.Next();
                 DecodeKeyValue(line, obj, fieldDepth);

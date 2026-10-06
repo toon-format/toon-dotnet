@@ -48,8 +48,8 @@ namespace Toon.Format.Internal.Decode
         /// </summary>
         public static bool IsDataRow(string content, char delimiter)
         {
-            var colonIndex = content.IndexOf(Constants.COLON);
-            var delimiterIndex = content.IndexOf(delimiter);
+            var colonIndex = StringUtils.FindUnquotedChar(content, Constants.COLON);
+            var delimiterIndex = StringUtils.FindUnquotedChar(content, delimiter);
             return colonIndex == -1 || (delimiterIndex != -1 && delimiterIndex < colonIndex);
         }
     }
