@@ -71,7 +71,7 @@ namespace Toon.Format.Internal.Shared
             if (value.IndexOf(delimiterChar) >= 0)
                 return false;
 
-            if (value[0] == Constants.LIST_ITEM_MARKER)
+            if (value[0] == Constants.LIST_ITEM_MARKER || value[0] == Constants.COMMENT_MARKER)
                 return false;
 
             return true;

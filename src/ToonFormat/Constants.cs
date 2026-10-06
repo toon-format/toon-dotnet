@@ -12,6 +12,7 @@ namespace Toon.Format
         public const char COLON = ':';
         public const char SPACE = ' ';
         public const char PIPE = '|';
+        public const char COMMENT_MARKER = '#';
         public const char DOT = '.';
 
         public const char OPEN_BRACKET = '[';
