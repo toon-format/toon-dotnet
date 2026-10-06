@@ -28,11 +28,11 @@ public static class ToonDecoder
 
         var resolvedOptions = new ResolvedDecodeOptions
         {
-            Indent = options.Indent,
+            IndentSize = options.IndentSize,
             Strict = options.Strict,
         };
 
-        var scanResult = Scanner.ToParsedLines(toonString, resolvedOptions.Indent, resolvedOptions.Strict);
+        var scanResult = Scanner.ToParsedLines(toonString, resolvedOptions.IndentSize, resolvedOptions.Strict);
 
         if (scanResult.Lines.Count == 0)
         {

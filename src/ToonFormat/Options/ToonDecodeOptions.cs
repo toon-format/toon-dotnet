@@ -10,7 +10,7 @@ public class ToonDecodeOptions
     /// Number of spaces per indentation level.
     /// Default is 2.
     /// </summary>
-    public int Indent { get; set; } = 2;
+    public int IndentSize { get; set; } = 2;
 
     /// <summary>
     /// When true, enforce strict validation of array lengths and tabular row counts.

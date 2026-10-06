@@ -39,7 +39,7 @@ public class SpecFixtureTests
         {
             var encodeOptions = new ToonEncodeOptions();
             if (options.TryGetProperty("indentSize", out var indentSize))
-                encodeOptions.Indent = indentSize.GetInt32();
+                encodeOptions.IndentSize = indentSize.GetInt32();
             if (options.TryGetProperty("delimiter", out var delimiter))
             {
                 encodeOptions.Delimiter = delimiter.GetString() switch
@@ -63,7 +63,7 @@ public class SpecFixtureTests
 
         var decodeOptions = new ToonDecodeOptions();
         if (options.TryGetProperty("indentSize", out var decodeIndentSize))
-            decodeOptions.Indent = decodeIndentSize.GetInt32();
+            decodeOptions.IndentSize = decodeIndentSize.GetInt32();
         if (options.TryGetProperty("strict", out var strict))
             decodeOptions.Strict = strict.GetBoolean();
 

@@ -40,7 +40,7 @@ var node = ToonDecoder.Decode(toon);
 
 | Option | Default | Description |
 | ------ | ------- | ----------- |
-| `Indent` | `2` | Spaces per indentation level (encode and decode) |
+| `IndentSize` | `2` | Spaces per indentation level (encode and decode) |
 | `Delimiter` | `ToonDelimiter.COMMA` | Array delimiter: `COMMA`, `TAB`, or `PIPE` (encode) |
 | `Strict` | `true` | Throw `ToonFormatException` on count mismatches and invalid input (decode) |
 

@@ -10,7 +10,7 @@ namespace Toon.Format.Internal.Decode
     /// </summary>
     internal class ResolvedDecodeOptions
     {
-        public int Indent { get; set; } = 2;
+        public int IndentSize { get; set; } = 2;
         public bool Strict { get; set; } = false;
     }
 

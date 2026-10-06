@@ -8,7 +8,7 @@ namespace Toon.Format.Internal.Encode
 {
     internal class ResolvedEncodeOptions
     {
-        public int Indent { get; set; } = 2;
+        public int IndentSize { get; set; } = 2;
         public char Delimiter { get; set; } = Constants.COMMA;
     }
 
@@ -29,7 +29,7 @@ namespace Toon.Format.Internal.Encode
                 return Primitives.EncodePrimitive(value, options.Delimiter);
             }
 
-            var writer = new LineWriter(options.Indent);
+            var writer = new LineWriter(options.IndentSize);
 
             if (Normalize.IsJsonArray(value))
             {

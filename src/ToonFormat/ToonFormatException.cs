@@ -135,7 +135,7 @@ namespace Toon.Format
         Range,
         /// <summary>Validation error: structural/rule validation failure in strict mode (e.g., extra lines, empty lines).</summary>
         Validation,
-        /// <summary>Indentation error: indentation is not a multiple of Indent or contains TAB.</summary>
+        /// <summary>Indentation error: indentation is not a multiple of IndentSize or contains TAB.</summary>
         Indentation,
         /// <summary>Delimiter error: fields/values contain disallowed delimiters or delimiter inference failed.</summary>
         Delimiter,

@@ -22,7 +22,7 @@ public static class ToonEncoder
 
         var resolvedOptions = new ResolvedEncodeOptions
         {
-            Indent = options.Indent,
+            IndentSize = options.IndentSize,
             Delimiter = Constants.ToDelimiterChar(options.Delimiter),
         };
 

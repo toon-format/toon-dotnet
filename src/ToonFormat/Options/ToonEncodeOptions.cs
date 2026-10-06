@@ -12,7 +12,7 @@ public class ToonEncodeOptions
     /// Number of spaces per indentation level.
     /// </summary>
     /// <remarks>Default is 2</remarks>
-    public int Indent { get; set; } = 2;
+    public int IndentSize { get; set; } = 2;
 
     /// <summary>
     /// Delimiter to use for tabular array rows and inline primitive arrays.
