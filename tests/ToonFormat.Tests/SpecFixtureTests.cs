@@ -94,7 +94,7 @@ public class SpecFixtureTests
 
     /// <summary>
     /// JSON text with every number re-printed as a double, so key order and strings must match
-    /// exactly while numbers compare by value (spec §2).
+    /// exactly while numbers compare by value.
     /// </summary>
     private static string Canonical(JsonNode? node) => node switch
     {
