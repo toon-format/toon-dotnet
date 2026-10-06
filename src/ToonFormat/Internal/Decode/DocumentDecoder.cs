@@ -97,12 +97,14 @@ namespace Toon.Format.Internal.Decode
             var header = At(line, () => Parser.ParseArrayHeaderLine(content, Constants.DEFAULT_DELIMITER_CHAR));
             if (header?.Header.Key != null)
             {
+                AssertNewKey(target, header.Header.Key, line);
                 target[header.Header.Key] = DecodeArrayFromHeader(header.Header, header.InlineValues, baseDepth, line);
                 return;
             }
 
             var keyToken = At(line, () => Parser.ParseKeyToken(content, 0));
             var rest = StringUtils.TrimSpaces(content.Substring(keyToken.End));
+            AssertNewKey(target, keyToken.Key, line);
 
             if (rest.Length == 0)
             {
@@ -381,6 +383,12 @@ namespace Toon.Format.Internal.Decode
         {
             if (StringUtils.FindUnquotedChar(line.Content, Constants.COLON) == -1)
                 throw ToonFormatException.Syntax("Unexpected bare token line outside root primitive position", line.LineNumber, sourceLine: line.Raw);
+        }
+
+        private void AssertNewKey(JsonObject target, string key, ParsedLine line)
+        {
+            if (_strict && target.ContainsKey(key))
+                throw ToonFormatException.Validation($"Duplicate sibling key \"{key}\"", line.LineNumber, sourceLine: line.Raw);
         }
 
         /// <summary>
