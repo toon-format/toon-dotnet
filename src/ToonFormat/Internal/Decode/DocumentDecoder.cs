@@ -24,16 +24,11 @@ internal sealed class DocumentDecoder
     public JsonNode? DecodeDocument()
     {
         var first = _cursor.Peek();
-        var skippedLeading = false;
-        while (first != null && first.Depth != 0)
-        {
-            SkipOverIndentedLine(first, 0);
-            skippedLeading = true;
-            first = _cursor.Peek();
-        }
-
         if (first == null)
             return new JsonObject();
+
+        if (first.Depth != 0)
+            throw OverIndentedLineError(first, 0);
 
         if (first.Content == EmptyArray)
         {
@@ -53,8 +48,7 @@ internal sealed class DocumentDecoder
 
         _cursor.Next();
         var following = _cursor.Peek();
-        // A skipped leading line makes the document multi-line, so no root primitive.
-        if (following == null && !skippedLeading && !IsKeyValueContent(first.Content))
+        if (following == null && !IsKeyValueContent(first.Content))
             return At(first, () => Parser.ParsePrimitiveToken(first.Content));
 
         if (!IsKeyValueContent(first.Content) && following?.Depth == 0)
@@ -66,10 +60,7 @@ internal sealed class DocumentDecoder
         for (var line = _cursor.Peek(); line != null; line = _cursor.Peek())
         {
             if (line.Depth != 0)
-            {
-                SkipOverIndentedLine(line, 0);
-                continue;
-            }
+                throw OverIndentedLineError(line, 0);
 
             _cursor.Next();
             DecodeKeyValue(line, root, 0);
@@ -96,7 +87,7 @@ internal sealed class DocumentDecoder
             return;
         }
 
-        if (header != null && _strict)
+        if (header != null)
             throw header.Keyed ? KeylessKeyedHeaderError(line) : ToonFormatException.Syntax("Keyless array header is only valid at the document root or as a list item", line.LineNumber, sourceLine: line.Raw);
 
         var keyToken = At(line, () => Parser.ParseKeyToken(content));
@@ -135,15 +126,11 @@ internal sealed class DocumentDecoder
         {
             fieldDepth ??= line.Depth;
 
-            if (line.Depth == fieldDepth)
-            {
-                _cursor.Next();
-                DecodeKeyValue(line, obj, fieldDepth.Value);
-            }
-            else
-            {
-                SkipOverIndentedLine(line, fieldDepth.Value);
-            }
+            if (line.Depth != fieldDepth)
+                throw OverIndentedLineError(line, fieldDepth.Value);
+
+            _cursor.Next();
+            DecodeKeyValue(line, obj, fieldDepth.Value);
         }
 
         return obj;
@@ -170,7 +157,8 @@ internal sealed class DocumentDecoder
     private JsonArray DecodeInlinePrimitiveArray(ArrayHeaderInfo header, ParsedLine headerLine)
     {
         var values = ParseCells(headerLine, header.InlineValues!, header.Delimiter);
-        Validation.AssertExpectedCount(values.Count, header.Length, "inline-form values", _strict, headerLine);
+        if (_strict)
+            Validation.AssertExpectedCount(values.Count, header.Length, "inline-form values", headerLine);
         return new JsonArray(values.ToArray());
     }
 
@@ -189,10 +177,7 @@ internal sealed class DocumentDecoder
                 break;
 
             if (line.Depth != rowDepth)
-            {
-                SkipOverIndentedLine(line, rowDepth);
-                continue;
-            }
+                throw OverIndentedLineError(line, rowDepth);
 
             if (!Validation.IsDataRow(line.Content, header.Delimiter))
                 break;
@@ -202,16 +187,16 @@ internal sealed class DocumentDecoder
             lastRowLine = line;
 
             var cells = ParseCells(line, line.Content, header.Delimiter);
-            Validation.AssertExpectedCount(cells.Count, Parser.CountLeafFields(header.Fields!), "tabular row values", _strict, line);
+            Validation.AssertExpectedCount(cells.Count, Parser.CountLeafFields(header.Fields!), "tabular row values", line);
 
             var cellIndex = 0;
             rows.Add(ObjectFromFields(header.Fields!, cells, ref cellIndex));
         }
 
-        Validation.AssertExpectedCount(rows.Count, header.Length, "tabular rows", _strict, lastRowLine);
-
         if (_strict)
         {
+            Validation.AssertExpectedCount(rows.Count, header.Length, "tabular rows", lastRowLine);
+
             if (startLine != null)
                 Validation.ValidateNoBlankLinesInRange(startLine.Value, lastRowLine.LineNumber, _cursor.BlankLines, "tabular array");
 
@@ -236,10 +221,7 @@ internal sealed class DocumentDecoder
                 break;
 
             if (line.Depth != itemDepth)
-            {
-                SkipOverIndentedLine(line, itemDepth);
-                continue;
-            }
+                throw OverIndentedLineError(line, itemDepth);
 
             if (!IsListItem(line.Content))
                 break;
@@ -249,10 +231,10 @@ internal sealed class DocumentDecoder
             lastItemLine = _cursor.LastLine!;
         }
 
-        Validation.AssertExpectedCount(items.Count, header.Length, "list-form items", _strict, lastItemLine);
-
         if (_strict)
         {
+            Validation.AssertExpectedCount(items.Count, header.Length, "list-form items", lastItemLine);
+
             if (startLine != null)
                 Validation.ValidateNoBlankLinesInRange(startLine.Value, lastItemLine.LineNumber, _cursor.BlankLines, "list-form array");
 
@@ -278,18 +260,11 @@ internal sealed class DocumentDecoder
         for (var line = _cursor.Peek(); line != null && line.Depth > baseDepth; line = _cursor.Peek())
         {
             if (line.Depth != entryDepth)
-            {
-                SkipOverIndentedLine(line, entryDepth);
-                continue;
-            }
+                throw OverIndentedLineError(line, entryDepth);
 
             _cursor.Next();
             if (!IsKeyValueContent(line.Content))
-            {
-                if (_strict)
-                    throw ToonFormatException.Syntax("Expected entry row inside keyed tabular object", line.LineNumber, sourceLine: line.Raw);
-                continue;
-            }
+                throw ToonFormatException.Syntax("Expected entry row inside keyed tabular object", line.LineNumber, sourceLine: line.Raw);
 
             startLine ??= line.LineNumber;
             lastEntryLine = line;
@@ -298,17 +273,20 @@ internal sealed class DocumentDecoder
             AssertNewKey(entries, keyToken.Key, line);
 
             var cells = ParseCells(line, StringUtils.TrimSpaces(line.Content.Substring(keyToken.End)), header.Delimiter);
-            Validation.AssertExpectedCount(cells.Count, leafCount, "keyed entry cells", _strict, line);
+            Validation.AssertExpectedCount(cells.Count, leafCount, "keyed entry cells", line);
 
             var cellIndex = 0;
             entries[keyToken.Key] = ObjectFromFields(header.Fields!, cells, ref cellIndex);
             entryCount++;
         }
 
-        Validation.AssertExpectedCount(entryCount, header.Length, "keyed entries", _strict, lastEntryLine);
+        if (_strict)
+        {
+            Validation.AssertExpectedCount(entryCount, header.Length, "keyed entries", lastEntryLine);
 
-        if (_strict && startLine != null)
-            Validation.ValidateNoBlankLinesInRange(startLine.Value, lastEntryLine.LineNumber, _cursor.BlankLines, "keyed tabular object");
+            if (startLine != null)
+                Validation.ValidateNoBlankLinesInRange(startLine.Value, lastEntryLine.LineNumber, _cursor.BlankLines, "keyed tabular object");
+        }
 
         return entries;
     }
@@ -324,10 +302,6 @@ internal sealed class DocumentDecoder
         var obj = new JsonObject();
         foreach (var field in fields)
         {
-            // A non-strict width mismatch leaves trailing leaf fields without a cell; they stay absent.
-            if (field.Children == null && cellIndex >= cells.Count)
-                continue;
-
             obj[field.Name] = field.Children != null ? ObjectFromFields(field.Children, cells, ref cellIndex) : cells[cellIndex++];
         }
 
@@ -367,11 +341,10 @@ internal sealed class DocumentDecoder
         var header = ResolveArrayHeader(itemLine);
         if (header != null && header.Key == null)
         {
-            if (header.Fields == null)
-                return DecodeArrayFromHeader(header, itemDepth, itemLine);
-
-            if (_strict)
+            if (header.Fields != null)
                 throw header.Keyed ? KeylessKeyedHeaderError(line) : ToonFormatException.Syntax("Keyless header with a field list is only valid at the document root", line.LineNumber, sourceLine: line.Raw);
+
+            return DecodeArrayFromHeader(header, itemDepth, itemLine);
         }
 
         if (IsKeyValueContent(afterHyphen))
@@ -389,13 +362,10 @@ internal sealed class DocumentDecoder
     {
         for (var line = _cursor.Peek(); line != null && line.Depth >= fieldDepth; line = _cursor.Peek())
         {
-            // A hyphen marks a list item only at item depth, so a `- ` line here is a further field.
             if (line.Depth != fieldDepth)
-            {
-                SkipOverIndentedLine(line, fieldDepth);
-                continue;
-            }
+                throw OverIndentedLineError(line, fieldDepth);
 
+            // A hyphen marks a list item only at item depth, so a `- ` line here is a further field.
             _cursor.Next();
             DecodeKeyValue(line, obj, fieldDepth);
         }
@@ -411,49 +381,26 @@ internal sealed class DocumentDecoder
             throw ToonFormatException.Indentation($"Indentation depth jump: expected depth {parentDepth + 1}, but found {firstNestedLine.Depth}", firstNestedLine.LineNumber, sourceLine: firstNestedLine.Raw);
     }
 
-    private void SkipOverIndentedLine(ParsedLine line, int contentDepth)
-    {
-        if (_strict)
-            throw ToonFormatException.Indentation($"Over-indented line: expected depth {contentDepth}, but found {line.Depth}", line.LineNumber, sourceLine: line.Raw);
+    private static ToonFormatException OverIndentedLineError(ParsedLine line, int contentDepth) =>
+        ToonFormatException.Indentation($"Over-indented line: expected depth {contentDepth}, but found {line.Depth}", line.LineNumber, sourceLine: line.Raw);
 
-        AssertNotScalarLine(line);
-        _cursor.Next();
-    }
-
-    // Strict decoding never silently discards input, so a line after the root form is an error.
-    // Non-strict decoding skips it, except a bare token, which errors in both modes.
+    // Decoding never silently discards input, so a line after the root form is an error.
     private void AssertFullyConsumed()
     {
-        if (!_strict)
-        {
-            for (var line = _cursor.Next(); line != null; line = _cursor.Next())
-                AssertNotScalarLine(line);
-            return;
-        }
-
         var trailing = _cursor.Peek();
         if (trailing != null)
             throw ToonFormatException.Validation("Unexpected content after the document root", trailing.LineNumber, sourceLine: trailing.Raw);
     }
 
-    // Both modes reject a bare token outside root primitive position, so it must not reach the
-    // non-strict paths that drop an over-indented line. A hyphen-leading line reaching here is
-    // off item depth, so it is no list item either.
-    private static void AssertNotScalarLine(ParsedLine line)
-    {
-        if (!IsKeyValueContent(line.Content))
-            throw ToonFormatException.Syntax("Unexpected bare token line outside root primitive position", line.LineNumber, sourceLine: line.Raw);
-    }
-
     /// <summary>
-    /// Parses a header line; a grammar failure errors in strict mode and leaves the line to key-value parsing otherwise.
+    /// Parses a header line; a grammar failure errors in both modes, a repeated field name in strict mode only.
     /// </summary>
     private ArrayHeaderInfo? ResolveArrayHeader(ParsedLine line)
     {
         string? error = null;
         var header = At(line, () => Parser.ParseArrayHeaderLine(line.Content, out error));
-        var violation = error ?? header?.StrictError;
-        if (_strict && violation != null)
+        var violation = error ?? (_strict ? header?.StrictError : null);
+        if (violation != null)
             throw ToonFormatException.Syntax(violation, line.LineNumber, sourceLine: line.Raw);
 
         return header;

@@ -7,9 +7,9 @@ namespace Toon.Format.Internal.Decode;
 /// </summary>
 internal static class Validation
 {
-    public static void AssertExpectedCount(int actual, int expected, string itemType, bool strict, ParsedLine line)
+    public static void AssertExpectedCount(int actual, int expected, string itemType, ParsedLine line)
     {
-        if (strict && actual != expected)
+        if (actual != expected)
             throw ToonFormatException.Range($"Expected {expected} {itemType}, but got {actual}", line.LineNumber, sourceLine: line.Raw);
     }
 
