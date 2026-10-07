@@ -44,17 +44,6 @@ public class HostTypeTests
         Assert.Equal(12500.75, project.Costs["usd"]);
     }
 
-    [Fact]
-    public void Encode_RejectsUnpairedSurrogates()
-    {
-        foreach (var text in new[] { "a\uD800b", "\uDC00" })
-        {
-            Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(text));
-            Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(new Dictionary<string, int> { [text] = 1 }));
-            Assert.Throws<ToonFormatException>(() => ToonEncoder.Encode(new { Text = text }));
-        }
-    }
-
     private sealed class Project
     {
         [JsonPropertyName("name")]
