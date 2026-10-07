@@ -10,21 +10,16 @@ public class ByteInputTests
 {
     private static readonly byte[] IllFormed = [.. Encoding.UTF8.GetBytes("a: x"), 0xFF];
 
-    [Fact]
-    public async Task Decode_RejectsIllFormedUtf8InStrictMode()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Decode_RejectsIllFormedUtf8(bool strict)
     {
-        Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(IllFormed));
-        Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(new MemoryStream(IllFormed)));
-        await Assert.ThrowsAsync<ToonFormatException>(() => ToonDecoder.DecodeAsync(new MemoryStream(IllFormed)));
-    }
+        var options = new ToonDecodeOptions { Strict = strict };
 
-    [Fact]
-    public void Decode_ReplacesIllFormedUtf8InNonStrictMode()
-    {
-        var options = new ToonDecodeOptions { Strict = false };
-
-        Assert.Equal("x\uFFFD", ToonDecoder.Decode(IllFormed, options)!["a"]!.GetValue<string>());
-        Assert.Equal("x\uFFFD", ToonDecoder.Decode(new MemoryStream(IllFormed), options)!["a"]!.GetValue<string>());
+        Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(IllFormed, options));
+        Assert.Throws<ToonFormatException>(() => ToonDecoder.Decode(new MemoryStream(IllFormed), options));
+        await Assert.ThrowsAsync<ToonFormatException>(() => ToonDecoder.DecodeAsync(new MemoryStream(IllFormed), options));
     }
 
     [Fact]

@@ -46,12 +46,12 @@ public static class ToonDecoder
     }
 
     /// <summary>
-    /// Decodes UTF-8 TOON bytes; in strict mode, ill-formed UTF-8 throws instead of decoding to U+FFFD.
+    /// Decodes UTF-8 TOON bytes; ill-formed UTF-8 throws instead of decoding to U+FFFD.
     /// </summary>
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static JsonNode? Decode(byte[] utf8Bytes, ToonDecodeOptions? options = null)
     {
-        return Decode(GetString(utf8Bytes, options), options);
+        return Decode(GetString(utf8Bytes), options);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static T? Decode<T>(byte[] utf8Bytes, ToonDecodeOptions? options = null)
     {
-        return Decode<T>(GetString(utf8Bytes, options), options);
+        return Decode<T>(GetString(utf8Bytes), options);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static JsonNode? Decode(Stream stream, ToonDecodeOptions? options = null)
     {
-        return Decode(GetString(ReadAllBytes(stream), options), options);
+        return Decode(GetString(ReadAllBytes(stream)), options);
     }
 
     /// <summary>
@@ -78,38 +78,37 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static T? Decode<T>(Stream stream, ToonDecodeOptions? options = null)
     {
-        return Decode<T>(GetString(ReadAllBytes(stream), options), options);
+        return Decode<T>(GetString(ReadAllBytes(stream)), options);
     }
 
     /// <inheritdoc cref="Decode(Stream, ToonDecodeOptions?)"/>
     public static async Task<JsonNode?> DecodeAsync(Stream stream, ToonDecodeOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return Decode(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false), options), options);
+        return Decode(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false)), options);
     }
 
     /// <inheritdoc cref="Decode{T}(Stream, ToonDecodeOptions?)"/>
     public static async Task<T?> DecodeAsync<T>(Stream stream, ToonDecodeOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return Decode<T>(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false), options), options);
+        return Decode<T>(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false)), options);
     }
 
     // GetString keeps a leading byte-order mark, so the scanner removes exactly one.
     private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
-    private static readonly UTF8Encoding LenientUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
 
-    private static string GetString(byte[] utf8Bytes, ToonDecodeOptions? options)
+    private static string GetString(byte[] utf8Bytes)
     {
         if (utf8Bytes == null)
             throw new ArgumentNullException(nameof(utf8Bytes));
 
-        return GetString(new ArraySegment<byte>(utf8Bytes), options);
+        return GetString(new ArraySegment<byte>(utf8Bytes));
     }
 
-    private static string GetString(ArraySegment<byte> utf8Bytes, ToonDecodeOptions? options)
+    private static string GetString(ArraySegment<byte> utf8Bytes)
     {
         try
         {
-            return (options?.Strict ?? true ? StrictUtf8 : LenientUtf8).GetString(utf8Bytes.Array!, utf8Bytes.Offset, utf8Bytes.Count);
+            return StrictUtf8.GetString(utf8Bytes.Array!, utf8Bytes.Offset, utf8Bytes.Count);
         }
         catch (DecoderFallbackException ex)
         {
