@@ -42,7 +42,7 @@ var node = ToonDecoder.Decode(toon);
 | ------ | ------- | ----------- |
 | `IndentSize` | `2` | Spaces per indentation level (encode and decode) |
 | `Delimiter` | `ToonDelimiter.Comma` | Array delimiter: `Comma`, `Tab`, or `Pipe` (encode) |
-| `Strict` | `true` | Enforces the spec's strict-mode errors, such as count mismatches, duplicate keys, or tab indentation (decode) |
+| `Strict` | `true` | Throws on count mismatches, duplicate keys, tab or misaligned indentation, blank lines inside arrays, and depth jumps; `false` recovers from these five only (decode) |
 
 ## Specification
 

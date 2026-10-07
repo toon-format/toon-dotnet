@@ -11,8 +11,9 @@ public class ToonDecodeOptions
     public int IndentSize { get; set; } = 2;
 
     /// <summary>
-    /// Whether to throw on input that strict mode rejects, such as length mismatches, blank lines
-    /// inside arrays, and duplicate keys. Default is true.
+    /// Whether to throw on count mismatches, duplicate keys, tab or misaligned indentation, blank lines
+    /// inside arrays, and depth jumps. When false, decoding recovers from these five – the last duplicate
+    /// key wins – and still throws on any other invalid input. Default is true.
     /// </summary>
     public bool Strict { get; set; } = true;
 }
