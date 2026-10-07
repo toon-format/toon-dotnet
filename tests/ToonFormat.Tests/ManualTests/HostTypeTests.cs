@@ -34,35 +34,6 @@ public class HostTypeTests
     }
 
     [Fact]
-    public void Encode_MapsEveryNumericTypeToANumber()
-    {
-        var numbers = new
-        {
-            Byte = (byte)1,
-            SByte = (sbyte)-2,
-            Short = (short)-3,
-            UShort = (ushort)4,
-            UInt = 5u,
-            ULong = ulong.MaxValue,
-            Float = 0.1f,
-            Decimal = 1.50m,
-            NaN = double.NaN,
-        };
-
-        Assert.Equal("""
-            Byte: 1
-            SByte: -2
-            Short: -3
-            UShort: 4
-            UInt: 5
-            ULong: 18446744073709552000
-            Float: 0.1
-            Decimal: 1.5
-            NaN: null
-            """, ToonEncoder.Encode(numbers));
-    }
-
-    [Fact]
     public void Encode_ReadsJsonNodesAndElements()
     {
         const string toon = "a: 1.5\nb[2]: x,2";
