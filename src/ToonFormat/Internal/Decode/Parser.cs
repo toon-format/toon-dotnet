@@ -39,15 +39,13 @@ internal static class Parser
         error = null;
         int bracketStart;
 
-        // Only spaces lead into a key; an NBSP or tab there is part of it.
-        var trimmed = content.TrimStart(Constants.Space);
-        if (trimmed.StartsWith("\"", StringComparison.Ordinal))
+        if (content.StartsWith("\"", StringComparison.Ordinal))
         {
-            var closingQuoteIndex = StringUtils.FindClosingQuote(trimmed);
-            if (closingQuoteIndex == -1 || closingQuoteIndex + 1 >= trimmed.Length || trimmed[closingQuoteIndex + 1] != Constants.OpenBracket)
+            var closingQuoteIndex = StringUtils.FindClosingQuote(content);
+            if (closingQuoteIndex == -1 || closingQuoteIndex + 1 >= content.Length || content[closingQuoteIndex + 1] != Constants.OpenBracket)
                 return null;
 
-            bracketStart = content.Length - trimmed.Length + closingQuoteIndex + 1;
+            bracketStart = closingQuoteIndex + 1;
         }
         else
         {

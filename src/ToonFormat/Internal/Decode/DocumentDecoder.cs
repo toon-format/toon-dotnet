@@ -331,9 +331,10 @@ internal sealed class DocumentDecoder
         if (line.Content == Constants.ListItemMarker.ToString())
             return new JsonObject();
 
-        // The scanner trims trailing spaces, so a bare `- ` arrives as the marker alone.
-        var afterHyphen = line.Content.Substring(Constants.ListItemPrefix.Length);
-        if (StringUtils.TrimSpaces(afterHyphen) == EmptyArray)
+        // The scanner trims trailing spaces, so a bare `- ` arrives as the marker alone. Every space
+        // after the hyphen goes, so `-   [2]: x` opens a header just as `-   a: 1` opens a field.
+        var afterHyphen = line.Content.Substring(Constants.ListItemPrefix.Length).TrimStart(Constants.Space);
+        if (afterHyphen == EmptyArray)
             return new JsonArray();
 
         var itemLine = new ParsedLine { Raw = line.Raw, Content = afterHyphen, Depth = line.Depth, LineNumber = line.LineNumber };
