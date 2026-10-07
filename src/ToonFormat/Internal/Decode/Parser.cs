@@ -90,7 +90,7 @@ internal static class Parser
         {
             var rawKey = content.Substring(0, bracketStart);
             // Trimming here would silently turn `foo [2]:` into a header with key `foo`.
-            if (char.IsWhiteSpace(rawKey[rawKey.Length - 1]))
+            if (IsWhitespace(rawKey[rawKey.Length - 1]))
                 return Invalid("Unexpected whitespace between key and bracket segment", out error);
 
             key = rawKey[0] == Constants.DoubleQuote ? ParseStringLiteral(rawKey) : rawKey;
@@ -149,9 +149,12 @@ internal static class Parser
     }
 
     private static string GapError(string gap, string next) =>
-        gap.Trim().Length == 0
+        gap.Trim(Constants.Space, Constants.Tab).Length == 0
             ? $"Unexpected whitespace between bracket segment and {next}"
-            : $"Unexpected content \"{gap.Trim()}\" between bracket segment and {next}";
+            : $"Unexpected content \"{gap.Trim(Constants.Space, Constants.Tab)}\" between bracket segment and {next}";
+
+    // Whitespace is SP and HTAB only; char.IsWhiteSpace would also catch NBSP, which belongs to the name.
+    private static bool IsWhitespace(char ch) => ch is Constants.Space or Constants.Tab;
 
     private static bool TryParseBracketSegment(string segment, out int length, out char delimiter, out bool keyed, out string? error)
     {
@@ -204,7 +207,7 @@ internal static class Parser
             var name = trimmed.Substring(0, groupStart);
             if (name.Length == 0)
                 throw ToonFormatException.Syntax("Missing field name before nested field group");
-            if (char.IsWhiteSpace(name[name.Length - 1]))
+            if (IsWhitespace(name[name.Length - 1]))
                 throw ToonFormatException.Syntax("Unexpected whitespace before nested field group");
 
             var groupEnd = FindMatchingBrace(trimmed, groupStart);
