@@ -21,7 +21,7 @@ dotnet test
 
 ## Pull Requests
 
-Spec behavior is tested through the spec fixtures – a missing case goes to [toon-format/spec](https://github.com/toon-format/spec) as a fixture. Changes to the format itself belong there too. .NET-specific behavior, such as `Decode<T>`, streams, and async, gets a test under `tests/ToonFormat.Tests/ManualTests/`. Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
+Spec behavior is tested through the spec fixtures – a missing case goes to [toon-format/spec](https://github.com/toon-format/spec) as a fixture. Changes to the format itself belong there too. A test under `tests/ToonFormat.Tests/ManualTests/` is only for API the spec does not describe, such as `Decode<T>`, streams, and async. Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
 
 ## Maintainers
 
