@@ -49,6 +49,8 @@ Targets [TOON spec v4.4](https://github.com/toon-format/spec/blob/v4.4.0/SPEC.md
 - **Integers in `long` range decode to `long`, every other number to `double`** – integers beyond `long` range lose precision and a token beyond `double` range (e.g. `1e999`) decodes as a string ([§4](https://github.com/toon-format/spec/blob/v4.4.0/SPEC.md#4-decoding-interpretation-reference-decoder))
 - **Every .NET numeric type encodes as a number** – integers in `long` range stay exact, `ulong` values above `long.MaxValue` and `decimal` values round to the nearest `double`, `float` keeps its shortest digits (`0.1f` encodes as `0.1`), `NaN` and `±Infinity` become `null`, `JsonNode` and `JsonElement` values encode as the JSON they hold, dictionaries become objects with string keys, other enumerables become arrays, and any other value encodes as `System.Text.Json` serializes it, honoring its attributes and converters so `Decode<T>` reads it back – a `DateTime` becomes an ISO 8601 string, an enum its number ([§3](https://github.com/toon-format/spec/blob/v4.4.0/SPEC.md#3-encoding-normalization-reference-encoder))
 
+Releases follow [SemVer](https://semver.org/): a new spec MINOR version ships as a MINOR release, even when it changes how hand-written input decodes, and a MAJOR release means an API break or a new spec MAJOR version.
+
 ### Migrating from spec v3.0
 
 Spec v4 dropped key folding and path expansion, along with the `KeyFolding`, `FlattenDepth`, and `ExpandPaths` options, and reads a line whose first non-space character is `#` as a comment. Decode documents written with folded keys or `#`-leading lines using a v3.0 build (with `ExpandPaths = ToonPathExpansion.Safe` for folded keys), then encode the result again with this one.
