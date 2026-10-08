@@ -1,5 +1,0 @@
-# Spec fixture cases this port does not pass, one "<file>: <name>" per line.
-
-decode/numbers.json: parses zero with exponent as number
-decode/numbers.json: treats negative leading-zeros in array as strings
-decode/numbers.json: treats unquoted negative leading-zero number as string

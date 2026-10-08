@@ -1,302 +1,147 @@
-#nullable enable
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Toon.Format.Internal.Shared;
 
-namespace Toon.Format.Internal.Encode
+namespace Toon.Format.Internal.Encode;
+
+/// <summary>
+/// Maps .NET values onto the JSON data model and classifies the resulting nodes.
+/// </summary>
+internal static class Normalize
 {
+    #region Normalization (object → JsonNode)
+
     /// <summary>
-    /// Normalization utilities for converting arbitrary .NET objects to JsonNode representations
-    /// and type guards for JSON value classification.
+    /// Normalizes a .NET value to the JSON data model: primitives, <c>System.Text.Json</c> nodes and elements,
+    /// dictionaries, and enumerables directly, any other value through <c>System.Text.Json</c> serialization.
     /// </summary>
-    internal static class Normalize
+    public static JsonNode? NormalizeValue(object? value)
     {
-        #region Normalization (object → JsonNode)
-
-        /// <summary>
-        /// Normalizes an arbitrary .NET value to a JsonNode representation.
-        /// Handles primitives, collections, dates, and custom objects.
-        /// </summary>
-        /// <param name="value">The value to be normalized.</param>
-        public static JsonNode? NormalizeValue(object? value)
+        switch (value)
         {
-            if (value == null)
+            case null:
                 return null;
-
-            if (value is string str)
-                return JsonValue.Create(str);
-
-            if (value is bool b)
+            case string s:
+                return JsonValue.Create(RequireScalarValues(s, "string value"));
+            case bool b:
                 return JsonValue.Create(b);
-
-            // Numbers: canonicalize -0 to +0, handle NaN and Infinity
-            if (value is double d)
-            {
-                var dn = d == 0 ? 0.0 : d;
-                if (!NumericUtils.IsFinite(dn))
-                    return null;
-                return JsonValue.Create(dn);
-            }
-
-            if (value is float f)
-            {
-                var fn = f == 0 ? 0.0f : f;
-                if (!NumericUtils.IsFinite(fn))
-                    return null;
-                return JsonValue.Create(fn);
-            }
-
-            if (value is int i) return JsonValue.Create(i);
-            if (value is long l) return JsonValue.Create(l);
-            if (value is decimal dec) return JsonValue.Create(dec);
-            if (value is byte by) return JsonValue.Create(by);
-            if (value is sbyte sb) return JsonValue.Create(sb);
-            if (value is short sh) return JsonValue.Create(sh);
-            if (value is ushort us) return JsonValue.Create(us);
-            if (value is uint ui) return JsonValue.Create(ui);
-            if (value is ulong ul) return JsonValue.Create(ul);
-
-            if (value is DateTime dt)
-                return JsonValue.Create(dt.ToString("O"));
-
-            if (value is DateTimeOffset dto)
-                return JsonValue.Create(dto.ToString("O"));
-
-            // Dictionary/Object → JsonObject (check BEFORE IEnumerable since IDictionary implements IEnumerable)
-            if (value is IDictionary dict)
-            {
-                var jsonObject = new JsonObject();
-                foreach (DictionaryEntry entry in dict)
-                {
-                    var key = entry.Key?.ToString() ?? string.Empty;
-                    jsonObject[key] = NormalizeValue(entry.Value);
-                }
-                return jsonObject;
-            }
-
-            if (value is IEnumerable enumerable && value is not string)
-            {
-                var jsonArray = new JsonArray();
-                foreach (var item in enumerable)
-                {
-                    jsonArray.Add(NormalizeValue(item));
-                }
-                return jsonArray;
-            }
-
-            if (IsPlainObject(value))
-            {
-                var jsonObject = new JsonObject();
-                var type = value.GetType();
-                var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-                foreach (var prop in properties.Where(prop => prop.CanRead))
-                {
-                    var propValue = prop.GetValue(value);
-                    jsonObject[prop.Name] = NormalizeValue(propValue);
-                }
-
-                return jsonObject;
-            }
-
-            // Fallback: unsupported types → null
-            return null;
-        }
-
-        /// <summary>
-        /// Normalizes a value of generic type to a JsonNode representation.
-        /// This overload aims to avoid an initial boxing for common value types.
-        /// </summary>
-        public static JsonNode? NormalizeValue<T>(T value)
-        {
-            if (value is null)
+            case double d:
+                return NumericUtils.IsFinite(d) ? JsonValue.Create(d) : null;
+            case float f:
+                return NumericUtils.IsFinite(f) ? JsonValue.Create(ToDouble(f)) : null;
+            case decimal dec:
+                return JsonValue.Create(ParseDouble(dec.ToString(CultureInfo.InvariantCulture)));
+            case ulong ul when ul > long.MaxValue:
+                return JsonValue.Create((double)ul);
+            case sbyte or byte or short or ushort or int or uint or long or ulong:
+                return JsonValue.Create(Convert.ToInt64(value, CultureInfo.InvariantCulture));
+            case JsonObject jsonObject:
+                return NormalizeObject(jsonObject.Select(property => (property.Key, (object?)property.Value)));
+            case JsonValue jsonValue when jsonValue.TryGetValue<string>(out var text):
+                return NormalizeValue(text);
+            // System.Text.Json refuses to write NaN and ±Infinity, which the data model maps to null.
+            case JsonValue jsonValue when jsonValue.TryGetValue<double>(out var d) && !NumericUtils.IsFinite(d):
                 return null;
-
-            // Fast-path primitives without boxing
-            switch (value)
-            {
-                case string s:
-                    return JsonValue.Create(s);
-                case bool b:
-                    return JsonValue.Create(b);
-                case int i:
-                    return JsonValue.Create(i);
-                case long l:
-                    return JsonValue.Create(l);
-                case double d:
-                    if (BitConverter.DoubleToInt64Bits(d) == BitConverter.DoubleToInt64Bits(-0.0)) return JsonValue.Create(0.0);
-                    if (!NumericUtils.IsFinite(d)) return null;
-                    return JsonValue.Create(d);
-                case float f:
-                    if (f == 0) return JsonValue.Create(0.0f);
-                    if (!NumericUtils.IsFinite(f)) return null;
-                    return JsonValue.Create(f);
-                case decimal dec:
-                    return JsonValue.Create(dec);
-                case byte by:
-                    return JsonValue.Create(by);
-                case sbyte sb:
-                    return JsonValue.Create(sb);
-                case short sh:
-                    return JsonValue.Create(sh);
-                case ushort us:
-                    return JsonValue.Create(us);
-                case uint ui:
-                    return JsonValue.Create(ui);
-                case ulong ul:
-                    return JsonValue.Create(ul);
-                case DateTime dt:
-                    return JsonValue.Create(dt.ToString("O"));
-                case DateTimeOffset dto:
-                    return JsonValue.Create(dto.ToString("O"));
-            }
-
-            // Collections / dictionaries (check IDictionary BEFORE IEnumerable since IDictionary implements IEnumerable)
-            if (value is IDictionary dict)
-            {
-                var jsonObject = new JsonObject();
-                foreach (DictionaryEntry entry in dict)
+            case JsonValue jsonValue when jsonValue.TryGetValue<float>(out var f) && !NumericUtils.IsFinite(f):
+                return null;
+            // Other values may wrap any .NET type, so read them back as the JSON they serialize to.
+            case JsonValue jsonValue:
+                using (var document = JsonDocument.Parse(jsonValue.ToJsonString()))
+                    return NormalizeValue(document.RootElement);
+            case JsonElement element:
+                return element.ValueKind switch
                 {
-                    var key = entry.Key?.ToString() ?? string.Empty;
-                    jsonObject[key] = NormalizeValue(entry.Value);
-                }
-                return jsonObject;
-            }
-
-            if (value is IEnumerable enumerable && value is not string)
-            {
+                    JsonValueKind.Object => NormalizeObject(element.EnumerateObject().Select(property => (property.Name, (object?)property.Value))),
+                    JsonValueKind.Array => NormalizeValue(element.EnumerateArray()),
+                    JsonValueKind.String => NormalizeValue(element.GetString()),
+                    JsonValueKind.Number when element.TryGetInt64(out var integer) => JsonValue.Create(integer),
+                    JsonValueKind.Number when element.TryGetDouble(out var number) => NormalizeValue(number),
+                    JsonValueKind.True or JsonValueKind.False => JsonValue.Create(element.GetBoolean()),
+                    _ => null,
+                };
+            case IDictionary dict:
+                return NormalizeObject(dict.Keys.Cast<object>().Select(key => (key.ToString() ?? string.Empty, (object?)dict[key])));
+            case IEnumerable enumerable:
                 var jsonArray = new JsonArray();
                 foreach (var item in enumerable)
-                {
                     jsonArray.Add(NormalizeValue(item));
-                }
                 return jsonArray;
-            }
-
-            // Plain object via reflection (boxing for value types here is acceptable and rare)
-            if (IsPlainObject(value!))
-            {
-                var jsonObject = new JsonObject();
-                var type = value!.GetType();
-                var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-                foreach (var prop in properties)
-                {
-                    if (prop.CanRead)
-                    {
-                        var propValue = prop.GetValue(value);
-                        jsonObject[prop.Name] = NormalizeValue(propValue);
-                    }
-                }
-
-                return jsonObject;
-            }
-
-            return null;
         }
 
-        /// <summary>
-        /// Determines if a value is a plain object (not a primitive, collection, or special type).
-        /// </summary>
-        private static bool IsPlainObject(object value)
-        {
-            if (value == null)
-                return false;
-
-            var type = value.GetType();
-
-            if (type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || type == typeof(DateTimeOffset))
-                return false;
-
-            if (typeof(IEnumerable).IsAssignableFrom(type))
-                return false;
-
-            return type.IsClass || type.IsValueType;
-        }
-
-        #endregion
-
-        #region Type guards
-
-        /// <summary>
-        /// Checks if a JsonNode is a primitive value (null, string, number, or boolean).
-        /// </summary>
-        public static bool IsJsonPrimitive(JsonNode? value)
-        {
-            if (value == null)
-                return true;
-
-            if (value is JsonValue jsonValue)
-            {
-                return jsonValue.TryGetValue<string>(out _)
-                    || jsonValue.TryGetValue<bool>(out _)
-                    || jsonValue.TryGetValue<int>(out _)
-                    || jsonValue.TryGetValue<long>(out _)
-                    || jsonValue.TryGetValue<double>(out _)
-                    || jsonValue.TryGetValue<decimal>(out _);
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Checks if a JsonNode is a JsonArray.
-        /// </summary>
-        public static bool IsJsonArray(JsonNode? value)
-        {
-            return value is JsonArray;
-        }
-
-        /// <summary>
-        /// Checks if a JsonNode is a JsonObject.
-        /// </summary>
-        public static bool IsJsonObject(JsonNode? value)
-        {
-            return value is JsonObject;
-        }
-
-        /// <summary>
-        /// Checks if a <see cref="JsonNode"/> is an object which is empty with no keys.
-        /// </summary>
-        /// <param name="value">The <see cref="JsonObject"/></param>
-        /// <returns><see langword="true"/> if empty, <see langword="false"/> if not.</returns>
-        public static bool IsEmptyObject(JsonNode? value)
-        {
-            return IsJsonObject(value) && (value as IDictionary<string, JsonNode>)?.Keys?.Count == 0;
-        }
-
-        #endregion
-
-        #region Array type detection
-
-        /// <summary>
-        /// Checks if a JsonArray contains only primitive values.
-        /// </summary>
-        public static bool IsArrayOfPrimitives(JsonArray array)
-        {
-            return array.All(item => IsJsonPrimitive(item));
-        }
-
-        /// <summary>
-        /// Checks if a JsonArray contains only arrays.
-        /// </summary>
-        public static bool IsArrayOfArrays(JsonArray array)
-        {
-            return array.All(item => IsJsonArray(item));
-        }
-
-        /// <summary>
-        /// Checks if a JsonArray contains only objects.
-        /// </summary>
-        public static bool IsArrayOfObjects(JsonArray array)
-        {
-            return array.All(item => IsJsonObject(item));
-        }
-
-        #endregion
+        // Decode<T> deserializes through System.Text.Json, so attributes and converters apply both ways.
+        return NormalizeValue(JsonSerializer.SerializeToElement(value, SerializerOptions));
     }
+
+    // System.Text.Json throws on NaN and ±Infinity, which the data model maps to null, and replaces
+    // unpaired surrogates with U+FFFD, which encoding must reject.
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        Converters =
+        {
+            new WriteConverter<double>((writer, d) => { if (NumericUtils.IsFinite(d)) writer.WriteNumberValue(d); else writer.WriteNullValue(); }),
+            new WriteConverter<float>((writer, f) => { if (NumericUtils.IsFinite(f)) writer.WriteNumberValue(ToDouble(f)); else writer.WriteNullValue(); }),
+            new WriteConverter<string>((writer, s) => writer.WriteStringValue(RequireScalarValues(s, "string value"))),
+            new WriteConverter<char>((writer, c) => writer.WriteStringValue(RequireScalarValues(c.ToString(), "string value"))),
+        },
+    };
+
+    private sealed class WriteConverter<T>(Action<Utf8JsonWriter, T> write) : JsonConverter<T>
+    {
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => throw new NotSupportedException();
+
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options) => write(writer, value);
+
+        public override void WriteAsPropertyName(Utf8JsonWriter writer, T value, JsonSerializerOptions options) =>
+            writer.WritePropertyName(RequireScalarValues(Convert.ToString(value, CultureInfo.InvariantCulture)!, "object key"));
+    }
+
+    private static JsonObject NormalizeObject(IEnumerable<(string Key, object? Value)> entries)
+    {
+        var jsonObject = new JsonObject();
+        foreach (var (key, value) in entries)
+            jsonObject[RequireScalarValues(key, "object key")] = NormalizeValue(value);
+        return jsonObject;
+    }
+
+    // Floats and decimals convert through their digits, because a cast turns 0.1f into 0.10000000149011612
+    // and rounds 3.14159265358979323846m to 3.1415926535897936 instead of 3.141592653589793.
+    private static double ParseDouble(string number) => double.Parse(number, CultureInfo.InvariantCulture);
+
+    private static double ToDouble(float value) => ParseDouble(NumericUtils.ToRoundTripString(value));
+
+    // A lone surrogate has no UTF-8 form, so emitting it would silently substitute U+FFFD.
+    private static string RequireScalarValues(string value, string context)
+    {
+        for (var i = 0; i < value.Length; i++)
+        {
+            if (char.IsHighSurrogate(value[i]) && i + 1 < value.Length && char.IsLowSurrogate(value[i + 1]))
+                i++;
+            else if (char.IsSurrogate(value[i]))
+                throw ToonFormatException.Validation($"Cannot encode {context} containing an unpaired surrogate U+{(int)value[i]:X4} at index {i}");
+        }
+
+        return value;
+    }
+
+    #endregion
+
+    #region Type guards
+
+    /// <summary>
+    /// Whether the node is null, a string, a number, or a boolean.
+    /// </summary>
+    public static bool IsJsonPrimitive(JsonNode? value) => value is null or JsonValue;
+
+    #endregion
+
+    #region Array type detection
+
+    public static bool IsArrayOfPrimitives(JsonArray array) => array.All(IsJsonPrimitive);
+
+    public static bool IsArrayOfObjects(JsonArray array) => array.All(item => item is JsonObject);
+
+    #endregion
 }

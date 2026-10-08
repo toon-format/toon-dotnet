@@ -1,196 +1,100 @@
-#nullable enable
-using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace Toon.Format.Internal.Decode;
 
-namespace Toon.Format.Internal.Decode
+/// <summary>
+/// A non-blank, non-comment line: its content without indentation and trailing spaces, and its depth.
+/// </summary>
+internal sealed class ParsedLine
 {
-    /// <summary>
-    /// Represents a parsed line with its raw content, indentation, depth, and line number.
-    /// </summary>
-    internal class ParsedLine
+    public string Raw { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public int Depth { get; set; }
+    public int LineNumber { get; set; }
+}
+
+/// <summary>
+/// Reads scanned lines with one line of lookahead.
+/// </summary>
+internal sealed class LineCursor
+{
+    private readonly List<ParsedLine> _lines;
+    private int _index;
+
+    public LineCursor(List<ParsedLine> lines, List<int> blankLines)
     {
-        public string Raw { get; set; } = string.Empty;
-        public int Indent { get; set; }
-        public string Content { get; set; } = string.Empty;
-        public int Depth { get; set; }
-        public int LineNumber { get; set; }
+        _lines = lines;
+        BlankLines = blankLines;
     }
 
-    /// <summary>
-    /// Information about a blank line in the source.
-    /// </summary>
-    internal class BlankLineInfo
+    /// <summary>Line numbers of blank lines, which strict mode rejects inside arrays and keyed objects.</summary>
+    public List<int> BlankLines { get; }
+
+    /// <summary>The line <see cref="Next"/> returned last.</summary>
+    public ParsedLine? LastLine => _index > 0 ? _lines[_index - 1] : null;
+
+    public ParsedLine? Peek() => _index < _lines.Count ? _lines[_index] : null;
+
+    public ParsedLine? Next() => _index < _lines.Count ? _lines[_index++] : null;
+}
+
+/// <summary>
+/// Splits source text into indented lines and records blank lines.
+/// </summary>
+internal static class Scanner
+{
+    public static LineCursor Scan(string source, int indentSize, bool strict)
     {
-        public int LineNumber { get; set; }
-        public int Indent { get; set; }
-        public int Depth { get; set; }
-    }
+        var lines = new List<ParsedLine>();
+        var blankLines = new List<int>();
+        var rawLines = source.Split(Constants.Newline);
 
-    /// <summary>
-    /// Result of scanning source text into parsed lines.
-    /// </summary>
-    internal class ScanResult
-    {
-        public List<ParsedLine> Lines { get; set; } = new();
-        public List<BlankLineInfo> BlankLines { get; set; } = new();
-    }
-
-    /// <summary>
-    /// Cursor for navigating through parsed lines during decoding.
-    /// </summary>
-    internal class LineCursor
-    {
-        private readonly List<ParsedLine> _lines;
-        private readonly List<BlankLineInfo> _blankLines;
-        private int _index;
-
-        public LineCursor(List<ParsedLine> lines, List<BlankLineInfo> blankLines)
+        for (var i = 0; i < rawLines.Length; i++)
         {
-            _lines = lines;
-            _blankLines = blankLines;
-            _index = 0;
-        }
+            var raw = rawLines[i];
+            var lineNumber = i + 1;
 
-        public List<BlankLineInfo> GetBlankLines() => _blankLines;
+            if (lineNumber == 1 && raw.Length > 0 && raw[0] == Constants.ByteOrderMark)
+                raw = raw.Substring(1);
 
-        public ParsedLine? Peek()
-        {
-            return _index < _lines.Count ? _lines[_index] : null;
-        }
+            // A trailing carriage return belongs to the CRLF terminator, not to the content.
+            if (raw.Length > 0 && raw[raw.Length - 1] == Constants.CarriageReturn)
+                raw = raw.Substring(0, raw.Length - 1);
 
-        public ParsedLine? Next()
-        {
-            return _index < _lines.Count ? _lines[_index++] : null;
-        }
+            var whitespaceEnd = 0;
+            while (whitespaceEnd < raw.Length && (raw[whitespaceEnd] == Constants.Space || raw[whitespaceEnd] == Constants.Tab))
+                whitespaceEnd++;
+            var firstTab = raw.IndexOf(Constants.Tab, 0, whitespaceEnd);
 
-        public ParsedLine? Current()
-        {
-            return _index > 0 ? _lines[_index - 1] : null;
-        }
+            // Strict rejects tab indentation below, so only the spaces before the first tab are indentation there.
+            var indent = strict && firstTab != -1 ? firstTab : whitespaceEnd;
+            // Non-strict input may indent with tabs, and each tab counts as one depth level.
+            var tabIndent = strict || firstTab == -1 ? 0 : raw.Take(whitespaceEnd).Count(ch => ch == Constants.Tab);
 
-        public void Advance()
-        {
-            _index++;
-        }
+            var content = raw.Substring(indent).TrimEnd(Constants.Space);
 
-        public bool AtEnd()
-        {
-            return _index >= _lines.Count;
-        }
+            // Only spaces may precede the comment marker. Comment lines vanish before blank-line
+            // tracking and strict validation, so they never count as rows, items, entries, or blank lines.
+            if (firstTab == -1 && content.Length > 0 && content[0] == Constants.CommentMarker)
+                continue;
 
-        public int Length => _lines.Count;
-    }
-
-    /// <summary>
-    /// Scanner utilities for parsing source text into structured lines.
-    /// </summary>
-    internal static class Scanner
-    {
-        /// <summary>
-        /// Parses source text into a list of structured lines with depth information.
-        /// </summary>
-        public static ScanResult ToParsedLines(string source, int indentSize, bool strict)
-        {
-            int estimatedLines = 1;
-
-            for (int i = 0; i < source.Length; i++)
+            if (content.Length == 0)
             {
-                if (source[i] == '\n')
-                    estimatedLines++;
+                blankLines.Add(lineNumber);
+                continue;
             }
-            var parsed = new List<ParsedLine>(estimatedLines);
-            var blankLines = new List<BlankLineInfo>(Math.Max(4, estimatedLines / 4));
-            if (string.IsNullOrWhiteSpace(source))
+
+            if (strict)
             {
-                return new ScanResult { Lines = parsed, BlankLines = blankLines };
+                if (firstTab != -1)
+                    throw ToonFormatException.Indentation("Tabs are not allowed in indentation in strict mode", lineNumber, sourceLine: raw);
+
+                if (indent % indentSize != 0)
+                    throw ToonFormatException.Indentation($"Indentation must be exact multiple of {indentSize}, but found {indent} spaces", lineNumber, sourceLine: raw);
             }
-            ReadOnlySpan<char> span = source.AsSpan();
-            int lineNumber = 0;
-            while (!span.IsEmpty)
-            {
-                lineNumber++;
-                int newlineIdx = span.IndexOf('\n');
-                ReadOnlySpan<char> lineSpan;
-                if (newlineIdx >= 0)
-                {
-                    lineSpan = span.Slice(0, newlineIdx);
-                    span = span.Slice(newlineIdx + 1);
-                }
-                else
-                {
-                    lineSpan = span;
-                    span = ReadOnlySpan<char>.Empty;
-                }
-                if (!lineSpan.IsEmpty && lineSpan[lineSpan.Length - 1] == '\r')
-                {
-                    lineSpan = lineSpan.Slice(0, lineSpan.Length - 1);
-                }
-                int indent = 0;
-                while (indent < lineSpan.Length && lineSpan[indent] == Constants.SPACE)
-                {
-                    indent++;
-                }
-                ReadOnlySpan<char> contentSpan = lineSpan.Slice(indent);
-                if (contentSpan.IsWhiteSpace())
-                {
-                    var depth = ComputeDepthFromIndent(indent, indentSize);
-                    blankLines.Add(new BlankLineInfo
-                    {
-                        LineNumber = lineNumber,
-                        Indent = indent,
-                        Depth = depth
-                    });
-                    continue;
-                }
-                var lineDepth = ComputeDepthFromIndent(indent, indentSize);
-                if (strict)
-                {
-                    int wsEnd = 0;
-                    while (wsEnd < lineSpan.Length &&
-                           (lineSpan[wsEnd] == Constants.SPACE || lineSpan[wsEnd] == Constants.TAB))
-                    {
-                        wsEnd++;
-                    }
-                    for (int j = 0; j < wsEnd; j++)
-                    {
-                        if (lineSpan[j] == Constants.TAB)
-                        {
-                            throw ToonFormatException.Syntax(
-                                $"Line {lineNumber}: Tabs are not allowed in indentation in strict mode");
-                        }
-                    }
-                    if (indent > 0 && indent % indentSize != 0)
-                    {
-                        throw ToonFormatException.Syntax(
-                            $"Line {lineNumber}: Indentation must be exact multiple of {indentSize}, but found {indent} spaces");
-                    }
-                }
-                parsed.Add(new ParsedLine
-                {
-                    Raw = lineSpan.ToString(),
-                    Indent = indent,
-                    Content = contentSpan.ToString(),
-                    Depth = lineDepth,
-                    LineNumber = lineNumber
-                });
-            }
-            return new ScanResult { Lines = parsed, BlankLines = blankLines };
+
+            var depth = (indent - tabIndent) / indentSize + tabIndent;
+            lines.Add(new ParsedLine { Raw = raw, Content = content, Depth = depth, LineNumber = lineNumber });
         }
 
-        private static bool IsWhiteSpace(this ReadOnlySpan<char> span)
-        {
-            for (int i = 0; i < span.Length; i++)
-            {
-                if (!char.IsWhiteSpace(span[i]))
-                    return false;
-            }
-            return true;
-        }
-
-        private static int ComputeDepthFromIndent(int indentSpaces, int indentSize)
-        {
-            return indentSpaces / indentSize;
-        }
+        return new LineCursor(lines, blankLines);
     }
 }

@@ -1,9 +1,4 @@
-#nullable enable
-using System;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Toon.Format.Internal.Encode;
 
 namespace Toon.Format;
@@ -19,15 +14,10 @@ public static class ToonEncoder
     public static string Encode<T>(T data, ToonEncodeOptions? options = null)
     {
         options ??= new ToonEncodeOptions();
+        if (options.IndentSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(options), "IndentSize must be at least 1");
 
-        var resolvedOptions = new ResolvedEncodeOptions
-        {
-            Indent = options.Indent,
-            Delimiter = Constants.ToDelimiterChar(options.Delimiter),
-            KeyFolding = options.KeyFolding,
-            FlattenDepth = options.FlattenDepth ?? int.MaxValue,
-        };
-
+        var resolvedOptions = new ResolvedEncodeOptions(options.IndentSize, Constants.ToDelimiterChar(options.Delimiter));
         return Encoders.EncodeValue(Normalize.NormalizeValue(data), resolvedOptions);
     }
 

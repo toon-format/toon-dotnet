@@ -1,39 +1,33 @@
-#nullable enable
 using System.Globalization;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
-namespace Toon.Format.Internal.Shared
+namespace Toon.Format.Internal.Shared;
+
+internal static class LiteralUtils
 {
-    internal static class LiteralUtils
+    private static readonly Regex NumericLiteralRegex = new(
+        pattern: "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?$",
+        options: RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    internal static bool IsBooleanOrNullLiteral(string token) =>
+        token is Constants.TrueLiteral or Constants.FalseLiteral or Constants.NullLiteral;
+
+    /// <summary>
+    /// Parses a token of the number grammar: an integer in <see cref="long"/> range becomes a <c>long</c>,
+    /// any other finite number a <c>double</c>. Returns null for every other token, which then decodes as a string.
+    /// </summary>
+    internal static JsonValue? ParseNumber(string token)
     {
-        /// <summary>
-        /// Checks if the token is a boolean or null literal: true, false, null.
-        /// </summary>
-        internal static bool IsBooleanOrNullLiteral(string token)
-        {
-            return string.Equals(token, Constants.TRUE_LITERAL, StringComparison.Ordinal)
-                || string.Equals(token, Constants.FALSE_LITERAL, StringComparison.Ordinal)
-                || string.Equals(token, Constants.NULL_LITERAL, StringComparison.Ordinal);
-        }
+        if (!NumericLiteralRegex.IsMatch(token))
+            return null;
 
-        /// <summary>
-        /// Checks if the token is a valid numeric literal.
-        /// Rules:
-        /// - Rejects leading zeros (except "0" itself or decimals like "0.xxx")
-        /// - Parses successfully and is a finite number (not NaN/Infinity)
-        /// </summary>
-        internal static bool IsNumericLiteral(string token)
-        {
-            if (string.IsNullOrEmpty(token))
-                return false;
+        if (long.TryParse(token, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var integer))
+            return JsonValue.Create(integer);
 
-            // Must not have leading zeros (except "0" itself or decimals like "0.5")
-            if (token.Length > 1 && token[0] == '0' && token[1] != '.')
-                return false;
+        if (!double.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) || !NumericUtils.IsFinite(number))
+            return null;
 
-            if (!double.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out var num))
-                return false;
-
-            return !double.IsNaN(num) && !double.IsInfinity(num);
-        }
+        return JsonValue.Create(number == 0 ? 0.0 : number);
     }
 }

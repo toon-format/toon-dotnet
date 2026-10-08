@@ -1,11 +1,6 @@
-﻿#nullable enable
-using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
 using Toon.Format.Internal.Decode;
 
 namespace Toon.Format;
@@ -25,39 +20,11 @@ public static class ToonDecoder
             throw new ArgumentNullException(nameof(toonString));
 
         options ??= new ToonDecodeOptions();
+        if (options.IndentSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(options), "IndentSize must be at least 1");
 
-        var resolvedOptions = new ResolvedDecodeOptions
-        {
-            Indent = options.Indent,
-            Strict = options.Strict,
-            ExpandPaths = options.ExpandPaths
-        };
-
-        var scanResult = Scanner.ToParsedLines(toonString, resolvedOptions.Indent, resolvedOptions.Strict);
-
-        if (scanResult.Lines.Count == 0)
-        {
-            return new JsonObject();
-        }
-
-        var cursor = new LineCursor(scanResult.Lines, scanResult.BlankLines);
-
-        // Track quoted keys if path expansion is enabled
-        HashSet<string>? quotedKeys = null;
-        if (resolvedOptions.ExpandPaths == ToonPathExpansion.Safe)
-        {
-            quotedKeys = new HashSet<string>();
-        }
-
-        var result = Decoders.DecodeValueFromLines(cursor, resolvedOptions, quotedKeys);
-
-        // Apply path expansion if enabled
-        if (resolvedOptions.ExpandPaths == ToonPathExpansion.Safe && result is JsonObject obj)
-        {
-            result = PathExpansion.ExpandPaths(obj, resolvedOptions.Strict, quotedKeys);
-        }
-
-        return result;
+        var cursor = Scanner.Scan(toonString, options.IndentSize, options.Strict);
+        return new DocumentDecoder(cursor, options.Strict).DecodeDocument();
     }
 
     /// <summary>
@@ -75,11 +42,11 @@ public static class ToonDecoder
             return (T?)(object?)node;
         }
 
-        return JsonSerializer.Deserialize<T>(node.ToJsonString());
+        return node.Deserialize<T>();
     }
 
     /// <summary>
-    /// Decodes UTF-8 TOON bytes.
+    /// Decodes UTF-8 TOON bytes; ill-formed UTF-8 throws instead of decoding to U+FFFD.
     /// </summary>
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static JsonNode? Decode(byte[] utf8Bytes, ToonDecodeOptions? options = null)
@@ -102,8 +69,7 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static JsonNode? Decode(Stream stream, ToonDecodeOptions? options = null)
     {
-        using var reader = CreateReader(stream);
-        return Decode(reader.ReadToEnd(), options);
+        return Decode(GetString(ReadAllBytes(stream)), options);
     }
 
     /// <summary>
@@ -112,45 +78,61 @@ public static class ToonDecoder
     /// <exception cref="ToonFormatException">The input is not valid TOON.</exception>
     public static T? Decode<T>(Stream stream, ToonDecodeOptions? options = null)
     {
-        using var reader = CreateReader(stream);
-        return Decode<T>(reader.ReadToEnd(), options);
+        return Decode<T>(GetString(ReadAllBytes(stream)), options);
     }
 
     /// <inheritdoc cref="Decode(Stream, ToonDecodeOptions?)"/>
     public static async Task<JsonNode?> DecodeAsync(Stream stream, ToonDecodeOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return Decode(await ReadToEndAsync(stream, cancellationToken).ConfigureAwait(false), options);
+        return Decode(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false)), options);
     }
 
     /// <inheritdoc cref="Decode{T}(Stream, ToonDecodeOptions?)"/>
     public static async Task<T?> DecodeAsync<T>(Stream stream, ToonDecodeOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return Decode<T>(await ReadToEndAsync(stream, cancellationToken).ConfigureAwait(false), options);
+        return Decode<T>(GetString(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false)), options);
     }
+
+    // GetString keeps a leading byte-order mark, so the scanner removes exactly one.
+    private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
     private static string GetString(byte[] utf8Bytes)
     {
         if (utf8Bytes == null)
             throw new ArgumentNullException(nameof(utf8Bytes));
 
-        return Encoding.UTF8.GetString(utf8Bytes);
+        return GetString(new ArraySegment<byte>(utf8Bytes));
     }
 
-    private static StreamReader CreateReader(Stream stream)
+    private static string GetString(ArraySegment<byte> utf8Bytes)
+    {
+        try
+        {
+            return StrictUtf8.GetString(utf8Bytes.Array!, utf8Bytes.Offset, utf8Bytes.Count);
+        }
+        catch (DecoderFallbackException ex)
+        {
+            throw ToonFormatException.Syntax("Input is not well-formed UTF-8", inner: ex);
+        }
+    }
+
+    private static ArraySegment<byte> ReadAllBytes(Stream stream)
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
-        return new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        return new ArraySegment<byte>(buffer.GetBuffer(), 0, (int)buffer.Length);
     }
 
-    private static async Task<string> ReadToEndAsync(Stream stream, CancellationToken cancellationToken)
+    private static async Task<ArraySegment<byte>> ReadAllBytesAsync(Stream stream, CancellationToken cancellationToken)
     {
-        using var reader = CreateReader(stream);
-#if NETSTANDARD2_0
-        return await reader.ReadToEndAsync().ConfigureAwait(false);
-#else
-        return await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-#endif
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        using var buffer = new MemoryStream();
+        await stream.CopyToAsync(buffer, 81920, cancellationToken).ConfigureAwait(false);
+        return new ArraySegment<byte>(buffer.GetBuffer(), 0, (int)buffer.Length);
     }
 }

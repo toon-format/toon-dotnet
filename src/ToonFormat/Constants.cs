@@ -1,93 +1,55 @@
-using System;
+namespace Toon.Format;
 
-namespace Toon.Format
+internal static class Constants
 {
-    internal static class Constants
+    public const char ListItemMarker = '-';
+
+    public const string ListItemPrefix = "- ";
+
+    public const char Comma = ',';
+    public const char Colon = ':';
+    public const char Space = ' ';
+    public const char Pipe = '|';
+    public const char CommentMarker = '#';
+
+    public const char OpenBracket = '[';
+    public const char CloseBracket = ']';
+    public const char OpenBrace = '{';
+    public const char CloseBrace = '}';
+
+    public const string NullLiteral = "null";
+    public const string TrueLiteral = "true";
+    public const string FalseLiteral = "false";
+
+    public const char Backslash = '\\';
+    public const char DoubleQuote = '"';
+    public const char Newline = '\n';
+    public const char CarriageReturn = '\r';
+    public const char Tab = '\t';
+    public const char ByteOrderMark = '\uFEFF';
+
+    public const char DefaultDelimiter = Comma;
+
+    public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
     {
-        public const char LIST_ITEM_MARKER = '-';
+        ToonDelimiter.Comma => Comma,
+        ToonDelimiter.Tab => Tab,
+        ToonDelimiter.Pipe => Pipe,
+        _ => Comma
+    };
+}
 
-        public const string LIST_ITEM_PREFIX = "- ";
+/// <summary>
+/// Delimiter between the values of inline arrays and tabular rows.
+/// </summary>
+public enum ToonDelimiter
+{
+    /// <summary>Comma ,</summary>
+    Comma,
 
-        public const char COMMA = ',';
-        public const char COLON = ':';
-        public const char SPACE = ' ';
-        public const char PIPE = '|';
-        public const char DOT = '.';
+    /// <summary>Tab \t</summary>
+    Tab,
 
-        public const char OPEN_BRACKET = '[';
-        public const char CLOSE_BRACKET = ']';
-        public const char OPEN_BRACE = '{';
-        public const char CLOSE_BRACE = '}';
-
-        public const string NULL_LITERAL = "null";
-        public const string TRUE_LITERAL = "true";
-        public const string FALSE_LITERAL = "false";
-
-        public const char BACKSLASH = '\\';
-        public const char DOUBLE_QUOTE = '"';
-        public const char NEWLINE = '\n';
-        public const char CARRIAGE_RETURN = '\r';
-        public const char TAB = '\t';
-
-        public const ToonDelimiter DEFAULT_DELIMITER_ENUM = ToonDelimiter.COMMA;
-
-        public const char DEFAULT_DELIMITER_CHAR = COMMA;
-
-        public static char ToDelimiterChar(ToonDelimiter delimiter) => delimiter switch
-        {
-            ToonDelimiter.COMMA => COMMA,
-            ToonDelimiter.TAB => TAB,
-            ToonDelimiter.PIPE => PIPE,
-            _ => COMMA
-        };
-
-        /// <summary>Maps delimiter characters to enum; unknown characters fall back to comma.</summary>
-        public static ToonDelimiter FromDelimiterChar(char delimiter) => delimiter switch
-        {
-            COMMA => ToonDelimiter.COMMA,
-            TAB => ToonDelimiter.TAB,
-            PIPE => ToonDelimiter.PIPE,
-            _ => ToonDelimiter.COMMA
-        };
-    }
-
-    /// <summary>
-    /// Delimiter between the values of inline arrays and tabular rows.
-    /// </summary>
-    public enum ToonDelimiter
-    {
-        /// <summary>Comma ,</summary>
-        COMMA,
-
-        /// <summary>Tab \t</summary>
-        TAB,
-
-        /// <summary>Pipe |</summary>
-        PIPE
-    }
-
-    /// <summary>
-    /// Key folding options
-    /// </summary>
-    public enum ToonKeyFolding
-    {
-        /// <summary>Key folding disabled</summary>
-        Off,
-
-        /// <summary>Nested objects with single keys are collapsed into dotted paths</summary>
-        Safe
-    }
-
-    /// <summary>
-    /// Path expansion options
-    /// </summary>
-    public enum ToonPathExpansion
-    {
-        /// <summary>Path expansion disabled</summary>
-        Off,
-
-        /// <summary>Keys containing dots are expanded into nested structures</summary>
-        Safe
-    }
-
+    /// <summary>Pipe |</summary>
+    Pipe
 }
