@@ -74,7 +74,7 @@ public enum ToonErrorKind
 {
     /// <summary>The input breaks the TOON grammar.</summary>
     Syntax,
-    /// <summary>A declared length doesn't match the rows, items, or entries that follow.</summary>
+    /// <summary>A declared length doesn't match the rows, items, or entries that follow, or a row or entry row doesn't match the header's field count.</summary>
     Range,
     /// <summary>A structural rule is broken, such as a duplicate key, content after the root, or an unpaired surrogate.</summary>
     Validation,
