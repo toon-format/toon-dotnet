@@ -59,5 +59,5 @@ internal static class ValidationShared
 
     private static bool IsNumericLike(string value) => NumericLikeRegex.IsMatch(value);
 
-    private static bool IsSpaceOrTab(char c) => c == Constants.Space || c == Constants.Tab;
+    internal static bool IsSpaceOrTab(char c) => c == Constants.Space || c == Constants.Tab;
 }
