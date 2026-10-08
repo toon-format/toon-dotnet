@@ -12,8 +12,8 @@ public class ToonDecodeOptions
 
     /// <summary>
     /// Whether to throw on count mismatches, duplicate keys, tab or misaligned indentation, blank lines
-    /// inside arrays, and depth jumps. When false, decoding recovers from these five – the last duplicate
-    /// key wins – and still throws on any other invalid input. Default is true.
+    /// inside an array or keyed tabular object, and depth jumps. When false, decoding recovers from these
+    /// five – the last duplicate key wins – and still throws on any other invalid input. Default is true.
     /// </summary>
     public bool Strict { get; set; } = true;
 }
