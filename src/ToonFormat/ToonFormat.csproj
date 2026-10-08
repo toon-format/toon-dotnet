@@ -9,7 +9,7 @@
 
 		<!-- Package Information -->
 		<PackageId>Toon.Format</PackageId>
-		<Version>0.1.0</Version>
+		<Version>0.2.0</Version>
 		<Authors>Johann Schopplich</Authors>
 		<Company>Johann Schopplich</Company>
 		<Description>Token-Oriented Object Notation (TOON) - a token-efficient JSON alternative for LLM prompts</Description>

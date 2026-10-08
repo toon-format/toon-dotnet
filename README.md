@@ -11,8 +11,6 @@ Encodes .NET values to [TOON (Token-Oriented Object Notation)](https://github.co
 dotnet add package Toon.Format
 ```
 
-`Toon.Format` is not on NuGet yet ([#29](https://github.com/toon-format/toon-dotnet/issues/29)) – until the first release, reference `src/ToonFormat` from a clone of this repository.
-
 ## Usage
 
 ```csharp
