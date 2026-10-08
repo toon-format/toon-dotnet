@@ -115,7 +115,6 @@ internal static class Parser
             }
         }
 
-        // Non-strict mode resolves a repeated field name by last write wins.
         var duplicateField = fields == null ? null : FindDuplicateFieldName(fields);
         var duplicateError = duplicateField == null ? null : $"Duplicate field name \"{duplicateField}\" in field list";
 
